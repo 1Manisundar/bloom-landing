@@ -3641,6 +3641,10 @@
         ['q6', 'shannon'], ['q7', 'lang'], ['q8', 'wittg'], ['q9', 'bayes'], ['q10', 'prob']];
         const SOURCES = [['s1', 'photo'], ['s2', 'entropy'], ['s3', 'wittg'], ['s4', 'bayes']];
 
+        /* Loop state must be declared before anything can call wake(); the initial
+           resize() below reaches it, and `let` bindings throw if touched early. */
+        let running = false, sleeping = false, idleFrames = 0, rafId = null;
+
         let W = 0, H = 0;
         function resize() {
           const r = canvas.getBoundingClientRect();
@@ -3776,7 +3780,6 @@
         }
 
         /* run only when visible, and sleep once settled */
-        let running = false, sleeping = false, idleFrames = 0, rafId = null;
         function frame() {
           if (!running) { rafId = null; return; }
           const energy = physics();
