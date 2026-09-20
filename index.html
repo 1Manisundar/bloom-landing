@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bloom — Feed your curiosity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..600,0..100,0..1&family=DM+Sans:opsz,wght@9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:32 55% 97%;
+  --card:32 40% 99%;
+  --card-alt:32 55% 96%;
+  --pill:30 25% 93%;
+  --divider:28 25% 90%;
+  --border:28 25% 85%;
+  --border-strong:28 25% 72%;
+  --text:18 10% 14%;
+  --text-strong:18 10% 22%;
+  --text-muted:18 6% 46%;
+  --text-faint:18 6% 60%;
+  --sage:140 18% 42%;
+  --sage-deep:140 22% 30%;
+  --sage-tint:140 22% 92%;
+  --terra:18 60% 56%;
+  --terra-tint:24 55% 94%;
+  --lav:263 25% 56%;
+  --lav-tint:263 25% 94%;
+  --rose:0 50% 60%;
+  --ink:24 14% 12%;
+  --shadow:28 20% 70%;
+  --r-sm:.5rem; --r:.875rem; --r-lg:1.25rem;
+  --display:'Fraunces',Georgia,serif;
+  --body:'DM Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);
+  background:hsl(var(--page));
+  color:hsl(var(--text));
+  -webkit-font-smoothing:antialiased;
+  font-size:16px;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 8%, hsl(var(--sage)/.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 88%, hsl(var(--terra)/.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 30%, hsl(var(--lav)/.04) 0%, transparent 60%);
+}
+::selection{background:hsl(var(--terra)/.3);color:hsl(var(--text))}
+
+/* ── Type ── */
+.display{font-family:var(--display);font-weight:400;letter-spacing:-.025em;line-height:.96;font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1}
+.italic-display{font-family:var(--display);font-style:italic;font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1}
+.serif{font-family:var(--display);font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1}
+.smcp{font-family:var(--display);font-feature-settings:"smcp","c2sc";letter-spacing:.18em;text-transform:uppercase;font-size:.72rem;font-weight:500}
+.eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--display);font-feature-settings:"smcp","c2sc";font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:hsl(var(--text-muted));font-weight:500}
+.eyebrow::before{content:"";width:1.6rem;height:1px;background:hsl(var(--border-strong))}
+.tabular{font-feature-settings:"tnum","lnum"}
+.mono{font-family:var(--mono);font-size:.8rem;letter-spacing:0}
+
+/* ── Layout ── */
+.container{max-width:1240px;margin:0 auto;padding:0 40px}
+.section{padding:64px 0;position:relative}
+.section--tight{padding:48px 0}
+.divider{display:flex;align-items:center;gap:1rem;color:hsl(var(--text-faint));font-family:var(--display);font-style:italic;font-size:.95rem;padding:8px 0;letter-spacing:.05em}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(to right,transparent,hsl(var(--border-strong)),transparent)}
+
+/* ── Masthead ── */
+.masthead{position:sticky;top:0;z-index:50;background:hsl(var(--page)/.82);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid hsl(var(--border))}
+.masthead::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:hsl(var(--border)/.5)}
+.masthead-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand-mark{width:30px;height:30px;position:relative}
+.brand-name{font-family:var(--display);font-size:1.4rem;font-weight:500;letter-spacing:-.01em;font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1}
+.brand-name em{font-style:italic;font-weight:400}
+.nav{display:flex;align-items:center;gap:6px}
+.nav a{display:inline-flex;flex-direction:column;align-items:center;padding:8px 12px;color:hsl(var(--text-muted));text-decoration:none;font-family:var(--display);font-size:.95rem;font-variation-settings:"SOFT" 100,"opsz" 20,"WONK" 1;position:relative;cursor:pointer}
+.nav a:hover{color:hsl(var(--text-strong))}
+.nav a[data-active="true"]{color:hsl(var(--text));font-style:italic}
+.nav a[data-active="true"]::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:hsl(var(--sage));border-radius:1px}
+.nav-actions{display:flex;align-items:center;gap:10px}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:999px;font-family:var(--body);font-size:.92rem;font-weight:500;border:1px solid transparent;cursor:pointer;text-decoration:none;transition:all .2s ease;line-height:1;white-space:nowrap}
+.btn-primary{background:hsl(var(--ink));color:hsl(var(--page));border-color:hsl(var(--ink))}
+.btn-primary:hover{background:hsl(var(--sage-deep));border-color:hsl(var(--sage-deep));transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:hsl(var(--text-strong))}
+.btn-ghost:hover{background:hsl(var(--pill))}
+.btn-outline{background:transparent;color:hsl(var(--text));border-color:hsl(var(--border-strong))}
+.btn-outline:hover{border-color:hsl(var(--text));background:hsl(var(--card))}
+.btn-sm{padding:8px 14px;font-size:.85rem}
+.btn-lg{padding:14px 22px;font-size:1rem}
+
+/* ── Cards ── */
+.card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);box-shadow:inset 0 1px 0 hsl(0 0% 100%/.5),0 1px 2px hsl(var(--shadow)/.04)}
+.card-paper{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r);box-shadow:inset 0 1px 0 hsl(0 0% 100%/.5)}
+
+/* ── Hero ── */
+.hero{padding:48px 0 24px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:56px;align-items:start}
+.hero-eyebrow{margin-bottom:18px}
+.hero-title{font-size:clamp(48px,7vw,96px);margin:0 0 20px}
+.hero-title em{font-style:italic;color:hsl(var(--terra))}
+.hero-title .ornament{display:inline-block;color:hsl(var(--sage));font-size:.55em;vertical-align:.18em;margin:0 .15em;font-style:italic;font-weight:400}
+.hero-sub{max-width:640px;font-size:1.12rem;color:hsl(var(--text-muted));margin:0 0 24px;text-wrap:pretty}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:28px}
+.hero-meta{display:flex;align-items:center;gap:24px;flex-wrap:wrap;color:hsl(var(--text-faint));font-size:.85rem}
+.hero-meta-dot{display:inline-block;width:6px;height:6px;border-radius:999px;background:hsl(var(--sage));box-shadow:0 0 0 4px hsl(var(--sage)/.15);margin-right:8px}
+.hero-meta-item{display:inline-flex;align-items:center}
+.hero-meta-rule{width:1px;height:14px;background:hsl(var(--border-strong))}
+
+/* ── Ask box (the centerpiece) ── */
+.ask{margin-top:24px;position:relative}
+.ask-frame{background:hsl(var(--card));border:1px solid hsl(var(--border-strong));border-radius:24px;padding:8px;box-shadow:0 30px 60px -30px hsl(var(--shadow)/.45),0 8px 16px -8px hsl(var(--shadow)/.2)}
+.ask-shell{background:hsl(var(--card-alt));border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.ask-row{display:flex;align-items:center;gap:14px}
+.ask-prefix{font-family:var(--display);font-style:italic;font-size:1.1rem;color:hsl(var(--text-muted));white-space:nowrap}
+.ask-input{flex:1;background:transparent;border:0;outline:0;font-family:var(--display);font-size:clamp(20px,2.4vw,28px);color:hsl(var(--text));font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1;padding:8px 0}
+.ask-input::placeholder{color:hsl(var(--text-placeholder,18 6% 65%));font-style:italic}
+.ask-cta{padding:12px 20px;border-radius:14px;background:hsl(var(--sage));color:#fff;border:0;font-family:var(--body);font-weight:600;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+.ask-cta:hover{background:hsl(var(--sage-deep))}
+.ask-suggestions{display:flex;flex-wrap:wrap;gap:8px;padding:0 4px 4px}
+.ask-chip{background:hsl(var(--page));border:1px solid hsl(var(--border));border-radius:999px;padding:7px 13px;font-size:.83rem;color:hsl(var(--text-strong));cursor:pointer;font-family:var(--body);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.ask-chip:hover{border-color:hsl(var(--border-strong));background:hsl(var(--card))}
+.ask-chip span{color:hsl(var(--text-faint));font-family:var(--display);font-style:italic}
+
+/* ── Live answer demo ── */
+.demo-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:36px}
+@media (max-width:980px){.demo-grid{grid-template-columns:1fr}}
+.demo-pane{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);overflow:hidden}
+.demo-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid hsl(var(--divider));background:hsl(var(--card-alt))}
+.demo-title{display:flex;align-items:center;gap:10px;font-family:var(--display);font-style:italic;font-size:.98rem;color:hsl(var(--text-strong))}
+.demo-dot{width:7px;height:7px;border-radius:999px;background:hsl(var(--sage));box-shadow:0 0 0 4px hsl(var(--sage)/.15);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.demo-body{padding:24px 26px}
+.answer-q{font-family:var(--display);font-style:italic;font-size:1.05rem;color:hsl(var(--text-muted));margin:0 0 14px}
+.answer-text{font-family:var(--display);font-variation-settings:"SOFT" 100,"opsz" 18,"WONK" 0;font-size:1.04rem;line-height:1.65;color:hsl(var(--text-strong));margin:0;text-wrap:pretty}
+.answer-text strong{color:hsl(var(--text));font-weight:600}
+.answer-text .pill-ref{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;background:hsl(var(--sage-tint));color:hsl(var(--sage-deep));border-radius:999px;font-size:.85em;text-decoration:none;border:1px solid hsl(var(--sage)/.2);cursor:pointer;font-style:normal;font-family:var(--body);font-weight:500;margin:0 1px}
+.answer-text .pill-ref:hover{background:hsl(var(--sage)/.18)}
+.answer-cursor{display:inline-block;width:2px;height:1.1em;background:hsl(var(--sage));vertical-align:-2px;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.answer-meta{display:flex;align-items:center;gap:16px;margin-top:22px;padding-top:16px;border-top:1px dashed hsl(var(--border));font-size:.78rem;color:hsl(var(--text-faint))}
+.answer-meta-tag{padding:3px 9px;border-radius:999px;background:hsl(var(--pill));color:hsl(var(--text-strong));font-family:var(--mono);font-size:.72rem}
+.demo-side{display:flex;flex-direction:column;gap:24px}
+.concept-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);padding:20px}
+.concept-card h4{margin:0 0 4px;font-family:var(--display);font-size:1.15rem;font-weight:500;font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1}
+.concept-card .summary{font-size:.92rem;color:hsl(var(--text-muted));line-height:1.5;margin:6px 0 14px;text-wrap:pretty}
+.concept-stats{display:flex;gap:18px;font-size:.78rem;color:hsl(var(--text-faint))}
+.concept-stats b{color:hsl(var(--text-strong));font-weight:600}
+.related-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:14px;border-top:1px dashed hsl(var(--border))}
+.related-tag{padding:4px 10px;border-radius:999px;background:hsl(var(--terra-tint));color:hsl(var(--terra));font-size:.78rem;border:1px solid hsl(var(--terra)/.2);font-family:var(--display);font-style:italic;cursor:pointer}
+.related-tag:hover{background:hsl(var(--terra)/.18)}
+
+/* ── Section heading block ── */
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:end;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid hsl(var(--border))}
+.sec-num{font-family:var(--display);font-style:italic;font-size:1rem;color:hsl(var(--text-faint));white-space:nowrap;padding-bottom:4px}
+.sec-title{font-family:var(--display);font-size:clamp(36px,4.5vw,56px);margin:0;letter-spacing:-.02em;line-height:1.02;font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1}
+.sec-title em{font-style:italic;color:hsl(var(--terra))}
+.sec-sub{justify-self:end;max-width:380px;color:hsl(var(--text-muted));font-size:.98rem;text-align:right;text-wrap:pretty}
+@media(max-width:780px){.sec-head{grid-template-columns:1fr;gap:16px}.sec-sub{text-align:left;justify-self:start}}
+
+/* ── Knowledge graph ── */
+.graph-wrap{position:relative;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);overflow:hidden;height:560px}
+.graph-overlay{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;pointer-events:none;padding:18px 22px;z-index:3}
+.graph-toolbar{display:flex;justify-content:space-between;align-items:center;pointer-events:auto}
+.graph-filters{display:flex;gap:6px;background:hsl(var(--page)/.7);backdrop-filter:blur(8px);padding:5px;border-radius:999px;border:1px solid hsl(var(--border))}
+.graph-filters button{background:transparent;border:0;padding:7px 14px;font-family:var(--body);font-size:.83rem;color:hsl(var(--text-muted));cursor:pointer;border-radius:999px;transition:all .15s;font-weight:500;display:inline-flex;align-items:center;gap:7px}
+.graph-filters button[data-active="true"]{background:hsl(var(--ink));color:hsl(var(--page))}
+.graph-filters button .swatch{width:8px;height:8px;border-radius:999px}
+.graph-legend{display:flex;gap:14px;align-items:center;background:hsl(var(--page)/.7);backdrop-filter:blur(8px);padding:8px 14px;border-radius:999px;border:1px solid hsl(var(--border));font-size:.78rem;color:hsl(var(--text-muted))}
+.graph-legend .item{display:inline-flex;align-items:center;gap:6px}
+.graph-legend .swatch{width:9px;height:9px;border-radius:999px}
+.graph-detail{align-self:end;justify-self:start;background:hsl(var(--card)/.95);backdrop-filter:blur(10px);border:1px solid hsl(var(--border));border-radius:14px;padding:14px 18px;max-width:320px;pointer-events:auto;font-size:.88rem;box-shadow:0 8px 24px -8px hsl(var(--shadow)/.3);transition:opacity .2s}
+.graph-detail h5{margin:0 0 4px;font-family:var(--display);font-size:1.08rem;font-style:italic;font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1}
+.graph-detail p{margin:0;color:hsl(var(--text-muted));line-height:1.5;font-size:.85rem}
+.graph-detail .meta{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px dashed hsl(var(--border));font-size:.74rem;color:hsl(var(--text-faint))}
+.graph-detail .meta b{color:hsl(var(--text-strong));font-weight:600}
+.graph-canvas{position:absolute;inset:0;width:100%;height:100%}
+.graph-stats{position:absolute;top:58px;right:22px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;font-family:var(--display);font-style:italic;font-size:.85rem;color:hsl(var(--text-faint));pointer-events:none}
+.graph-stats .num{font-size:1.6rem;font-style:normal;color:hsl(var(--text));font-variation-settings:"SOFT" 100,"opsz" 60,"WONK" 1;line-height:1}
+
+/* ── Wiki feed ── */
+.wiki-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:980px){.wiki-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.wiki-grid{grid-template-columns:1fr}}
+.wiki-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);padding:24px;display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden}
+.wiki-card:hover{transform:translateY(-3px);border-color:hsl(var(--border-strong));box-shadow:0 18px 30px -20px hsl(var(--shadow)/.4)}
+.wiki-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.wiki-title{margin:0;font-family:var(--display);font-size:1.4rem;font-weight:500;line-height:1.15;font-variation-settings:"SOFT" 100,"opsz" 40,"WONK" 1;letter-spacing:-.01em}
+.wiki-glyph{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;font-family:var(--display);font-style:italic;font-size:1.5rem;color:hsl(var(--sage-deep));background:hsl(var(--sage-tint));border:1px solid hsl(var(--sage)/.18)}
+.wiki-glyph[data-tone="terra"]{color:hsl(var(--terra));background:hsl(var(--terra-tint));border-color:hsl(var(--terra)/.18)}
+.wiki-glyph[data-tone="lav"]{color:hsl(var(--lav));background:hsl(var(--lav-tint));border-color:hsl(var(--lav)/.18)}
+.wiki-summary{font-family:var(--display);font-variation-settings:"SOFT" 100,"opsz" 14,"WONK" 0;font-size:.95rem;line-height:1.55;color:hsl(var(--text-strong));margin:0;flex:1;text-wrap:pretty}
+.wiki-summary::first-letter{font-family:var(--display);font-size:2.6em;line-height:.85;float:left;padding:.12em .12em 0 0;color:hsl(var(--text));font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1}
+.wiki-foot{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px dashed hsl(var(--border));font-size:.78rem;color:hsl(var(--text-faint))}
+.wiki-foot .count{font-family:var(--mono);color:hsl(var(--text-strong))}
+.wiki-foot .arrow{font-family:var(--display);font-style:italic}
+.wiki-tags{display:flex;flex-wrap:wrap;gap:6px}
+.wiki-tag{font-size:.73rem;padding:2px 8px;border-radius:999px;background:hsl(var(--pill));color:hsl(var(--text-muted));font-family:var(--display);font-style:italic}
+
+/* ── Dashboard / activity ── */
+.dash{display:grid;grid-template-columns:1fr;gap:24px}
+@media(max-width:1000px){.dash{grid-template-columns:1fr}}
+.dash-pane{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);padding:28px}
+.dash-pane h3{margin:0 0 4px;font-family:var(--display);font-size:1.4rem;font-weight:500;font-variation-settings:"SOFT" 100,"opsz" 40,"WONK" 1}
+.dash-pane h3 em{font-style:italic;color:hsl(var(--terra))}
+.dash-pane .pane-sub{margin:0 0 22px;color:hsl(var(--text-muted));font-size:.9rem}
+.heatmap{display:grid;grid-template-rows:repeat(7,16px);grid-auto-flow:column;grid-auto-columns:16px;gap:4px;margin:18px 0;overflow-x:auto;padding-bottom:6px}
+.heatmap div{border-radius:3px;background:hsl(var(--pill));transition:all .2s;cursor:pointer}
+.heatmap div[data-l="1"]{background:hsl(var(--sage)/.2)}
+.heatmap div[data-l="2"]{background:hsl(var(--sage)/.4)}
+.heatmap div[data-l="3"]{background:hsl(var(--sage)/.65)}
+.heatmap div[data-l="4"]{background:hsl(var(--sage)/.92)}
+.heatmap div:hover{transform:scale(1.4);outline:2px solid hsl(var(--ink))}
+.heat-foot{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:hsl(var(--text-faint))}
+.heat-key{display:inline-flex;align-items:center;gap:4px}
+.heat-key div{width:11px;height:11px;border-radius:3px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.kpi{padding:16px;border:1px solid hsl(var(--border));border-radius:var(--r);background:hsl(var(--card-alt))}
+.kpi .label{font-size:.72rem;color:hsl(var(--text-faint));font-family:var(--display);font-feature-settings:"smcp","c2sc";letter-spacing:.16em;text-transform:uppercase}
+.kpi .num{font-family:var(--display);font-size:2.1rem;line-height:1;font-variation-settings:"SOFT" 100,"opsz" 60,"WONK" 1;margin-top:6px}
+.kpi .delta{font-size:.78rem;color:hsl(var(--sage));margin-top:6px;font-family:var(--mono)}
+
+.timeline{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.tl-item{display:grid;grid-template-columns:72px 1fr;gap:16px;padding:14px 0;border-top:1px solid hsl(var(--divider))}
+.tl-item:first-child{border-top:0;padding-top:0}
+.tl-time{font-family:var(--mono);font-size:.7rem;color:hsl(var(--text-faint));padding-top:2px}
+.tl-content{display:flex;flex-direction:column;gap:6px}
+.tl-q{font-family:var(--display);font-size:.92rem;line-height:1.35;font-variation-settings:"SOFT" 100,"opsz" 18,"WONK" 0;margin:0}
+.tl-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tl-tag{font-size:.68rem;padding:1px 6px;border-radius:999px;background:hsl(var(--sage-tint));color:hsl(var(--sage-deep));font-family:var(--display);font-style:italic;border:1px solid hsl(var(--sage)/.15)}
+.tl-tag[data-tone="terra"]{background:hsl(var(--terra-tint));color:hsl(var(--terra));border-color:hsl(var(--terra)/.15)}
+.tl-tag[data-tone="lav"]{background:hsl(var(--lav-tint));color:hsl(var(--lav));border-color:hsl(var(--lav)/.15)}
+
+/* ── Features grid ── */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:980px){.features{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.features{grid-template-columns:1fr}}
+.feat{padding:28px;border:1px solid hsl(var(--border));border-radius:var(--r-lg);background:hsl(var(--card));position:relative;overflow:hidden}
+.feat-num{font-family:var(--display);font-style:italic;color:hsl(var(--text-faint));font-size:.85rem;margin-bottom:14px}
+.feat h4{margin:0 0 8px;font-family:var(--display);font-size:1.5rem;font-weight:500;font-variation-settings:"SOFT" 100,"opsz" 40,"WONK" 1;letter-spacing:-.005em;line-height:1.1}
+.feat h4 em{font-style:italic;color:hsl(var(--terra))}
+.feat p{margin:0;color:hsl(var(--text-muted));font-size:.93rem;line-height:1.55;text-wrap:pretty}
+.feat-icon{margin-bottom:18px;width:46px;height:46px;border-radius:14px;background:hsl(var(--sage-tint));border:1px solid hsl(var(--sage)/.18);display:grid;place-items:center;color:hsl(var(--sage-deep))}
+.feat-icon[data-tone="terra"]{background:hsl(var(--terra-tint));border-color:hsl(var(--terra)/.18);color:hsl(var(--terra))}
+.feat-icon[data-tone="lav"]{background:hsl(var(--lav-tint));border-color:hsl(var(--lav)/.18);color:hsl(var(--lav))}
+
+/* ── Testimonials ── */
+.testi{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:980px){.testi{grid-template-columns:1fr}}
+.quote{padding:28px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);display:flex;flex-direction:column;gap:18px}
+.quote .mark{font-family:var(--display);font-size:3rem;line-height:.7;color:hsl(var(--terra));font-style:italic}
+.quote-text{font-family:var(--display);font-size:1.08rem;line-height:1.5;font-variation-settings:"SOFT" 100,"opsz" 24,"WONK" 0;color:hsl(var(--text-strong));margin:0;flex:1;text-wrap:pretty}
+.quote-by{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid hsl(var(--divider))}
+.avatar{width:38px;height:38px;border-radius:999px;background:hsl(var(--sage-tint));border:1px solid hsl(var(--sage)/.2);display:grid;place-items:center;font-family:var(--display);font-style:italic;color:hsl(var(--sage-deep));font-size:1rem}
+.quote-by .name{font-family:var(--body);font-weight:600;font-size:.92rem;color:hsl(var(--text-strong));line-height:1.2}
+.quote-by .role{font-size:.78rem;color:hsl(var(--text-faint));font-family:var(--display);font-style:italic}
+
+/* ── Pricing ── */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+@media(max-width:900px){.pricing{grid-template-columns:1fr}}
+.price-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--r-lg);padding:32px;display:flex;flex-direction:column;gap:18px;position:relative}
+.price-card[data-feat="true"]{border-color:hsl(var(--ink));background:hsl(var(--ink));color:hsl(var(--page))}
+.price-card[data-feat="true"] .price-name,.price-card[data-feat="true"] .price-amt,.price-card[data-feat="true"] .price-feat li{color:hsl(var(--page))}
+.price-card[data-feat="true"] .price-sub,.price-card[data-feat="true"] .price-amt-cents{color:hsl(var(--page)/.7)}
+.price-card[data-feat="true"] .feat-rule{background:hsl(var(--page)/.18)}
+.price-card[data-feat="true"] .check{color:hsl(var(--terra))}
+.price-tag{position:absolute;top:-12px;left:32px;background:hsl(var(--terra));color:#fff;padding:4px 12px;border-radius:999px;font-size:.72rem;font-family:var(--display);font-feature-settings:"smcp","c2sc";letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+.price-name{font-family:var(--display);font-style:italic;font-size:1.25rem;font-variation-settings:"SOFT" 100,"opsz" 30,"WONK" 1;margin:0}
+.price-sub{font-size:.88rem;color:hsl(var(--text-muted));margin:0;text-wrap:pretty}
+.price-amt{font-family:var(--display);font-size:3.2rem;line-height:1;font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1;margin:0;display:flex;align-items:baseline;gap:6px}
+.price-amt-cents{font-size:1rem;color:hsl(var(--text-muted));font-family:var(--body);font-variation-settings:normal;letter-spacing:0}
+.feat-rule{height:1px;background:hsl(var(--border))}
+.price-feat{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;flex:1}
+.price-feat li{display:flex;align-items:flex-start;gap:10px;font-size:.92rem;line-height:1.4;color:hsl(var(--text-strong))}
+.check{color:hsl(var(--sage));margin-top:1px;flex:none}
+
+/* ── FAQ ── */
+.faq{max-width:780px;margin:0 auto}
+.faq-item{border-top:1px solid hsl(var(--border));padding:22px 0;cursor:pointer}
+.faq-item:last-child{border-bottom:1px solid hsl(var(--border))}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:14px;font-family:var(--display);font-size:1.18rem;font-weight:500;font-variation-settings:"SOFT" 100,"opsz" 24,"WONK" 1;color:hsl(var(--text));list-style:none;line-height:1.3}
+.faq-q::-webkit-details-marker{display:none}
+.faq-toggle{font-family:var(--display);font-style:italic;font-size:1.5rem;color:hsl(var(--terra));transition:transform .25s;flex:none}
+.faq-item[open] .faq-toggle{transform:rotate(45deg)}
+.faq-a{margin-top:12px;color:hsl(var(--text-muted));font-size:.96rem;line-height:1.6;max-width:680px;text-wrap:pretty}
+
+/* ── Final CTA ── */
+.final{background:hsl(var(--ink));color:hsl(var(--page));border-radius:24px;padding:80px 64px;position:relative;overflow:hidden}
+@media(max-width:780px){.final{padding:48px 32px}}
+.final-grain{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23fff'/%3E%3C/svg%3E");pointer-events:none}
+.final-blob{position:absolute;width:340px;height:340px;border-radius:999px;filter:blur(60px);opacity:.4;pointer-events:none}
+.final-blob.b1{background:hsl(var(--terra));top:-100px;right:-50px}
+.final-blob.b2{background:hsl(var(--sage));bottom:-100px;left:10%}
+.final-inner{position:relative;display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:center}
+@media(max-width:780px){.final-inner{grid-template-columns:1fr}}
+.final h2{font-family:var(--display);font-size:clamp(40px,5vw,72px);margin:0 0 18px;font-variation-settings:"SOFT" 100,"opsz" 144,"WONK" 1;letter-spacing:-.025em;line-height:.98}
+.final h2 em{font-style:italic;color:hsl(var(--terra))}
+.final p{margin:0 0 28px;color:hsl(var(--page)/.75);font-size:1.05rem;max-width:520px}
+.final .actions{display:flex;gap:12px;flex-wrap:wrap}
+.final .btn-primary{background:hsl(var(--page));color:hsl(var(--ink));border-color:hsl(var(--page))}
+.final .btn-primary:hover{background:hsl(var(--terra));color:#fff;border-color:hsl(var(--terra))}
+.final .btn-outline{color:hsl(var(--page));border-color:hsl(var(--page)/.3)}
+.final .btn-outline:hover{border-color:hsl(var(--page));background:hsl(var(--page)/.08)}
+.final-stats{display:flex;flex-direction:column;gap:18px}
+.final-stat{padding:18px 22px;background:hsl(var(--page)/.06);border:1px solid hsl(var(--page)/.15);border-radius:14px;backdrop-filter:blur(8px)}
+.final-stat .num{font-family:var(--display);font-size:2.4rem;line-height:1;font-variation-settings:"SOFT" 100,"opsz" 60,"WONK" 1}
+.final-stat .num em{font-style:italic;color:hsl(var(--terra))}
+.final-stat .lbl{font-size:.85rem;color:hsl(var(--page)/.65);margin-top:4px;font-family:var(--display);font-style:italic}
+
+/* ── Footer ── */
+footer{padding:64px 0 36px;border-top:1px solid hsl(var(--border));margin-top:80px}
+.foot-grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:36px;margin-bottom:48px}
+@media(max-width:780px){.foot-grid{grid-template-columns:repeat(2,1fr)}}
+.foot-brand p{margin:14px 0 0;color:hsl(var(--text-muted));font-size:.92rem;max-width:300px}
+.foot-col h5{font-family:var(--display);font-feature-settings:"smcp","c2sc";letter-spacing:.16em;text-transform:uppercase;font-size:.74rem;color:hsl(var(--text-faint));margin:0 0 16px;font-weight:500}
+.foot-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.foot-col a{color:hsl(var(--text-strong));text-decoration:none;font-size:.92rem;font-family:var(--body)}
+.foot-col a:hover{color:hsl(var(--sage-deep))}
+.foot-col li.note{color:hsl(var(--text-faint));font-size:.78rem;font-family:var(--display);font-style:italic}
+.foot-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding-top:24px;border-top:1px solid hsl(var(--border));font-size:.82rem;color:hsl(var(--text-faint))}
+.foot-bot .ornament{font-family:var(--display);font-style:italic;letter-spacing:.2em}
+
+/* ── Scroll fades ── */
+.fade-in{opacity:0;transform:translateY(16px);transition:opacity .9s ease,transform .9s ease}
+.fade-in.in{opacity:1;transform:none}
+
+/* ── Tooltip on graph node hover ── */
+.node-tooltip{position:fixed;pointer-events:none;background:hsl(var(--ink));color:hsl(var(--page));padding:6px 10px;border-radius:8px;font-size:.78rem;font-family:var(--mono);transform:translate(-50%,-130%);white-space:nowrap;z-index:100;opacity:0;transition:opacity .15s}
+.node-tooltip.show{opacity:1}
+
+/* ── Marquee ── */
+.marquee{overflow:hidden;border-top:1px solid hsl(var(--border));border-bottom:1px solid hsl(var(--border));padding:18px 0;background:hsl(var(--card));margin:8px 0}
+.marquee-track{display:flex;gap:64px;animation:scroll 38s linear infinite;width:max-content;color:hsl(var(--text-muted));font-family:var(--display);font-style:italic;font-size:1.1rem;font-variation-settings:"SOFT" 100,"opsz" 24,"WONK" 1}
+.marquee-track span{display:inline-flex;align-items:center;gap:16px;white-space:nowrap}
+.marquee-track span::after{content:"❦";color:hsl(var(--terra));margin-left:64px}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── Tour modal ── */
+.tour-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s ease}
+.tour-modal.open{opacity:1;visibility:visible}
+.tour-backdrop{position:absolute;inset:0;background:hsl(var(--ink)/0);backdrop-filter:blur(0px);-webkit-backdrop-filter:blur(0px);transition:background .5s ease,backdrop-filter .5s ease,-webkit-backdrop-filter .5s ease}
+.tour-modal.open .tour-backdrop{background:hsl(var(--ink)/.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.tour-frame{position:relative;width:min(1320px,94vw);height:min(860px,92vh);border-radius:20px;overflow:hidden;box-shadow:0 60px 120px -30px rgba(0,0,0,.5),0 20px 40px -10px rgba(0,0,0,.3);transform:scale(.92);transition:transform .5s cubic-bezier(.16,1,.3,1);background:hsl(var(--ink))}
+.tour-modal.open .tour-frame{transform:scale(1)}
+.tour-frame iframe{width:100%;height:100%;border:0}
+.tour-close{position:absolute;top:8px;right:14px;z-index:10;width:32px;height:32px;border-radius:999px;background:hsl(var(--border)/.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid hsl(var(--border-strong)/.4);color:hsl(var(--text-strong));display:grid;place-items:center;cursor:pointer;transition:all .2s;font-size:.9rem;font-weight:600;line-height:1}
+.tour-close:hover{background:hsl(var(--border-strong)/.8);color:hsl(var(--text));transform:scale(1.08)}
+
+</style>
+</head>
+<body>
+
+<!-- ───────────── MASTHEAD ───────────── -->
+<header class="masthead">
+  <div class="container masthead-inner">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="6" fill="hsl(140,18%,42%)"/>
+        <circle cx="9" cy="9" r="3" fill="hsl(18,60%,56%)"/>
+        <circle cx="24" cy="22" r="3" fill="hsl(263,25%,56%)"/>
+        <circle cx="22" cy="8" r="2" fill="hsl(140,18%,42%)" opacity=".5"/>
+        <circle cx="8" cy="23" r="2" fill="hsl(18,60%,56%)" opacity=".5"/>
+        <line x1="9" y1="9" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+        <line x1="24" y1="22" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+        <line x1="22" y1="8" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+        <line x1="8" y1="23" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+      </svg>
+      <span class="brand-name">Bloom<em>.</em></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a data-active="true" href="#top">Home</a>
+      <a href="#features">Features</a>
+      <a href="#wiki">Library</a>
+      <a href="#dashboard">Mirror</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-ghost btn-sm" href="#">Sign in</a>
+      <a class="btn btn-primary btn-sm" href="#cta">Start free <span aria-hidden>→</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ───────────── HERO ───────────── -->
+<section class="section hero" id="top">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow hero-eyebrow">No.&nbsp;01 — A mirror for the mind</div>
+        <h1 class="display hero-title">
+          Feed your<br>
+          <em>curiosity.</em><span class="ornament">&nbsp;❦&nbsp;</span><br>
+          Grow a mind.
+        </h1>
+        <p class="hero-sub">
+          Bloom is an AI&#8209;native learning workspace where every question you ask plants a concept,
+          every concept compounds into a private wiki, and your wandering thoughts grow into
+          a living knowledge graph that mirrors how you think.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="#cta">Plant your first question <span aria-hidden>→</span></a>
+          <button class="btn btn-outline btn-lg" id="open-tour">Watch a 90-second tour</button>
+        </div>
+        <div class="hero-meta">
+          <span class="hero-meta-item"><span class="hero-meta-dot"></span>Free for the curious</span>
+          <span class="hero-meta-rule"></span>
+          <span class="hero-meta-item">Open source · self-hostable</span>
+          <span class="hero-meta-rule"></span>
+          <span class="hero-meta-item">Bring your own model</span>
+        </div>
+      </div>
+
+      <!-- ASK BOX -->
+      <div class="ask" id="ask">
+        <div class="ask-frame">
+          <div class="ask-shell">
+            <div class="ask-row">
+              <span class="ask-prefix">Ask anything —</span>
+              <input id="ask-input" class="ask-input" placeholder="Why does the sky look pink at golden hour?" autocomplete="off"/>
+              <button class="ask-cta" id="ask-go">
+                Bloom it
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+            <div class="ask-suggestions">
+              <span class="smcp" style="color:hsl(var(--text-faint));align-self:center;margin-right:4px">Try</span>
+              <button class="ask-chip" data-q="How does the Calvin cycle fix carbon?">How does the Calvin cycle fix carbon? <span>↗</span></button>
+              <button class="ask-chip" data-q="Why is entropy not reversible?">Why is entropy not reversible? <span>↗</span></button>
+              <button class="ask-chip" data-q="What did Wittgenstein mean by language games?">What did Wittgenstein mean by language games? <span>↗</span></button>
+              <button class="ask-chip" data-q="Compare Keynes and Hayek on cycles">Keynes vs Hayek on cycles <span>↗</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── MARQUEE ───────────── -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Connects ideas across fields</span><span>Compounds knowledge over time</span>
+    <span>Yours, forever &amp; offline</span><span>Open source, self&#8209;hostable</span>
+    <span>From a question to a wiki page</span><span>Personality&#8209;aware learning</span>
+    <span>Connects ideas across fields</span><span>Compounds knowledge over time</span>
+    <span>Yours, forever &amp; offline</span><span>Open source, self&#8209;hostable</span>
+    <span>From a question to a wiki page</span><span>Personality&#8209;aware learning</span>
+  </div>
+</div>
+
+<!-- ───────────── LIVE ANSWER DEMO ───────────── -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ ii.</div>
+      <h2 class="sec-title">A question, answered<br>and <em>remembered.</em></h2>
+      <p class="sec-sub">Every answer is grounded in your sources, attaches to a concept node, and quietly grows your personal wiki — without you lifting another finger.</p>
+    </div>
+
+    <div class="demo-grid">
+      <div class="demo-pane">
+        <div class="demo-head">
+          <div class="demo-title"><span class="demo-dot"></span> Bloom is thinking…</div>
+          <div class="smcp" style="color:hsl(var(--text-faint))">CRAG · grounded</div>
+        </div>
+        <div class="demo-body">
+          <p class="answer-q" id="answer-q">— <span id="answer-q-text">How does the Calvin cycle fix carbon?</span></p>
+          <p class="answer-text" id="answer-text"></p>
+          <div class="answer-meta">
+            <span class="answer-meta-tag">~ 1.2s</span>
+            <span>Retrieved from <b>3 sources</b></span>
+            <span>·</span>
+            <span>Touched <b>4 concepts</b></span>
+            <span style="margin-left:auto">retrieval: <b style="color:hsl(var(--sage))">CORRECT</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-side">
+        <div class="concept-card">
+          <div class="eyebrow">New concept · grown</div>
+          <h4 style="margin-top:10px">Calvin Cycle</h4>
+          <p class="summary">The light&#8209;independent stage of photosynthesis where CO₂ is fixed into 3&#8209;phosphoglycerate by RuBisCO, then reduced to G3P using ATP and NADPH from the light reactions.</p>
+          <div class="concept-stats">
+            <span><b>12</b> questions</span>
+            <span><b>3</b> sources</span>
+            <span><b>last</b> seen 2m ago</span>
+          </div>
+          <div class="related-row">
+            <span class="related-tag">Photosynthesis</span>
+            <span class="related-tag">RuBisCO</span>
+            <span class="related-tag">G3P</span>
+            <span class="related-tag">Light reactions</span>
+          </div>
+        </div>
+
+        <div class="concept-card" style="background:hsl(var(--sage-tint));border-color:hsl(var(--sage)/.18)">
+          <div class="eyebrow" style="color:hsl(var(--sage-deep))">Bloom noticed —</div>
+          <p style="font-family:var(--display);font-style:italic;font-size:1.05rem;margin:8px 0 0;line-height:1.45;font-variation-settings:'SOFT' 100,'opsz' 18,'WONK' 1;color:hsl(var(--text-strong))">You've asked four questions about photosynthesis this week. Want a Feynman drill on the carbon&#8209;fixation pathway? <span style="color:hsl(var(--sage-deep));font-weight:500;cursor:pointer">Yes →</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── KNOWLEDGE GRAPH ───────────── -->
+<section class="section" id="graph">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ iii.</div>
+      <h2 class="sec-title">Watch your mind <em>connect</em><br>itself.</h2>
+      <p class="sec-sub">Every concept you touch becomes a node. Every shared question becomes an edge. The graph self‑organizes by topic — drag, hover, follow your curiosity.</p>
+    </div>
+
+    <div class="graph-wrap">
+      <canvas id="graph-canvas" class="graph-canvas"></canvas>
+
+      <div class="graph-overlay">
+        <div class="graph-toolbar">
+          <div class="graph-filters" id="graph-filters">
+            <button data-f="all" data-active="true">All</button>
+            <button data-f="bio"><span class="swatch" style="background:hsl(140,18%,42%)"></span>Biology</button>
+            <button data-f="phys"><span class="swatch" style="background:hsl(18,60%,56%)"></span>Physics</button>
+            <button data-f="phil"><span class="swatch" style="background:hsl(263,25%,56%)"></span>Philosophy</button>
+            <button data-f="math"><span class="swatch" style="background:hsl(42,60%,52%)"></span>Math</button>
+          </div>
+          <div class="graph-legend">
+            <span class="item"><span class="swatch" style="background:hsl(var(--sage))"></span>Concept</span>
+            <span class="item"><span class="swatch" style="background:hsl(var(--terra));border-radius:2px"></span>Question</span>
+            <span class="item"><span class="swatch" style="background:hsl(var(--lav));border-radius:0;transform:rotate(45deg)"></span>Source</span>
+          </div>
+        </div>
+
+        <div></div>
+
+        <div class="graph-detail" id="graph-detail">
+          <div class="eyebrow" style="margin-bottom:8px">Hover any node</div>
+          <h5 id="gd-title">Photosynthesis</h5>
+          <p id="gd-desc">The biological process by which plants convert light energy into chemical energy stored in glucose.</p>
+          <div class="meta">
+            <span><b id="gd-q">12</b> questions</span>
+            <span><b id="gd-c">7</b> connections</span>
+            <span><b id="gd-d">2d</b> ago</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="graph-stats">
+        <span class="num tabular">147</span>
+        <span>concepts · 312 edges</span>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:36px">⌖ &nbsp; drag · scroll · hover &nbsp; ⌖</div>
+  </div>
+</section>
+
+<!-- ───────────── FEATURES ───────────── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ iv.</div>
+      <h2 class="sec-title">A workspace that <em>thinks</em><br>with you.</h2>
+      <p class="sec-sub">Six ways Bloom turns scattered questions into compound knowledge. Every feature is opt‑in, every output is yours to export.</p>
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="6"/><path d="m21 21-5.5-5.5"/></svg>
+        </div>
+        <div class="feat-num">i.</div>
+        <h4>Corrective <em>RAG</em></h4>
+        <p>An LLM grades every retrieval — correct, ambiguous, or off — and adapts. You get answers grounded in your sources, not hallucinations dressed in confidence.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" data-tone="terra">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M9 6h6M6 9v6M9 18h6M18 9v6"/></svg>
+        </div>
+        <div class="feat-num">ii.</div>
+        <h4>A self‑growing <em>knowledge graph</em></h4>
+        <p>Concepts auto‑extract from every answer. Neo4j stores them; ForceAtlas2 lays them out. The more you ask, the richer the map of your own mind.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" data-tone="lav">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16M4 12h10M4 19h16"/><circle cx="18" cy="12" r="2"/></svg>
+        </div>
+        <div class="feat-num">iii.</div>
+        <h4>The Wiki that <em>writes itself</em></h4>
+        <p>Each concept node has a synthesized summary that compounds with every new question or source. You always have a clean, current page on what you've learned.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <div class="feat-num">iv.</div>
+        <h4>The <em>Mirror</em></h4>
+        <p>Patterns in your curiosity surfaced gently — depth vs breadth, dormant concepts, where you're stuck. A reflection, never a report card.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" data-tone="terra">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 11l6-1z"/></svg>
+        </div>
+        <div class="feat-num">v.</div>
+        <h4>Spaced <em>review</em></h4>
+        <p>Concepts you've barely touched bubble up. Concepts you've cracked rest. A quiet flashcard system tuned by your forgetting curve, not someone else's.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" data-tone="lav">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h12l4 4v12H4z"/><path d="M16 4v4h4M8 12h8M8 16h6"/></svg>
+        </div>
+        <div class="feat-num">vi.</div>
+        <h4>Export to <em>git</em></h4>
+        <p>Your wiki is just markdown. One click sends every concept page to your repo or Obsidian vault. We're a co‑pilot, not a roach‑motel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── WIKI FEED ───────────── -->
+<section class="section" id="wiki">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ v.</div>
+      <h2 class="sec-title">Your private<br><em>commonplace book.</em></h2>
+      <p class="sec-sub">A rich page for every concept you've ever touched — written by the model, edited by you, indexed by the graph.</p>
+    </div>
+
+    <div class="wiki-grid">
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">Photosynthesis</h3>
+          <div class="wiki-glyph">P</div>
+        </div>
+        <p class="wiki-summary">The biological process by which plants harvest photons of light and weave them into the sugars that fuel almost every food chain on the planet, splitting water and exhaling oxygen along the way.</p>
+        <div class="wiki-tags"><span class="wiki-tag">biology</span><span class="wiki-tag">cell&#8209;bio</span><span class="wiki-tag">cycles</span></div>
+        <div class="wiki-foot"><span class="count">12 q · 3 src · 4d</span><span class="arrow">read →</span></div>
+      </article>
+
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">Entropy</h3>
+          <div class="wiki-glyph" data-tone="terra">E</div>
+        </div>
+        <p class="wiki-summary">A measure of the number of microstates corresponding to a macrostate; the reason coffee cools, the reason eggs scramble, the arrow of time pointing only forward in the universe we live in.</p>
+        <div class="wiki-tags"><span class="wiki-tag">physics</span><span class="wiki-tag">thermo</span><span class="wiki-tag">information</span></div>
+        <div class="wiki-foot"><span class="count">8 q · 5 src · 1d</span><span class="arrow">read →</span></div>
+      </article>
+
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">Language Games</h3>
+          <div class="wiki-glyph" data-tone="lav">L</div>
+        </div>
+        <p class="wiki-summary">Wittgenstein's notion that meaning is not a hidden essence but a use — words gain sense from the rule‑governed activities they participate in, like pieces in a game whose rules everyone implicitly knows.</p>
+        <div class="wiki-tags"><span class="wiki-tag">philosophy</span><span class="wiki-tag">language</span></div>
+        <div class="wiki-foot"><span class="count">6 q · 2 src · 6h</span><span class="arrow">read →</span></div>
+      </article>
+
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">RuBisCO</h3>
+          <div class="wiki-glyph">R</div>
+        </div>
+        <p class="wiki-summary">The slowest, fussiest, most abundant enzyme on Earth — it grabs CO₂ and bolts it onto a five‑carbon sugar, but mistakes it for oxygen often enough that plants invented elaborate workarounds.</p>
+        <div class="wiki-tags"><span class="wiki-tag">enzyme</span><span class="wiki-tag">biochem</span></div>
+        <div class="wiki-foot"><span class="count">4 q · 2 src · 2d</span><span class="arrow">read →</span></div>
+      </article>
+
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">Calvin Cycle</h3>
+          <div class="wiki-glyph" data-tone="terra">C</div>
+        </div>
+        <p class="wiki-summary">The light‑independent waltz where carbon enters as a gas and leaves as a sugar — fixation, reduction, regeneration, repeat — using the ATP and NADPH the light reactions stocked the kitchen with.</p>
+        <div class="wiki-tags"><span class="wiki-tag">biology</span><span class="wiki-tag">cycles</span></div>
+        <div class="wiki-foot"><span class="count">12 q · 3 src · 2m</span><span class="arrow">read →</span></div>
+      </article>
+
+      <article class="wiki-card">
+        <div class="wiki-head">
+          <h3 class="wiki-title">Bayes' Theorem</h3>
+          <div class="wiki-glyph" data-tone="lav">B</div>
+        </div>
+        <p class="wiki-summary">A rule for updating belief in light of new evidence, beautiful in its symmetry — the posterior is the prior times the likelihood, normalized. The math, oddly, of how a careful mind should change.</p>
+        <div class="wiki-tags"><span class="wiki-tag">stats</span><span class="wiki-tag">epistemics</span><span class="wiki-tag">math</span></div>
+        <div class="wiki-foot"><span class="count">9 q · 4 src · 3d</span><span class="arrow">read →</span></div>
+      </article>
+    </div>
+
+    <div style="text-align:center;margin-top:32px">
+      <a class="btn btn-outline" href="#">Browse all 147 concept pages <span aria-hidden>→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── DASHBOARD ───────────── -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ vi.</div>
+      <h2 class="sec-title">A <em>mirror</em> for<br>your curiosity.</h2>
+      <p class="sec-sub">Activity, momentum, where you've been wandering deeply, and where the cobwebs are gathering. A gentle reflection — never a leaderboard.</p>
+    </div>
+
+    <div class="dash">
+      <div class="dash-pane">
+        <h3>The shape of your <em>year</em></h3>
+        <p class="pane-sub">52 weeks · 364 questions asked · 147 concepts grown</p>
+
+        <div class="heatmap" id="heatmap"></div>
+
+        <div class="heat-foot">
+          <span>Apr '25 ← &nbsp;<i style="font-style:italic;font-family:var(--display)">52 weeks</i>&nbsp; → Apr '26</span>
+          <span class="heat-key">
+            less
+            <div data-l="0"></div><div data-l="1"></div><div data-l="2"></div><div data-l="3"></div><div data-l="4"></div>
+            more
+          </span>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="label">Streak</div><div class="num tabular">38<span style="font-size:.7em;color:hsl(var(--text-muted))"> days</span></div><div class="delta">↑ longest yet</div></div>
+          <div class="kpi"><div class="label">Depth</div><div class="num tabular">3.4<span style="font-size:.7em;color:hsl(var(--text-muted))"> q/concept</span></div><div class="delta">↑ 0.6 on last month</div></div>
+          <div class="kpi"><div class="label">Breadth</div><div class="num tabular">11<span style="font-size:.7em;color:hsl(var(--text-muted))"> domains</span></div><div class="delta" style="color:hsl(var(--lav))">↗ exploring philosophy</div></div>
+        </div>
+      </div>
+
+      <div class="dash-pane">
+        <h3>Lately, you've <em>wondered</em></h3>
+        <p class="pane-sub">Last 7 questions, threaded by concept</p>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <span class="tl-time">2m ago</span>
+            <div class="tl-content">
+              <p class="tl-q">How does the Calvin cycle fix carbon?</p>
+              <div class="tl-tags"><span class="tl-tag">Calvin Cycle</span><span class="tl-tag">RuBisCO</span><span class="tl-tag">Photosynthesis</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">28m ago</span>
+            <div class="tl-content">
+              <p class="tl-q">Why doesn't entropy run backwards?</p>
+              <div class="tl-tags"><span class="tl-tag" data-tone="terra">Entropy</span><span class="tl-tag" data-tone="terra">Arrow of time</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">2h ago</span>
+            <div class="tl-content">
+              <p class="tl-q">What did Wittgenstein mean by language games?</p>
+              <div class="tl-tags"><span class="tl-tag" data-tone="lav">Language Games</span><span class="tl-tag" data-tone="lav">Wittgenstein</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">yesterday</span>
+            <div class="tl-content">
+              <p class="tl-q">How does Bayes update prior beliefs?</p>
+              <div class="tl-tags"><span class="tl-tag" data-tone="lav">Bayes' Theorem</span><span class="tl-tag" data-tone="lav">Probability</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">yesterday</span>
+            <div class="tl-content">
+              <p class="tl-q">Why is RuBisCO so slow?</p>
+              <div class="tl-tags"><span class="tl-tag">RuBisCO</span><span class="tl-tag">enzyme kinetics</span></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <span class="tl-time">2d</span>
+            <div class="tl-content">
+              <p class="tl-q">What's the difference between entropy and information?</p>
+              <div class="tl-tags"><span class="tl-tag" data-tone="terra">Entropy</span><span class="tl-tag" data-tone="terra">Information</span><span class="tl-tag" data-tone="terra">Shannon</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── TESTIMONIALS ───────────── -->
+<section class="section" id="testi">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ vii.</div>
+      <h2 class="sec-title">Carried by<br><em>curious</em> minds.</h2>
+      <p class="sec-sub">A small but stubborn community of self‑learners, researchers, and lifelong students growing their own private wikis.</p>
+    </div>
+
+    <div class="testi">
+      <div class="quote">
+        <span class="mark">“</span>
+        <p class="quote-text">I'd been keeping a janky notes folder for ten years. Bloom rebuilt it in a weekend — and now my reading actually <em style="font-style:italic;font-family:var(--display);color:hsl(var(--terra))">connects</em>. The graph is the wow moment, but the wiki is what I keep coming back to.</p>
+        <div class="quote-by">
+          <div class="avatar">M</div>
+          <div><div class="name">Mira Halberstam</div><div class="role">PhD candidate · cognitive sci</div></div>
+        </div>
+      </div>
+      <div class="quote">
+        <span class="mark">“</span>
+        <p class="quote-text">As a self‑taught engineer, I'd ask GPT the same thing four times a month and never remember the answer. Bloom remembers. My questions are finally compounding instead of evaporating.</p>
+        <div class="quote-by">
+          <div class="avatar" style="background:hsl(var(--terra-tint));border-color:hsl(var(--terra)/.2);color:hsl(var(--terra))">D</div>
+          <div><div class="name">Devon Kabir</div><div class="role">Indie developer</div></div>
+        </div>
+      </div>
+      <div class="quote">
+        <span class="mark">“</span>
+        <p class="quote-text">The Mirror tab is unsettling in the best way. It quietly told me I'd been circling the same three concepts for two weeks and asked, very politely, if I'd like to try teaching one. I did. It clicked.</p>
+        <div class="quote-by">
+          <div class="avatar" style="background:hsl(var(--lav-tint));border-color:hsl(var(--lav)/.2);color:hsl(var(--lav))">A</div>
+          <div><div class="name">Anaïs Toranaga</div><div class="role">High&#8209;school teacher</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── PRICING ───────────── -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ viii.</div>
+      <h2 class="sec-title">Plans that <em>grow</em><br>with you.</h2>
+      <p class="sec-sub">Bloom is open source — self‑host for free, or let us keep your wiki tended in the cloud.</p>
+    </div>
+
+    <div class="pricing">
+      <div class="price-card">
+        <p class="price-name">Sapling</p>
+        <p class="price-sub">For curious folks just planting their first questions.</p>
+        <p class="price-amt">$0<span class="price-amt-cents">/forever</span></p>
+        <div class="feat-rule"></div>
+        <ul class="price-feat">
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>50 questions / month</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Up to 100 concept pages</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Knowledge graph visualizer</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Markdown export</li>
+        </ul>
+        <a class="btn btn-outline" href="#cta">Start free</a>
+      </div>
+
+      <div class="price-card" data-feat="true">
+        <span class="price-tag">Most loved</span>
+        <p class="price-name">Bloom</p>
+        <p class="price-sub">For the steady learner. Unlimited curiosity, your own model.</p>
+        <p class="price-amt">$12<span class="price-amt-cents">/mo, billed yearly</span></p>
+        <div class="feat-rule"></div>
+        <ul class="price-feat">
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Unlimited questions</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Bring your own GPT‑4o / Claude / local model</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>The Mirror &amp; spaced review</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Source ingestion (URL · paste · PDF)</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>One‑click git export</li>
+        </ul>
+        <a class="btn btn-primary" style="background:hsl(var(--page));color:hsl(var(--ink));border-color:hsl(var(--page))" href="#cta">Start 14‑day trial</a>
+      </div>
+
+      <div class="price-card">
+        <p class="price-name">Greenhouse</p>
+        <p class="price-sub">For teams, classrooms, and labs growing a shared garden.</p>
+        <p class="price-amt">$29<span class="price-amt-cents">/seat / mo</span></p>
+        <div class="feat-rule"></div>
+        <ul class="price-feat">
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Everything in Bloom</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Shared wikis &amp; graphs</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>SSO &amp; admin controls</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Self‑host or managed cloud</li>
+          <li><svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 5 5 9-11"/></svg>Priority support</li>
+        </ul>
+        <a class="btn btn-outline" href="#">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── FAQ ───────────── -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="sec-head">
+      <div class="sec-num">§ ix.</div>
+      <h2 class="sec-title">Honest <em>answers</em><br>before you ask.</h2>
+      <p class="sec-sub">If we missed yours, ask Bloom — it's good at this.</p>
+    </div>
+    <div class="faq">
+      <details class="faq-item" open>
+        <summary class="faq-q">Does Bloom store my data on its own servers?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">By default, the cloud version stores your wiki encrypted at rest in the EU or US (your choice on signup). If you'd rather keep everything local, the entire stack runs on your machine via Docker — Neo4j, Qdrant, Ollama, the works.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Which AI models does it use?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">Anything you bring. The default cloud config uses GPT‑4o for synthesis and a local Llama 3.1 (via Ollama) for personality and concept extraction. You can swap in Claude, Gemini, Mistral — your keys, your choice.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Is the personality dashboard a gimmick?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">It's earnest but humble — based on the TCI 240 framework, with explicit confidence bands and a "this isn't me" button per dimension. It's a mirror for noticing patterns, not a label generator.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Can I export my wiki and walk away?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">Always. One click ships every concept page as markdown to your git repo, Obsidian vault, or a downloadable zip. Wikilinks, frontmatter, and the works. We'd rather earn the next month than trap you in last month's.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">How is this different from ChatGPT or Notion AI?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">ChatGPT forgets between sessions. Notion AI remembers documents but not concepts. Bloom is a knowledge graph first — every answer becomes a node, every node grows a wiki page, every wiki page deepens future answers. It compounds.</p>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q">Is there a student discount?<span class="faq-toggle">+</span></summary>
+        <p class="faq-a">Yes — verified students and educators get the Bloom plan free. Email us with proof and we'll flip the switch within a day.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── FINAL CTA ───────────── -->
+<section class="section" id="cta">
+  <div class="container">
+    <div class="final">
+      <div class="final-grain"></div>
+      <span class="final-blob b1"></span>
+      <span class="final-blob b2"></span>
+      <div class="final-inner">
+        <div>
+          <div class="eyebrow" style="color:hsl(var(--page)/.6)">No.&nbsp;x — Begin</div>
+          <h2 style="margin-top:18px">Ask one<br>real <em>question.</em></h2>
+          <p>The kind you've been carrying around. The kind whose answer you'd love to remember six months from now. Plant it. Watch it grow.</p>
+          <div class="actions">
+            <a class="btn btn-primary btn-lg" href="#">Start free <span aria-hidden>→</span></a>
+            <a class="btn btn-outline btn-lg" href="#">Self‑host on GitHub</a>
+          </div>
+        </div>
+        <div class="final-stats">
+          <div class="final-stat"><div class="num tabular"><em>14k</em></div><div class="lbl">curious minds, growing wikis</div></div>
+          <div class="final-stat"><div class="num tabular"><em>2.1m</em></div><div class="lbl">concepts planted &amp; tended</div></div>
+          <div class="final-stat"><div class="num tabular"><em>97<span style="font-size:.6em">%</span></em></div><div class="lbl">would tell a friend</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── FOOTER ───────────── -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand foot-col">
+        <a class="brand" href="#top">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="6" fill="hsl(140,18%,42%)"/>
+            <circle cx="9" cy="9" r="3" fill="hsl(18,60%,56%)"/>
+            <circle cx="24" cy="22" r="3" fill="hsl(263,25%,56%)"/>
+            <line x1="9" y1="9" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+            <line x1="24" y1="22" x2="16" y2="16" stroke="hsl(28,25%,72%)" stroke-width="1"/>
+          </svg>
+          <span class="brand-name">Bloom<em>.</em></span>
+        </a>
+        <p>An AI‑native, curiosity‑driven learning workspace. Built with care, exported on demand.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#wiki">Wiki</a></li>
+          <li><a href="#graph">Graph</a></li>
+          <li><a href="#dashboard">Mirror</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">API reference</a></li>
+          <li><a href="#">Community</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Field notes (blog)</a></li>
+          <li><a href="#">Press kit</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Security</a></li>
+          <li class="note">Encrypted at rest · soc2 in progress</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Bloom Labs · grown in Lisbon &amp; New York</span>
+      <span class="ornament">❦ &nbsp; tend your garden &nbsp; ❦</span>
+      <span>v1.7 · "the calvin cycle"</span>
+    </div>
+  </div>
+</footer>
+
+<div class="node-tooltip" id="node-tooltip"></div>
+
+<!-- Tour Modal -->
+<div class="tour-modal" id="tour-modal">
+  <div class="tour-backdrop" id="tour-backdrop"></div>
+  <div class="tour-frame">
+    <button class="tour-close" id="tour-close" title="Close tour">✕</button>
+    <iframe id="tour-iframe" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+/* ─────────── Smooth nav highlight ─────────── */
+const nav = document.querySelectorAll('.nav a');
+nav.forEach(a => a.addEventListener('click', () => {
+  nav.forEach(x => x.removeAttribute('data-active'));
+  a.setAttribute('data-active','true');
+}));
+
+/* ─────────── Ask box typing → live answer ─────────── */
+const askInput = document.getElementById('ask-input');
+const askGo = document.getElementById('ask-go');
+const answerText = document.getElementById('answer-text');
+const answerQText = document.getElementById('answer-q-text');
+
+const ANSWERS = {
+  default: {
+    q: "How does the Calvin cycle fix carbon?",
+    parts: [
+      "The Calvin cycle is the ",
+      {pill:"Photosynthesis"},
+      "'s quiet second half — the part that doesn't need light. It runs in three movements: ",
+      {b:"fixation"},
+      ", reduction, and regeneration.\n\nFirst, an enzyme called ",
+      {pill:"RuBisCO"},
+      " grabs a CO₂ molecule and welds it onto a five‑carbon sugar. The unstable product splits into two molecules of ",
+      {pill:"3-PGA"},
+      ". Then ATP and NADPH (made earlier in the light reactions) reduce 3-PGA into ",
+      {pill:"G3P"},
+      " — the cycle's actual sugar export. For every six turns, one G3P leaves to become glucose; the rest are recycled to keep the wheel spinning."
+    ]
+  },
+  entropy: {
+    q: "Why is entropy not reversible?",
+    parts: [
+      "Because there are vastly more ways for a system to be ",
+      {b:"disordered"},
+      " than ordered. ",
+      {pill:"Entropy"},
+      " counts microstates — the rearrangements of particles consistent with what you see. A neat stack of cards has one arrangement; a shuffled deck has ~10⁶⁷. Statistical mechanics tells us systems drift toward higher‑probability configurations simply because there are more of them. The ",
+      {pill:"Arrow of time"},
+      " is just this drift, written in coffee cooling and eggs scrambling — never the reverse."
+    ]
+  },
+  language: {
+    q: "What did Wittgenstein mean by language games?",
+    parts: [
+      "Wittgenstein's idea — sketched in the ",
+      {b:"Philosophical Investigations"},
+      " — was that language doesn't get its meaning by pointing at things. It gets meaning the way a chess piece does: from the rule‑governed activity it participates in. Asking, joking, ordering, praying — each is a different ",
+      {pill:"Language Game"},
+      ". ",
+      {pill:"Meaning"},
+      " is use, not essence."
+    ]
+  },
+  keynes: {
+    q: "Compare Keynes and Hayek on cycles",
+    parts: [
+      {pill:"Keynes"},
+      " saw business cycles as failures of demand — in slumps, money hides under mattresses and someone (usually the state) has to spend it back into circulation. ",
+      {pill:"Hayek"},
+      " saw the same cycles as failures of structure — when central banks push rates below the natural rate, capital gets misallocated into projects that can't actually be finished. Keynes diagnoses the symptom; Hayek, the malinvestment that caused it. Both, in their way, are right."
+    ]
+  }
+};
+
+let typingTimer = null;
+function renderAnswer(key){
+  const a = ANSWERS[key] || ANSWERS.default;
+  if (typingTimer) clearTimeout(typingTimer);
+  answerQText.textContent = a.q;
+  answerText.innerHTML = '';
+  // Build HTML pieces in order, "type" them in
+  const pieces = [];
+  for(const p of a.parts){
+    if(typeof p==='string'){
+      // Split the string into chunks for typing
+      pieces.push({type:'text', text:p});
+    } else if(p.pill){
+      pieces.push({type:'pill', text:p.pill});
+    } else if(p.b){
+      pieces.push({type:'bold', text:p.b});
+    }
+  }
+  let pi=0, ci=0;
+  function step(){
+    if(pi>=pieces.length){
+      answerText.innerHTML = answerText.innerHTML.replace(/<span class="answer-cursor"><\/span>/g,'');
+      return;
+    }
+    const piece = pieces[pi];
+    if(piece.type==='text'){
+      ci+=Math.max(2,Math.floor(piece.text.length/14));
+      const slice = piece.text.slice(0,ci).replace(/\n\n/g,'<br><br>');
+      let html = answerText.dataset.committed||'';
+      html = html + slice;
+      answerText.innerHTML = html + '<span class="answer-cursor"></span>';
+      if(ci>=piece.text.length){
+        answerText.dataset.committed = (answerText.dataset.committed||'') + piece.text.replace(/\n\n/g,'<br><br>');
+        pi++; ci=0;
+      }
+    } else if(piece.type==='pill'){
+      const html = (answerText.dataset.committed||'') + `<a class="pill-ref" data-c="${piece.text}">${piece.text}</a>`;
+      answerText.dataset.committed = html;
+      answerText.innerHTML = html + '<span class="answer-cursor"></span>';
+      pi++;
+    } else if(piece.type==='bold'){
+      const html = (answerText.dataset.committed||'') + `<strong>${piece.text}</strong>`;
+      answerText.dataset.committed = html;
+      answerText.innerHTML = html + '<span class="answer-cursor"></span>';
+      pi++;
+    }
+    typingTimer = setTimeout(step, piece.type==='text'?28:90);
+  }
+  answerText.dataset.committed='';
+  step();
+}
+
+askGo.addEventListener('click', ()=>{
+  const v = askInput.value.toLowerCase();
+  let key='default';
+  if(v.includes('entropy')||v.includes('reversible')) key='entropy';
+  else if(v.includes('wittgenstein')||v.includes('language')) key='language';
+  else if(v.includes('keynes')||v.includes('hayek')) key='keynes';
+  renderAnswer(key);
+  document.getElementById('demo').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+document.querySelectorAll('.ask-chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    askInput.value = c.dataset.q;
+    askGo.click();
+  });
+});
+
+// Initial render after a beat
+setTimeout(()=>renderAnswer('default'), 600);
+
+/* ─────────── Heatmap (52 weeks × 7 days) ─────────── */
+const hm = document.getElementById('heatmap');
+const days = 52*7;
+const rng = (s=>()=>(s = (s*9301+49297)%233280)/233280)(7);
+let dHtml='';
+for(let i=0;i<days;i++){
+  const r = rng();
+  const recency = i/days; // more recent = right
+  const weight = recency*0.6 + r*0.4;
+  let l = 0;
+  if(weight>0.92) l=4;
+  else if(weight>0.78) l=3;
+  else if(weight>0.55) l=2;
+  else if(weight>0.32) l=1;
+  dHtml += `<div data-l="${l}" title="${Math.floor(l*3 + r*3)} questions"></div>`;
+}
+hm.innerHTML = dHtml;
+
+/* ─────────── Knowledge graph (canvas physics) ─────────── */
+const canvas = document.getElementById('graph-canvas');
+const ctx = canvas.getContext('2d');
+const detail = document.getElementById('graph-detail');
+const tooltip = document.getElementById('node-tooltip');
+
+const DOMAINS = {
+  bio:{color:'#6f8d72', name:'Biology'},
+  phys:{color:'#cc6f4d', name:'Physics'},
+  phil:{color:'#8d7bb0', name:'Philosophy'},
+  math:{color:'#c79f3b', name:'Math'}
+};
+// Concept nodes (with id, label, domain, q, c, recency, type)
+const CONCEPTS = [
+  ['photo','Photosynthesis','bio',12,7,'2d'],
+  ['calvin','Calvin Cycle','bio',12,5,'2m'],
+  ['rubisco','RuBisCO','bio',4,4,'2d'],
+  ['krebs','Krebs Cycle','bio',5,3,'5d'],
+  ['mito','Mitochondria','bio',6,4,'1w'],
+  ['atp','ATP','bio',7,6,'3d'],
+  ['cell','Cell Bio','bio',9,5,'4d'],
+  ['entropy','Entropy','phys',8,5,'1d'],
+  ['arrow','Arrow of Time','phys',3,3,'1d'],
+  ['therm','Thermo','phys',4,4,'2d'],
+  ['shannon','Shannon Info','phys',3,3,'2d'],
+  ['quantum','Quantum','phys',2,2,'1w'],
+  ['wittg','Wittgenstein','phil',5,4,'6h'],
+  ['lang','Language Games','phil',6,4,'6h'],
+  ['mean','Meaning','phil',4,4,'1d'],
+  ['epist','Epistemics','phil',3,3,'3d'],
+  ['hayek','Hayek','phil',2,2,'1w'],
+  ['bayes',"Bayes' Theorem",'math',9,5,'3d'],
+  ['prob','Probability','math',7,5,'3d'],
+  ['stat','Statistics','math',5,4,'4d'],
+  ['lin','Linear Algebra','math',3,3,'1w'],
+];
+const DESCRIPTIONS = {
+  photo: "The biological process by which plants convert light energy into chemical energy.",
+  calvin: "Light-independent stage of photosynthesis where CO₂ is fixed into G3P.",
+  rubisco: "The slowest, fussiest, most abundant enzyme on Earth — fixes CO₂ to RuBP.",
+  krebs: "Citric acid cycle — oxidizes acetyl-CoA to extract high-energy electrons.",
+  mito: "The membrane-bound organelle responsible for cellular respiration.",
+  atp: "The chemical currency of life — energy stored in phosphoanhydride bonds.",
+  cell: "Foundational concepts of how cells are organized and function.",
+  entropy: "A measure of microstates — the reason coffee cools and eggs scramble.",
+  arrow: "The thermodynamic asymmetry pointing time forward, never back.",
+  therm: "Laws governing energy, temperature, and the limits of work.",
+  shannon: "Information measured as the resolution of uncertainty in bits.",
+  quantum: "The probabilistic substrate underlying all of physics.",
+  wittg: "20th century philosopher who reframed meaning as use.",
+  lang: "Wittgenstein's claim that meaning emerges from rule-governed activity.",
+  mean: "What words and signs refer to — and how reference works at all.",
+  epist: "The study of knowledge, justification, and belief revision.",
+  hayek: "Austrian economist; saw cycles as misallocations of capital.",
+  bayes: "Updates a prior belief in light of new evidence — symmetry of probability.",
+  prob: "The math of uncertainty, chance, and expected outcomes.",
+  stat: "Methods for inferring properties of a population from samples.",
+  lin: "Vectors, matrices, transformations — the lingua franca of ML.",
+};
+// Edges (concept-concept)
+const EDGES = [
+  ['photo','calvin'],['photo','atp'],['photo','cell'],
+  ['calvin','rubisco'],['calvin','atp'],['rubisco','cell'],
+  ['krebs','mito'],['krebs','atp'],['mito','atp'],['mito','cell'],
+  ['entropy','arrow'],['entropy','therm'],['entropy','shannon'],
+  ['therm','quantum'],['shannon','prob'],['shannon','bayes'],
+  ['wittg','lang'],['lang','mean'],['wittg','mean'],['mean','epist'],
+  ['epist','bayes'],['hayek','epist'],
+  ['bayes','prob'],['prob','stat'],['stat','lin'],['stat','shannon'],
+  ['photo','entropy'], // cross-domain bridges
+  ['cell','prob'],
+];
+// Question nodes — small terra squares attached to concepts
+const QUESTIONS = [
+  ['q1','calvin'], ['q2','calvin'], ['q3','rubisco'],
+  ['q4','entropy'], ['q5','arrow'], ['q6','shannon'],
+  ['q7','lang'], ['q8','wittg'], ['q9','bayes'], ['q10','prob']
+];
+// Source nodes
+const SOURCES = [
+  ['s1','photo'], ['s2','entropy'], ['s3','wittg'], ['s4','bayes']
+];
+
+// Build node objects with positions / velocities
+let W=0,H=0;
+function resize(){
+  const r = canvas.getBoundingClientRect();
+  W = r.width; H = r.height;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+const nodes = [];
+const idx = {};
+function addNode(id,kind,label,domain,extra){
+  const angle = Math.random()*Math.PI*2;
+  const r = 100 + Math.random()*Math.min(W,H)*0.3;
+  const n = {
+    id,kind,label,domain,
+    x: W/2 + Math.cos(angle)*r,
+    y: H/2 + Math.sin(angle)*r,
+    vx:0,vy:0,
+    r: kind==='concept'? 6 + Math.sqrt(extra?.q||3)*1.6 : kind==='question'? 3 : 3.5,
+    extra
+  };
+  nodes.push(n); idx[id]=n;
+}
+CONCEPTS.forEach(c=>addNode(c[0],'concept',c[1],c[2],{q:c[3],c:c[4],d:c[5]}));
+QUESTIONS.forEach(q=>addNode(q[0],'question','',null,{parent:q[1]}));
+SOURCES.forEach(s=>addNode(s[0],'source','',null,{parent:s[1]}));
+
+const edges = [];
+EDGES.forEach(e=>edges.push([idx[e[0]],idx[e[1]],'cc']));
+QUESTIONS.forEach(q=>edges.push([idx[q[0]],idx[q[1]],'qc']));
+SOURCES.forEach(s=>edges.push([idx[s[0]],idx[s[1]],'sc']));
+
+// Filter state
+let activeFilter = 'all';
+const filterMap = {bio:'bio',phys:'phys',phil:'phil',math:'math'};
+document.querySelectorAll('#graph-filters button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#graph-filters button').forEach(x=>x.removeAttribute('data-active'));
+    b.setAttribute('data-active','true');
+    activeFilter = b.dataset.f;
+  });
+});
+
+// Physics
+let hovered=null, dragged=null, mx=0, my=0;
+function tick(){
+  // forces
+  // 1) repel between nodes
+  for(let i=0;i<nodes.length;i++){
+    const a = nodes[i];
+    if(a===dragged) continue;
+    for(let j=i+1;j<nodes.length;j++){
+      const b = nodes[j];
+      const dx = a.x-b.x, dy = a.y-b.y;
+      const d2 = dx*dx+dy*dy+0.1;
+      const d = Math.sqrt(d2);
+      if(d<160){
+        const f = 600/d2;
+        a.vx += dx/d*f; a.vy += dy/d*f;
+        b.vx -= dx/d*f; b.vy -= dy/d*f;
+      }
+    }
+  }
+  // 2) edge spring
+  for(const e of edges){
+    const a=e[0], b=e[1];
+    const targetLen = e[2]==='cc'? 90 : 38;
+    const dx = b.x-a.x, dy = b.y-a.y;
+    const d = Math.sqrt(dx*dx+dy*dy)+0.01;
+    const f = (d-targetLen)*0.02;
+    if(a!==dragged){a.vx += dx/d*f; a.vy += dy/d*f;}
+    if(b!==dragged){b.vx -= dx/d*f; b.vy -= dy/d*f;}
+  }
+  // 3) center gravity
+  for(const n of nodes){
+    if(n===dragged) continue;
+    const dx = W/2 - n.x, dy = H/2 - n.y;
+    n.vx += dx*0.0008; n.vy += dy*0.0008;
+  }
+  // 4) integrate
+  for(const n of nodes){
+    if(n===dragged) continue;
+    n.vx*=0.86; n.vy*=0.86;
+    n.x += n.vx; n.y += n.vy;
+    n.x = Math.max(20, Math.min(W-20, n.x));
+    n.y = Math.max(20, Math.min(H-20, n.y));
+  }
+}
+
+function isVisible(n){
+  if(activeFilter==='all') return true;
+  if(n.kind==='concept') return n.domain===activeFilter;
+  // question/source — visible if their parent concept is visible
+  const parent = idx[n.extra?.parent];
+  return parent && parent.domain===activeFilter;
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // edges
+  for(const e of edges){
+    const a=e[0], b=e[1];
+    const va = isVisible(a), vb = isVisible(b);
+    if(!va && !vb) continue;
+    let alpha = (va&&vb)?0.18:0.05;
+    if(hovered && (a===hovered||b===hovered)) alpha=0.55;
+    ctx.strokeStyle = `rgba(80,68,58,${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
+    ctx.stroke();
+  }
+  // nodes
+  for(const n of nodes){
+    const vis = isVisible(n);
+    const col = n.domain ? DOMAINS[n.domain].color : (n.kind==='question'?'#cc6f4d':'#8d7bb0');
+    const alpha = vis ? (hovered && hovered!==n && !isNeighbor(n,hovered) ? 0.18 : 1) : 0.08;
+    if(n.kind==='concept'){
+      // halo
+      const grad = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*3.5);
+      grad.addColorStop(0, `${col}${Math.floor(60*alpha).toString(16).padStart(2,'0')}`);
+      grad.addColorStop(1, `${col}00`);
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r*3.5,0,Math.PI*2); ctx.fill();
+      // dot
+      ctx.fillStyle = hexAlpha(col,alpha);
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
+      // ring
+      ctx.strokeStyle = hexAlpha('#ffffff',alpha*0.7);
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // label for big nodes
+      if(n.r>9 || n===hovered){
+        ctx.fillStyle = hexAlpha('#1a1612',alpha);
+        ctx.font = `${n===hovered?'600 ':''}13px DM Sans, system-ui, sans-serif`;
+        ctx.textAlign='center';
+        ctx.fillText(n.label, n.x, n.y + n.r + 14);
+      }
+    } else if(n.kind==='question'){
+      ctx.fillStyle = hexAlpha(col,alpha*0.85);
+      ctx.fillRect(n.x-n.r,n.y-n.r,n.r*2,n.r*2);
+    } else { // source
+      ctx.save();
+      ctx.translate(n.x,n.y);
+      ctx.rotate(Math.PI/4);
+      ctx.fillStyle = hexAlpha(col,alpha*0.8);
+      ctx.fillRect(-n.r,-n.r,n.r*2,n.r*2);
+      ctx.restore();
+    }
+  }
+}
+function hexAlpha(hex,a){
+  if(hex.length===4) hex='#'+[1,2,3].map(i=>hex[i]+hex[i]).join('');
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function isNeighbor(n,h){
+  for(const e of edges){ if((e[0]===n&&e[1]===h)||(e[1]===n&&e[0]===h)) return true; }
+  return false;
+}
+
+function loop(){
+  tick(); draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// Mouse / drag
+canvas.addEventListener('mousemove',(e)=>{
+  const r = canvas.getBoundingClientRect();
+  mx = e.clientX - r.left; my = e.clientY - r.top;
+  if(dragged){
+    dragged.x = mx; dragged.y = my; dragged.vx = dragged.vy = 0;
+    return;
+  }
+  hovered = null;
+  for(const n of nodes){
+    const dx = mx-n.x, dy = my-n.y;
+    if(dx*dx+dy*dy < (n.r+6)*(n.r+6)){ hovered = n; break; }
+  }
+  if(hovered){
+    canvas.style.cursor = 'grab';
+    if(hovered.kind==='concept'){
+      detail.style.opacity='1';
+      document.getElementById('gd-title').textContent = hovered.label;
+      document.getElementById('gd-desc').textContent = DESCRIPTIONS[hovered.id]||'';
+      document.getElementById('gd-q').textContent = hovered.extra.q;
+      document.getElementById('gd-c').textContent = hovered.extra.c;
+      document.getElementById('gd-d').textContent = hovered.extra.d;
+      tooltip.classList.remove('show');
+    } else {
+      tooltip.classList.add('show');
+      tooltip.style.left = (e.clientX)+'px';
+      tooltip.style.top = (e.clientY)+'px';
+      tooltip.textContent = hovered.kind==='question' ? 'question' : 'source';
+    }
+  } else {
+    canvas.style.cursor = 'default';
+    tooltip.classList.remove('show');
+  }
+});
+canvas.addEventListener('mousedown',()=>{ if(hovered){ dragged = hovered; canvas.style.cursor='grabbing'; }});
+window.addEventListener('mouseup',()=>{ dragged = null; canvas.style.cursor = hovered?'grab':'default'; });
+canvas.addEventListener('mouseleave',()=>{ tooltip.classList.remove('show'); });
+
+/* ─────────── Scroll fade-ins ─────────── */
+const obs = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:0.08});
+document.querySelectorAll('.section, .marquee, .feat, .wiki-card, .quote, .price-card').forEach(n=>{
+  n.classList.add('fade-in'); obs.observe(n);
+});
+
+/* ─────────── Active nav by section ─────────── */
+const sections = ['top','features','wiki','dashboard','pricing','faq'];
+const navLinks = Array.from(document.querySelectorAll('.nav a'));
+const navByHash = {};
+navLinks.forEach(a=>{ const h=a.getAttribute('href').replace('#',''); navByHash[h]=a; });
+window.addEventListener('scroll',()=>{
+  let active = 'top';
+  for(const s of sections){
+    const el = document.getElementById(s);
+    if(el && el.getBoundingClientRect().top < 200) active = s;
+  }
+  navLinks.forEach(a=>a.removeAttribute('data-active'));
+  if(navByHash[active]) navByHash[active].setAttribute('data-active','true');
+},{passive:true});
+
+/* ─────────── Tour modal ─────────── */
+const tourModal = document.getElementById('tour-modal');
+const tourIframe = document.getElementById('tour-iframe');
+document.getElementById('open-tour').addEventListener('click',()=>{
+  tourIframe.src = 'Bloom Tour.html';
+  tourModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+function closeTour(){
+  tourModal.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(()=>{ tourIframe.src = ''; }, 400);
+}
+document.getElementById('tour-close').addEventListener('click', closeTour);
+document.getElementById('tour-backdrop').addEventListener('click', closeTour);
+window.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && tourModal.classList.contains('open')) closeTour(); });
+
+</script>
+
+</body>
+</html>
