@@ -542,7 +542,12 @@ body::after{
 const $ = s=> document.querySelector(s);
 const $$ = s=> Array.from(document.querySelectorAll(s));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-const inIframe = window.self !== window.top;
+let inIframe = false;
+try {
+  inIframe = window.self !== window.top;
+} catch (e) {
+  inIframe = true;
+}
 if(inIframe) document.body.classList.add('in-iframe');
 
 /* ── Timeline ── */
@@ -553,7 +558,7 @@ const SCENES = [
   {n:7, dur:7,  label:'Begin'}
 ];
 const TOTAL = SCENES.reduce((a,b)=> a + b.dur, 0);
-let elapsed = 0, playing = !reduce.matches, lastTs = 0, lastIdx = -1;
+let elapsed = 0, playing = true, lastTs = 0, lastIdx = -1;
 
 const sceneEls = $$('.scene');
 const fill = $('#scrubber-fill'), thumb = $('#scrubber-thumb'), scrubber = $('#scrubber');
@@ -583,14 +588,19 @@ function activeIndex(){
 }
 function show(i){
   sceneEls.forEach(s=> s.classList.remove('active'));
-  sceneEls[i].classList.add('active');
-  cur.textContent = String(SCENES[i].n).padStart(2,'0');
+  if(sceneEls[i]) sceneEls[i].classList.add('active');
+  if(cur) cur.textContent = String(SCENES[i].n).padStart(2,'0');
   $$('#strip button').forEach((b, k)=> b.dataset.active = (k === i) ? 'true' : 'false');
   if(i === 0) scene1();
   if(i === 1) scene2();
   if(i === 5) scene6();
-  graphRunning = (i === 3);
-  if(graphRunning) wakeGraph();
+  if(i === 3){
+    graphRunning = true;
+    if(!gW || !gH) graphResize();
+    wakeGraph();
+  } else {
+    graphRunning = false;
+  }
 }
 function seek(i){ elapsed = sceneStart(i) + 0.001; }
 
@@ -658,18 +668,21 @@ addEventListener('keydown', e=>{
 });
 
 /* ── Scene 1: typing ── */
+let s1Timer;
 function scene1(){
+  clearTimeout(s1Timer);
   const target = "Why does the sky look pink at golden hour?";
   const el = $('#s1-typed');
+  if(!el) return;
   if(reduce.matches){ el.innerHTML = target + '<span class="s1-cursor"></span>'; return; }
   el.innerHTML = '<span class="s1-cursor"></span>';
   let i = 0;
   (function step(){
-    if(!sceneEls[0].classList.contains('active')) return;
+    if(!sceneEls[0] || !sceneEls[0].classList.contains('active')) return;
     if(i >= target.length){ el.innerHTML = target + '<span class="s1-cursor"></span>'; return; }
     i++;
     el.innerHTML = target.slice(0, i) + '<span class="s1-cursor"></span>';
-    setTimeout(step, 55 + Math.random() * 40);
+    s1Timer = setTimeout(step, 55 + Math.random() * 40);
   })();
 }
 
@@ -842,15 +855,18 @@ document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) wakeGra
 
 /* ── Closing CTAs: talk to the parent page when embedded ── */
 if(inIframe){
-  const msg = target=> e=>{
+  const closeTour = e=>{
     e.preventDefault();
-    parent.postMessage('bloom:close-tour', '*');
+    try {
+      parent.postMessage('bloom:close-tour', '*');
+    } catch(err) {}
   };
-  $('#cta-start').addEventListener('click', msg());
-  $('#cta-back').addEventListener('click', msg());
+  const startBtn = $('#cta-start');
+  const backBtn = $('#cta-back');
+  if(startBtn) startBtn.addEventListener('click', closeTour);
+  if(backBtn) backBtn.addEventListener('click', closeTour);
 }
 
-scene1();
 })();
 </script>
 </body>

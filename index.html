@@ -2955,7 +2955,7 @@
         </div>
 
         <p style="text-align:center;margin:32px 0 0">
-          <a class="btn btn-outline" href="https://github.com/1Manisundar/bloom-landing">Browse all 147 concept pages
+          <a class="btn btn-outline" href="#graph">Browse all 147 concept pages
             <span aria-hidden="true">→</span></a>
         </p>
       </div>
@@ -3902,9 +3902,10 @@
           let lastFocus = null;
           function open() {
             lastFocus = document.activeElement;
+            modal.removeAttribute('hidden');
             modal.hidden = false;
             iframe.src = 'tour.html';
-            requestAnimationFrame(() => modal.classList.add('open'));
+            modal.classList.add('open');
             document.body.style.overflow = 'hidden';
             $('#tour-close').focus();
           }
