@@ -1,5 +1,5 @@
-// neuroditto landing: boot. Milestone 2 is the skeleton: the page, its type, its scroll, the preloader and
-// the sound toggle. The 3D world (milestone 3) and Neuro (milestone 5) plug in where marked.
+// neuroditto landing: boot. The page, its type, its scroll, the preloader and the sound toggle start here;
+// the 3D world loads alongside. Neuro (milestone 5) plugs in after it.
 
 import "@fontsource/instrument-serif/latin-400.css";
 import "@fontsource/instrument-serif/latin-400-italic.css";
@@ -13,11 +13,12 @@ import { startPreloader } from "./ui/preloader";
 import { setupReveals } from "./ui/reveals";
 import { setupSound } from "./ui/sound";
 import { setupWaitlist } from "./ui/waitlist";
+import type { World } from "./world";
 
 declare global {
   interface Window {
     /** A handle for the screenshot script and for poking at the page from the console. */
-    __nd?: { scroll: Scroll; ready: Promise<void> };
+    __nd?: { scroll: Scroll; ready: Promise<void>; world: Promise<World | null> };
   }
 }
 
@@ -41,11 +42,21 @@ const windowLoaded = new Promise<void>((resolve) => {
 const preloader = startPreloader(reduced);
 for (const face of FACES) preloader.track(document.fonts.load(face));
 preloader.track(windowLoaded);
-// Milestone 3: preloader.track(world.ready), so the count also follows the 3D world's own loading.
+const worldLoading = preloader.progress(6);
 preloader.seal();
 
 const scroll = setupScroll(reduced);
 scroll.lock();
+
+// The 3D world is a separate download, fetched while the preloader is up. The page never waits on it to be
+// readable, and if it cannot start (no WebGL), the poster behind the canvas stays as the backdrop.
+const canvas = document.getElementById("world") as HTMLCanvasElement | null;
+const world: Promise<World | null> = canvas
+  ? import("./world")
+      .then((m) => { worldLoading(0.1); return m.createWorld({ canvas, scroll, reduced, report: (f) => worldLoading(0.1 + f * 0.9) }); })
+      .catch((error: unknown) => { console.warn("The 3D world could not start; showing the still backdrop.", error); return null; })
+      .finally(() => worldLoading(1))
+  : Promise.resolve(null);
 
 const sound = setupSound();
 setupWaitlist();
@@ -62,4 +73,4 @@ const ready = preloader.finished.then(() => {
   setupReveals(reduced);
 });
 
-window.__nd = { scroll, ready };
+window.__nd = { scroll, ready, world };

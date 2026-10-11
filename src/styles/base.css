@@ -34,13 +34,19 @@ body[data-chapter="noise"]    { --gx: 78%; --gy: 62%; --hx: 30%; --hy: 20%; --gl
 body[data-chapter="sense"]    { --gx: 30%; --gy: 46%; --hx: 82%; --hy: 78%; --glow: 0.17; }
 body[data-chapter="graph"]    { --gx: 70%; --gy: 50%; --hx: 12%; --hy: 30%; --glow: 0.20; }
 body[data-chapter="mirror"]   { --gx: 50%; --gy: 22%; --hx: 50%; --hy: 92%; --glow: 0.12; }
+body[data-chapter="reflect"]  { --gx: 50%; --gy: 30%; --hx: 50%; --hy: 96%; --glow: 0.10; }
 body[data-chapter="practice"] { --gx: 26%; --gy: 56%; --hx: 80%; --hy: 24%; --glow: 0.17; }
 body[data-chapter="today"]    { --gx: 50%; --gy: 52%; --hx: 50%; --hy: 100%; --glow: 0.22; }
 body[data-chapter="private"]  { --gx: 76%; --gy: 66%; --hx: 20%; --hy: 16%; --glow: 0.10; }
 body[data-chapter="begin"]    { --gx: 50%; --gy: 70%; --hx: 50%; --hy: 0%; --glow: 0.20; }
 
-.world { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; display: none; }
-.has-world .world { display: block; }
+/* The canvas keeps the tallest height the screen can have, so a phone's address bar sliding away does not
+   resize the world mid-scroll. It stays invisible until its first frame is drawn. */
+.world { position: fixed; top: 0; left: 0; width: 100%; height: 100lvh; z-index: -2; opacity: 0; transition: opacity 1.4s var(--ease); }
+.has-world .world { opacity: 1; }
+/* Once the world has faded in over it, the poster is put away: left in place it would go on repainting its
+   moving lights behind an opaque canvas at every chapter change. */
+.has-world .poster { visibility: hidden; transition: visibility 0s linear 1.5s; }
 /* Film grain: one small noise tile, drawn by the browser. */
 .grain {
   position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay;

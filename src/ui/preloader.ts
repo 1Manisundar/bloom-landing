@@ -8,7 +8,9 @@ const GIVE_UP_MS = 10_000;
 export interface Preloader {
   /** Count this piece of loading work. A rejection still counts as settled. */
   track<T>(work: Promise<T>, weight?: number): Promise<T>;
-  /** Call once everything has been handed to track(). */
+  /** For work that can say how far along it is: returns a function to call with 0 to 1 as it goes. */
+  progress(weight?: number): (fraction: number) => void;
+  /** Call once everything has been handed to track() or progress(). */
   seal(): void;
   /** Resolves when the work is done and the screen has shown it. */
   finished: Promise<void>;
@@ -60,7 +62,7 @@ export function startPreloader(reduced: boolean): Preloader {
     const target = real();
     shown = reduced ? target : Math.min(target, shown + Math.max(0.6, (target - shown) * 0.14));
     paint();
-    if (sealed && settled >= total && shown >= 99.5) end();
+    if (sealed && settled >= total - 1e-6 && shown >= 99.5) end();
     else requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
@@ -72,6 +74,15 @@ export function startPreloader(reduced: boolean): Preloader {
       const done = () => { settled += weight; };
       work.then(done, done);
       return work;
+    },
+    progress(weight = 1) {
+      total += weight;
+      let reported = 0;
+      return (fraction) => {
+        const next = Math.min(1, Math.max(reported, fraction));
+        settled += weight * (next - reported);
+        reported = next;
+      };
     },
     seal() { sealed = true; },
     finished,

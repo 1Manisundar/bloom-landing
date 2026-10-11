@@ -54,37 +54,40 @@ export function setupScroll(reduced: boolean): Scroll {
     return label?.textContent?.trim() ?? "";
   };
 
-  const enter = (section: HTMLElement) => {
-    if (state.chapter === section.id) return;
-    state.chapter = section.id;
-    document.body.dataset.chapter = section.id;
-    if (topLabel) topLabel.textContent = labelOf(section);
-    emit(true);
-  };
-
-  for (const section of sections) {
-    ScrollTrigger.create({
-      trigger: section,
-      start: "top center",
-      end: "bottom center",
-      onToggle: (self) => { if (self.isActive) enter(section); },
-      onUpdate: (self) => {
-        if (state.chapter !== section.id) return;
-        state.local = self.progress;
-        emit(false);
-      },
-    });
-  }
-
+  // One marker per chapter: it runs from the chapter's top reaching the middle of the screen to its bottom
+  // doing the same, so the markers tile the page and exactly one chapter is "in the middle" at a time.
+  const marks = sections.map((section) => ({
+    section,
+    trigger: ScrollTrigger.create({ trigger: section, start: "top center", end: "bottom center" }),
+  }));
   const main = document.getElementById("main");
-  if (main) {
-    ScrollTrigger.create({
-      trigger: main,
-      start: "top top",
-      end: "bottom bottom",
-      onUpdate: (self) => { state.progress = self.progress; emit(false); },
-    });
-  }
+  const story = main ? ScrollTrigger.create({ trigger: main, start: "top top", end: "bottom bottom" }) : null;
+
+  // The state is worked out from the scroll position itself, never pieced together from enter and leave
+  // events, so a jump across several chapters lands in the same state as scrolling there would.
+  let measured = false;
+  const measure = () => {
+    if (!marks.length) return;
+    const y = window.scrollY;
+    let at = marks[0];
+    for (const mark of marks) if (y >= mark.trigger.start) at = mark;
+    const start = Math.max(0, at.trigger.start);
+    const span = Math.max(1, at.trigger.end - start);
+    state.local = Math.min(1, Math.max(0, (y - start) / span));
+    if (story) state.progress = Math.min(1, Math.max(0, (y - story.start) / Math.max(1, story.end - story.start)));
+
+    const changed = state.chapter !== at.section.id || !measured;
+    measured = true;
+    if (changed) {
+      state.chapter = at.section.id;
+      document.body.dataset.chapter = at.section.id;
+      if (topLabel) topLabel.textContent = labelOf(at.section);
+    }
+    emit(changed);
+  };
+  ScrollTrigger.addEventListener("refresh", measure);
+  window.addEventListener("scroll", measure, { passive: true });
+  measure();
 
   return {
     state,
@@ -100,6 +103,7 @@ export function setupScroll(reduced: boolean): Scroll {
       if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
       else window.scrollTo(0, y);
       ScrollTrigger.update();
+      measure();
     },
   };
 }
