@@ -1,0 +1,9 @@
+node_modules/
+dist/
+# Screenshots taken to check the page (npm run shots)
+shots/
+.env
+.env.local
+.vercel
+*.log
+.DS_Store

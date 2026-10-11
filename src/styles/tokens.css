@@ -1,0 +1,51 @@
+/* neuroditto landing: design tokens. A night lab with warm neurons.
+   One type set, one strict scale, one palette. Nothing else in the page names a raw colour or size. */
+
+/* The poster's two lights move between chapters; registering them lets them animate. */
+@property --gx { syntax: "<percentage>"; inherits: true; initial-value: 72%; }
+@property --gy { syntax: "<percentage>"; inherits: true; initial-value: 38%; }
+@property --hx { syntax: "<percentage>"; inherits: true; initial-value: 18%; }
+@property --hy { syntax: "<percentage>"; inherits: true; initial-value: 82%; }
+@property --glow { syntax: "<number>"; inherits: true; initial-value: 0.16; }
+
+:root {
+  color-scheme: dark;
+
+  /* Colour */
+  --ink: #0d0a18;            /* the night: deep ink-violet, never pure black */
+  --ink-2: #151026;          /* a raised surface */
+  --ink-3: #1d1733;
+  --text: #f3ece1;           /* soft warm white */
+  --text-dim: #b9aec4;       /* secondary text: 9.6:1 on --ink */
+  --text-faint: #8f84a0;     /* labels: 5.6:1 on --ink */
+  --line: rgba(243, 236, 225, 0.16);
+  --line-strong: rgba(243, 236, 225, 0.34);
+  --gold: #ffd84a;           /* neurons */
+  --amber: #ffb020;          /* synapses */
+  --rose: #ff8fae;           /* Neuro's pink, used sparingly */
+  --iris: #6a4bd8;           /* anime-iris violet: for light, never for text */
+  --iris-text: #b3a2ff;      /* the same hue, light enough to read */
+
+  /* Type: one set */
+  --f-display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  --f-body: "Manrope Variable", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+
+  /* Type scale (strict): label, small, body, lede, aside, line, big line, wordmark */
+  --t-label: 0.6875rem;
+  --t-small: 0.875rem;
+  --t-body: 1rem;
+  --t-lede: clamp(1.0625rem, 0.95rem + 0.45vw, 1.3125rem);
+  --t-aside: clamp(1.375rem, 1.1rem + 1.1vw, 2rem);
+  --t-line: clamp(2.125rem, 1.2rem + 3.7vw, 4.25rem);
+  --t-big: clamp(2.75rem, 1.2rem + 6.2vw, 6.5rem);
+  --t-mark: clamp(3.75rem, 16.5vw, 17rem);
+
+  /* Space */
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --s-1: 0.5rem; --s-2: 1rem; --s-3: 1.5rem; --s-4: 2.5rem; --s-5: 4rem;
+
+  /* Shape and motion */
+  --r: 4px;                  /* lab-instrument corners: nearly square */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

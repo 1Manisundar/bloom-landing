@@ -1,0 +1,231 @@
+/* neuroditto landing: layout and components. All content is real HTML; the 3D world only sits behind it. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: auto; overflow-x: clip; }
+body {
+  margin: 0; background: var(--ink); color: var(--text);
+  font-family: var(--f-body); font-size: var(--t-body); line-height: 1.55; font-weight: 420;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: clip;
+}
+h1, h2, h3, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; }
+b { font-weight: 650; }
+.mono { font-family: var(--f-mono); font-size: var(--t-label); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; }
+.dim { color: var(--text-faint); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 2px; }
+
+.skip { position: fixed; left: var(--gutter); top: -4rem; z-index: 200; background: var(--gold); color: var(--ink); padding: 0.6rem 1rem; font-weight: 700; text-decoration: none; border-radius: var(--r); }
+.skip:focus { top: 0.75rem; }
+
+/* ---------- The world behind the text ---------- */
+/* The poster is each chapter's mood as light. It is what shows before the 3D world loads, with reduced motion,
+   and wherever WebGL is missing. */
+.poster {
+  position: fixed; inset: 0; z-index: -3;
+  background:
+    radial-gradient(58vmax 58vmax at var(--gx) var(--gy), rgba(255, 176, 32, var(--glow)), transparent 62%),
+    radial-gradient(52vmax 52vmax at var(--hx) var(--hy), rgba(106, 75, 216, 0.2), transparent 64%),
+    linear-gradient(180deg, var(--ink) 0%, #100c1e 100%);
+  transition: --gx 1.4s var(--ease), --gy 1.4s var(--ease), --hx 1.4s var(--ease), --hy 1.4s var(--ease), --glow 1.4s var(--ease);
+}
+body[data-chapter="hero"]     { --gx: 72%; --gy: 38%; --hx: 16%; --hy: 84%; --glow: 0.15; }
+body[data-chapter="noise"]    { --gx: 78%; --gy: 62%; --hx: 30%; --hy: 20%; --glow: 0.10; }
+body[data-chapter="sense"]    { --gx: 30%; --gy: 46%; --hx: 82%; --hy: 78%; --glow: 0.17; }
+body[data-chapter="graph"]    { --gx: 70%; --gy: 50%; --hx: 12%; --hy: 30%; --glow: 0.20; }
+body[data-chapter="mirror"]   { --gx: 50%; --gy: 22%; --hx: 50%; --hy: 92%; --glow: 0.12; }
+body[data-chapter="practice"] { --gx: 26%; --gy: 56%; --hx: 80%; --hy: 24%; --glow: 0.17; }
+body[data-chapter="today"]    { --gx: 50%; --gy: 52%; --hx: 50%; --hy: 100%; --glow: 0.22; }
+body[data-chapter="private"]  { --gx: 76%; --gy: 66%; --hx: 20%; --hy: 16%; --glow: 0.10; }
+body[data-chapter="begin"]    { --gx: 50%; --gy: 70%; --hx: 50%; --hy: 0%; --glow: 0.20; }
+
+.world { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; display: none; }
+.has-world .world { display: block; }
+/* Film grain: one small noise tile, drawn by the browser. */
+.grain {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 -0.2'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- Preloader ---------- */
+.preloader {
+  position: fixed; inset: 0; z-index: 100; background: var(--ink);
+  display: grid; align-content: end; justify-items: start; gap: var(--s-2); padding: var(--gutter);
+  transition: opacity 0.9s var(--ease), visibility 0s linear 0.9s;
+}
+.preloader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+.preloader__neurons { display: flex; gap: 0.7rem; }
+.preloader__neurons span { width: 9px; height: 9px; border-radius: 50%; background: var(--ink-3); border: 1px solid var(--line); transition: background 0.5s, box-shadow 0.5s, border-color 0.5s; }
+.preloader__neurons span.is-on { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 14px 2px rgba(255, 216, 74, 0.55); }
+.preloader__line { font-family: var(--f-display); font-style: italic; font-size: var(--t-line); line-height: 1; letter-spacing: -0.01em; }
+.preloader__count { color: var(--text-faint); font-size: var(--t-small); letter-spacing: 0.12em; font-variant-numeric: tabular-nums; }
+.preloader__count span:first-child { color: var(--gold); }
+
+/* ---------- Top bar ---------- */
+.top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-2);
+  padding: clamp(0.9rem, 2.2vh, 1.5rem) var(--gutter);
+}
+.top::before { content: ""; position: absolute; inset: 0 0 -1.5rem 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--ink) 0%, rgba(13, 10, 24, 0.92) 55%, transparent 100%); }
+.top__mark { font-family: var(--f-display); font-style: italic; font-size: 1.375rem; text-decoration: none; justify-self: start; letter-spacing: -0.01em; }
+.top__chapter { color: var(--text-faint); justify-self: center; white-space: nowrap; }
+.sound {
+  justify-self: end; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; padding: 0 0.9rem;
+  background: transparent; color: var(--text-dim); border: 1px solid var(--line); border-radius: var(--r); cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.sound:hover { color: var(--text); border-color: var(--line-strong); }
+.sound__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); transition: background 0.3s, box-shadow 0.3s; }
+.sound[aria-pressed="true"] { color: var(--text); border-color: var(--line-strong); }
+.sound[aria-pressed="true"] .sound__dot { background: var(--gold); box-shadow: 0 0 10px 1px rgba(255, 216, 74, 0.7); }
+
+/* ---------- Chapters ---------- */
+/* Each chapter is --len screens tall. Its text stays in view while the world moves behind it. */
+.chapter { position: relative; min-height: calc(var(--len, 1) * 100svh); }
+.chapter__stick {
+  position: sticky; top: 0; min-height: 100svh; display: grid; align-content: center;
+  padding: clamp(5.5rem, 13vh, 8.5rem) var(--gutter) clamp(3rem, 9vh, 6rem);
+}
+.copy { position: relative; display: grid; gap: var(--s-3); max-width: 35rem; }
+.chapter--right .copy { justify-self: end; }
+.chapter--center .copy, .copy--center { justify-self: center; justify-items: center; text-align: center; }
+.copy--wide { max-width: none; width: 100%; }
+.copy--roomy { max-width: 42rem; }
+.copy--center { max-width: 58rem; }
+/* A soft scrim so text keeps its contrast over the world. */
+.copy::before { content: ""; position: absolute; inset: -3.5rem calc(-1 * var(--gutter)); z-index: -1; pointer-events: none; background: radial-gradient(closest-side, rgba(13, 10, 24, 0.78), rgba(13, 10, 24, 0.4) 62%, transparent); }
+
+.label { color: var(--text-faint); }
+.label__num { color: var(--gold); }
+.line { font-family: var(--f-display); font-weight: 400; font-size: var(--t-line); line-height: 1.03; letter-spacing: -0.012em; text-wrap: balance; }
+.line--big { font-size: var(--t-big); line-height: 0.98; }
+.lede { font-size: var(--t-lede); line-height: 1.5; color: var(--text-dim); max-width: 34ch; text-wrap: pretty; }
+.copy--center .lede { max-width: 40ch; }
+.aside { font-family: var(--f-display); font-style: italic; font-size: var(--t-aside); line-height: 1.15; color: var(--gold); }
+.fine { font-size: var(--t-small); color: var(--text-faint); max-width: 44ch; }
+.tagrow { color: var(--text-dim); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; }
+.tag { display: inline-block; padding: 0.22rem 0.5rem; border: 1px solid var(--amber); color: var(--amber); border-radius: 2px; letter-spacing: 0.18em; }
+
+/* ---------- Hero ---------- */
+.chapter--hero .chapter__stick { align-content: end; }
+.hero { display: grid; gap: var(--s-3); }
+.hero__title { font-weight: 400; display: grid; gap: var(--s-2); }
+.wordmark { font-family: var(--f-display); font-size: var(--t-mark); line-height: 0.82; letter-spacing: -0.035em; margin-left: -0.04em; display: block; }
+.hero__tag { font-family: var(--f-display); font-style: italic; font-size: var(--t-line); line-height: 1; color: var(--gold); display: block; }
+.hero__lede { max-width: 38ch; }
+.cue { display: flex; align-items: center; gap: 0.9rem; color: var(--text-faint); margin-top: var(--s-2); }
+.cue__line { width: 3.5rem; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); }
+
+/* ---------- I, II ---------- */
+.fragments { display: flex; flex-wrap: wrap; gap: 0.5rem 0; color: var(--text-dim); }
+.fragments li:not(:last-child)::after { content: "·"; margin: 0 0.75rem; color: var(--amber); }
+.adapters { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--s-3); font-size: var(--t-small); color: var(--text-dim); border-top: 1px solid var(--line); }
+.adapters li { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+
+/* ---------- IV · The Mirror ---------- */
+.chapter--wide .copy--wide { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); column-gap: clamp(2rem, 5vw, 5rem); row-gap: var(--s-4); align-items: start; }
+.chapter--wide .copy--wide > .label, .chapter--wide .copy--wide > .line { grid-column: 1 / -1; }
+.gap { display: grid; gap: var(--s-3); align-content: start; }
+.gap__ask { color: var(--text-dim); max-width: 46ch; }
+.saiddid { display: grid; grid-template-columns: 1fr 1fr; }
+.saiddid__col { display: grid; gap: var(--s-1); align-content: start; padding: 0 var(--s-3) 0 0; }
+.saiddid__col + .saiddid__col { padding: 0 0 0 var(--s-3); border-left: 1px solid var(--line-strong); }
+.saiddid__text { font-family: var(--f-display); font-size: var(--t-aside); line-height: 1.15; }
+.saiddid__col + .saiddid__col .saiddid__text { font-style: italic; color: var(--rose); }
+.possibility { display: grid; gap: var(--s-2); padding: var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r); background: rgba(21, 16, 38, 0.82); }
+.possibility__text { font-family: var(--f-display); font-size: var(--t-aside); line-height: 1.15; }
+.possibility__text b { font-style: italic; font-weight: 400; color: var(--gold); }
+.possibility__why { display: grid; gap: 0.3rem; color: var(--text-dim); }
+.possibility__pen { font-size: var(--t-small); color: var(--text-dim); padding-top: var(--s-2); border-top: 1px solid var(--line); }
+.scale { letter-spacing: 0.14em; color: var(--text-faint); }
+.scale b { color: var(--gold); font-weight: 500; }
+.verdicts { display: flex; flex-wrap: wrap; gap: 0.5rem; color: var(--text-dim); }
+.verdicts span { padding: 0.45rem 0.7rem; border: 1px solid var(--line); border-radius: 2px; }
+.promises { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3); border-top: 1px solid var(--line); padding-top: var(--s-3); }
+.promise { display: grid; gap: var(--s-1); align-content: start; font-size: var(--t-small); color: var(--text-dim); }
+.promise__title { font-family: var(--f-display); font-weight: 400; font-size: var(--t-aside); line-height: 1.1; color: var(--text); text-wrap: balance; }
+
+/* ---------- V, VI ---------- */
+.feynman { display: grid; gap: var(--s-1); padding-left: var(--s-3); border-left: 1px solid var(--amber); }
+.feynman__ask { font-family: var(--f-display); font-style: italic; font-size: var(--t-aside); line-height: 1.15; }
+.todaycard { display: grid; gap: var(--s-1); justify-items: center; padding: var(--s-3) var(--s-4); border: 1px solid rgba(255, 216, 74, 0.5); border-radius: var(--r); background: rgba(21, 16, 38, 0.86); box-shadow: 0 0 60px -10px rgba(255, 176, 32, 0.35); }
+.todaycard__title { font-family: var(--f-display); font-size: var(--t-aside); line-height: 1.15; }
+.todaycard__why { font-size: var(--t-small); color: var(--text-dim); }
+.quiet { display: grid; gap: 0.4rem; font-size: var(--t-small); color: var(--text-faint); margin-top: var(--s-3); }
+.quiet b { color: var(--text-dim); font-weight: 600; }
+
+/* ---------- VIII · Begin ---------- */
+.waitlist { display: grid; gap: var(--s-1); width: min(100%, 34rem); justify-items: start; text-align: left; margin-top: var(--s-2); }
+.waitlist__label { color: var(--text-faint); }
+.waitlist__row { display: grid; grid-template-columns: 1fr auto; gap: var(--s-1); width: 100%; }
+.waitlist__input {
+  min-height: 52px; padding: 0 1rem; background: rgba(21, 16, 38, 0.86); color: var(--text); font: inherit; font-size: 1.0625rem;
+  border: 1px solid var(--line-strong); border-radius: var(--r); width: 100%;
+}
+.waitlist__input::placeholder { color: var(--text-faint); }
+.waitlist__input[aria-invalid="true"] { border-color: var(--rose); }
+.btn {
+  min-height: 52px; padding: 0 1.4rem; font: inherit; font-weight: 700; color: var(--ink); background: var(--gold);
+  border: 0; border-radius: var(--r); cursor: pointer; white-space: nowrap; transition: background 0.25s, transform 0.25s var(--ease);
+}
+.btn:hover { background: #ffe37a; }
+.btn[disabled] { opacity: 0.6; cursor: progress; }
+.waitlist__status { min-height: 1.6em; font-size: var(--t-small); color: var(--text-dim); }
+.waitlist__status[data-kind="error"] { color: var(--rose); }
+.waitlist__status[data-kind="ok"] { color: var(--gold); }
+
+/* ---------- Footer ---------- */
+.foot { position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: var(--s-2); padding: var(--s-4) var(--gutter) var(--s-3); border-top: 1px solid var(--line); background: var(--ink); }
+.foot__mark { font-family: var(--f-display); font-style: italic; font-size: var(--t-aside); line-height: 1; }
+.foot__nav { display: flex; gap: var(--s-3); color: var(--text-dim); }
+.foot__nav a { text-decoration: none; padding: 0.6rem 0; }
+.foot__nav a:hover { color: var(--text); }
+.foot__year { justify-self: end; color: var(--text-faint); }
+
+/* ---------- Tablet and phone: designed, not squeezed ---------- */
+@media (max-width: 900px), (max-height: 640px) {
+  /* Text flows with the page; nothing is pinned on a small screen. */
+  .chapter { min-height: calc(max(var(--len, 1), 1) * 88svh); display: grid; align-content: center; }
+  .chapter__stick { position: static; min-height: 0; padding: clamp(4.5rem, 12vh, 6rem) var(--gutter); }
+  .chapter--hero { min-height: 100svh; align-content: end; }
+  .chapter--right .copy { justify-self: start; }
+  .copy::before { inset: -2rem -1.25rem; }
+  .chapter--wide .copy--wide { grid-template-columns: 1fr; }
+  .promises { grid-template-columns: 1fr; }
+  .top__chapter { display: none; }
+  .top { grid-template-columns: 1fr auto; }
+}
+@media (max-width: 560px) {
+  .saiddid { grid-template-columns: 1fr; gap: var(--s-3); }
+  .saiddid__col, .saiddid__col + .saiddid__col { padding: 0; border-left: 0; }
+  .saiddid__col + .saiddid__col { padding-top: var(--s-3); border-top: 1px solid var(--line-strong); }
+  .adapters { grid-template-columns: 1fr; }
+  .waitlist__row { grid-template-columns: 1fr; }
+  .btn { width: 100%; }
+  .todaycard { padding: var(--s-3); }
+  .foot { grid-template-columns: 1fr; align-items: start; }
+  .foot__year { justify-self: start; }
+  .sound { padding: 0 0.7rem; letter-spacing: 0.1em; }
+}
+
+/* ---------- Reduced motion: calm, still, simple fades ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .poster, .preloader, .preloader__neurons span, .sound, .sound__dot, .btn { transition-duration: 0.01s; }
+}
+
+/* ---------- Loading and line reveals ---------- */
+html.is-loading { overflow: hidden; }
+/* Each line is revealed from behind a mask; the padding keeps descenders (g, y, p) from being cut. */
+.rl-mask { padding-bottom: 0.16em; margin-bottom: -0.16em; }
+
+/* A wide but short screen (a 13-inch laptop): the Mirror holds more than fits, so it is tightened, and
+   below that it is let go to scroll like any page rather than pinned with its end out of reach. */
+@media (min-width: 901px) and (max-height: 900px) {
+  .chapter--wide .chapter__stick { padding-top: 5rem; padding-bottom: 2rem; }
+  .chapter--wide .copy--wide { row-gap: var(--s-3); }
+  .chapter--wide .gap { gap: var(--s-2); }
+}
+@media (min-width: 901px) and (max-height: 800px) {
+  .chapter--wide .chapter__stick { position: static; }
+}

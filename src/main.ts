@@ -1,0 +1,65 @@
+// neuroditto landing: boot. Milestone 2 is the skeleton: the page, its type, its scroll, the preloader and
+// the sound toggle. The 3D world (milestone 3) and Neuro (milestone 5) plug in where marked.
+
+import "@fontsource/instrument-serif/latin-400.css";
+import "@fontsource/instrument-serif/latin-400-italic.css";
+import "@fontsource-variable/manrope/wght.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
+import "./styles/tokens.css";
+import "./styles/base.css";
+
+import { setupScroll, type Scroll } from "./scroll";
+import { startPreloader } from "./ui/preloader";
+import { setupReveals } from "./ui/reveals";
+import { setupSound } from "./ui/sound";
+import { setupWaitlist } from "./ui/waitlist";
+
+declare global {
+  interface Window {
+    /** A handle for the screenshot script and for poking at the page from the console. */
+    __nd?: { scroll: Scroll; ready: Promise<void> };
+  }
+}
+
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const root = document.documentElement;
+root.classList.add("js", "is-loading");
+
+/** The faces the first screen is set in. The preloader waits for these, and only these. */
+const FACES = [
+  '400 1em "Instrument Serif"',
+  'italic 400 1em "Instrument Serif"',
+  '400 1em "Manrope Variable"',
+  '500 1em "JetBrains Mono Variable"',
+];
+
+const windowLoaded = new Promise<void>((resolve) => {
+  if (document.readyState === "complete") resolve();
+  else window.addEventListener("load", () => resolve(), { once: true });
+});
+
+const preloader = startPreloader(reduced);
+for (const face of FACES) preloader.track(document.fonts.load(face));
+preloader.track(windowLoaded);
+// Milestone 3: preloader.track(world.ready), so the count also follows the 3D world's own loading.
+preloader.seal();
+
+const scroll = setupScroll(reduced);
+scroll.lock();
+
+const sound = setupSound();
+setupWaitlist();
+
+// A soft tick each time the story moves into a new chapter (only once sound is on).
+scroll.on((_state, chapterChanged) => { if (chapterChanged) sound.tick(); });
+
+const year = document.getElementById("year");
+if (year) year.textContent = String(new Date().getFullYear());
+
+const ready = preloader.finished.then(() => {
+  scroll.unlock();
+  scroll.refresh();
+  setupReveals(reduced);
+});
+
+window.__nd = { scroll, ready };
