@@ -2,16 +2,16 @@
 // never required: if WebGL is missing, or the machine cannot keep up, it steps aside and the poster shows.
 
 import gsap from "gsap";
-import { Group, MathUtils, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import { Group, MathUtils, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import type { Scroll } from "../scroll";
 import { createBackdrop } from "./backdrop";
 import { createRig } from "./camera";
-import { CARD_ARRIVES, CARD_PERIOD, createCards } from "./cards";
 import { CHAPTERS } from "./chapters";
 import { createGraphLines } from "./graph";
 import { createParticles } from "./particles";
 import { createLens, type Lens } from "./post";
-import { buildShapes } from "./shapes";
+import { buildShapes, intoMirror } from "./shapes";
+import { createStory } from "./story";
 
 export interface WorldStats {
   /** Frames per second over the last couple of seconds. */
@@ -41,7 +41,6 @@ interface Options {
 
 const smooth = (x: number) => { const t = MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const LAST = CHAPTERS.length - 1;
-const UP = new Vector3(0, 1, 0);
 /** How far through a chapter (0 to 1) the world starts turning into the next one. */
 const LEAVE_AT = 0.55;
 
@@ -76,12 +75,20 @@ export async function createWorld({ canvas, scroll, reduced, report }: Options):
   const camera = new PerspectiveCamera(40, 1, 0.1, 100);
   const rig = createRig(camera);
   const backdrop = createBackdrop();
-  const particles = createParticles(count, shapes.targets);
+  const particles = createParticles(count, shapes.targets, shapes.clusterOf);
   const graph = createGraphLines(shapes.graph);
-  const cards = createCards();
   const subject = new Group();
-  subject.add(particles.points, graph.lines, cards.mesh);
+  subject.add(particles.points, graph.lines);
   scene.add(backdrop.mesh, subject);
+
+  // The annotations: the story places names and pointers over the picture, frame by frame.
+  const layer = document.getElementById("annot");
+  const svg = document.getElementById("annot-lines") as SVGSVGElement | null;
+  const story = layer && svg
+    ? createStory({ layer, svg, subject, camera, graph: shapes.graph, size: () => ({ width, height }) })
+    : null;
+  // Where the graph's links sit when they are seen in the mirror (see intoMirror in shapes.ts).
+  const glass = intoMirror(0, 0, 0);
 
   let lens: Lens | null = tuning.get("bloom") === "0" ? null : createLens(renderer, scene, camera, small);
   let width = 0, height = 0;
@@ -101,22 +108,32 @@ export async function createWorld({ canvas, scroll, reduced, report }: Options):
   };
 
   // ---------- where the story is ----------
+  // One number follows the scroll: the chapter in the middle of the screen, plus how far through it you are.
+  // Everything else is read off that one number once it has been smoothed, so the scene, the camera and the
+  // annotations can never disagree about where the story is.
   const order = CHAPTERS.map((c) => c.id);
-  /** The shape position and the camera position the scroll is asking for, each 0 to LAST. */
-  const asked = (): [number, number] => {
+  const asked = () => {
     const i = Math.max(0, order.indexOf(scroll.state.chapter));
-    if (i >= LAST) return [LAST, LAST];
-    const f = scroll.state.local;
-    const turn = smooth((f - LEAVE_AT) / (1 - LEAVE_AT));
-    // The camera creeps a little while you read, then travels with the morph.
-    const creep = f < LEAVE_AT ? 0.14 * (f / LEAVE_AT) : 0.14 + 0.86 * turn;
-    return [i + turn, i + creep];
+    return Math.min(LAST + 0.999, i + scroll.state.local);
+  };
+  /** The parts of a story position: the chapter, its scene's progress, and the turn into the next one. */
+  const parts = (u: number) => {
+    const chapter = MathUtils.clamp(Math.floor(u), 0, LAST);
+    const local = u - chapter;
+    const beat = MathUtils.clamp(local / LEAVE_AT, 0, 1);
+    const turn = chapter < LAST ? smooth((local - LEAVE_AT) / (1 - LEAVE_AT)) : 0;
+    // The camera creeps a little while you read, then travels with the turn.
+    const creep = chapter < LAST ? (local < LEAVE_AT ? 0.14 * (local / LEAVE_AT) : 0.14 + 0.86 * turn) : 0;
+    return { chapter, beat, turn, shape: chapter + turn, camera: chapter + creep };
   };
 
-  let [shapeAt, cameraAt] = asked();
-  let clock = 0, last = performance.now(), dirty = true, running = true, shown = false, pulse = 0;
+  let storyAt = asked();
+  let cameraAt = parts(storyAt).camera;
+  let shapeAt = parts(storyAt).shape;
+  let clock = 0, last = performance.now(), dirty = true, running = true, shown = false, flare = 0;
+  let lastStill = -1;
   const pointer = { x: 0, y: 0 }, lean = { x: 0, y: 0 };
-  const phases = cards.offsets.map(() => 0);
+  window.addEventListener("nd:verdict", () => { dirty = true; });
 
   if (!reduced && window.matchMedia("(pointer: fine)").matches) {
     window.addEventListener("pointermove", (e) => {
@@ -161,16 +178,23 @@ export async function createWorld({ canvas, scroll, reduced, report }: Options):
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
 
-    const [wantShape, wantCamera] = asked();
+    const want = asked();
+    let here = parts(want);
     if (reduced) {
-      // Reduced motion: nothing drifts and nothing travels. Each chapter is a still picture.
-      const still = Math.round(wantShape);
-      if (still === shapeAt && !dirty) return;
+      // Reduced motion: nothing drifts and nothing travels. Each chapter is a still picture of its scene,
+      // finished, and the picture changes when the next chapter takes over the middle of the screen.
+      const raw = parts(want);
+      const still = raw.chapter < LAST && raw.turn > 0.5 ? raw.chapter + 1 : raw.chapter;
+      if (still === lastStill && !dirty) return;
+      lastStill = still;
+      here = { chapter: still, beat: 1, turn: 0, shape: still, camera: still };
       shapeAt = cameraAt = still;
     } else {
       clock += dt;
-      shapeAt += (wantShape - shapeAt) * (1 - Math.exp(-dt * 5));
-      cameraAt += (wantCamera - cameraAt) * (1 - Math.exp(-dt * 3.2));
+      storyAt += (want - storyAt) * (1 - Math.exp(-dt * 4.5));
+      here = parts(storyAt);
+      shapeAt = here.shape;
+      cameraAt += (here.camera - cameraAt) * (1 - Math.exp(-dt * 3.2));
       lean.x += (pointer.x - lean.x) * (1 - Math.exp(-dt * 3));
       lean.y += (pointer.y - lean.y) * (1 - Math.exp(-dt * 3));
     }
@@ -197,31 +221,28 @@ export async function createWorld({ canvas, scroll, reduced, report }: Options):
     lights.set(mix((c) => c.lights[0]), mix((c) => c.lights[1]), mix((c) => c.lights[2]), mix((c) => c.lights[3]));
     backdrop.uniforms.uGlow.value = mix((c) => c.lights[4]);
 
-    // Chapter III: the links between concepts, shown once the nodes have nearly settled.
-    const linked = smooth((near(order.indexOf("graph")) - 0.55) / 0.4);
-    graph.lines.visible = linked > 0.001;
-    graph.uniforms.uShow.value = linked;
-    graph.uniforms.uTime.value = clock;
-
-    // Chapter II: cards flying into the brain. Each arrival makes the brain flare for a moment.
-    const feeding = reduced ? 0 : smooth((near(order.indexOf("sense")) - 0.5) / 0.4);
-    cards.mesh.visible = feeding > 0.001;
-    cards.uniforms.uShow.value = feeding;
-    cards.uniforms.uTime.value = clock;
-    // The text of chapter II is on the right of a wide screen: the camera's right, seen from the brain.
-    cards.uniforms.uTextSide.value.setFromMatrixColumn(camera.matrixWorld, 0).applyAxisAngle(UP, -subject.rotation.y)
-      .multiplyScalar(width > height ? 1 : 0);
-    cards.offsets.forEach((offset, n) => {
-      const phase = (clock / CARD_PERIOD + offset) % 1;
-      if (phases[n] < CARD_ARRIVES && phase >= CARD_ARRIVES && feeding > 0.3) pulse = 1;
-      phases[n] = phase;
-    });
-    pulse *= Math.exp(-dt * 4.5);
-    u.uPulse.value = pulse * feeding;
-
     subject.rotation.y = Math.sin(clock * 0.11) * mix((c) => c.sway);
     subject.rotation.x = Math.sin(clock * 0.07 + 2) * 0.04;
     rig.update(cameraAt, clock, lean);
+    // The story places its annotations from the camera as it stands this frame.
+    camera.updateMatrixWorld();
+    subject.updateMatrixWorld();
+    const cue = story?.update({ chapter: here.chapter, beat: here.beat, turn: here.turn, time: clock }) ?? { highlight: [-1, 0] as [number, number], reveal: 1, flare: 0 };
+
+    // The map's links: drawn in during the pattern scene, and carried into the mirror at the mirror's scale.
+    const pattern = order.indexOf("pattern"), mirrorAt = order.indexOf("mirror");
+    const linked = smooth((Math.max(near(pattern), near(mirrorAt)) - 0.55) / 0.4);
+    graph.lines.visible = linked > 0.001;
+    graph.uniforms.uShow.value = linked;
+    graph.uniforms.uTime.value = clock;
+    graph.uniforms.uReveal.value = cue.reveal;
+    const inGlass = MathUtils.clamp(shapeAt - pattern, 0, 1);
+    graph.lines.position.set(glass[0] * inGlass, glass[1] * inGlass, glass[2] * inGlass);
+    graph.lines.scale.set(MathUtils.lerp(1, 0.5, inGlass), MathUtils.lerp(1, 0.5, inGlass), MathUtils.lerp(1, 0.22, inGlass));
+
+    u.uHighlight.value.set(cue.highlight[0], cue.highlight[1]);
+    flare = Math.max(flare * Math.exp(-dt * 4.5), cue.flare);
+    u.uPulse.value = flare;
 
     if (lens) lens.render(dt);
     else renderer.render(scene, camera);

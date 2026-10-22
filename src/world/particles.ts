@@ -2,7 +2,7 @@
 // is one number (uMix), and the vertex shader does the rest, so a morph costs nothing on the main thread.
 
 import {
-  AdditiveBlending, BufferAttribute, BufferGeometry, Color, Points, ShaderMaterial, Vector4,
+  AdditiveBlending, BufferAttribute, BufferGeometry, Color, Points, ShaderMaterial, Vector2, Vector4,
 } from "three";
 import { RING_TILT, mulberry32, type ShapeName } from "./shapes";
 
@@ -11,6 +11,7 @@ const VERTEX = /* glsl */ `
   attribute vec3 aTo;
   attribute vec3 aColor;
   attribute vec4 aSeed;            // three random numbers, and which orbit ring the particle rides
+  attribute float aCluster;        // which cluster of the example week this particle's idea is in (-1: none)
 
   uniform float uMix;              // 0 = the "from" shape, 1 = the "to" shape
   uniform float uTime;
@@ -20,6 +21,7 @@ const VERTEX = /* glsl */ `
   uniform float uCool;
   uniform float uPulse;
   uniform float uSolid;
+  uniform vec2 uHighlight;         // a cluster to light up, and how much (0 = none)
   uniform float uFromOrbit;
   uniform float uToOrbit;
   uniform vec4 uTilt;
@@ -77,7 +79,11 @@ const VERTEX = /* glsl */ `
     float lit = smoothstep(-0.3, 0.2, facing) * (0.6 + 0.7 * pow(1.0 - clamp(facing, 0.0, 1.0), 1.5));
     vAlpha *= mix(1.0, 0.06 + lit, uSolid);
 
-    gl_PointSize = uSize * (0.4 + 0.6 * aSeed.y) * (1.0 + inFlight * 0.35) / max(depth, 0.5);
+    // The story can light up one cluster of ideas: it brightens, and everything else steps back a little.
+    float chosen = step(abs(aCluster - uHighlight.x), 0.1);
+    vAlpha *= 1.0 + uHighlight.y * (chosen * 1.6 - (1.0 - chosen) * 0.45);
+
+    gl_PointSize = uSize * (0.4 + 0.6 * aSeed.y) * (1.0 + inFlight * 0.35) * (1.0 + chosen * uHighlight.y * 0.35) / max(depth, 0.5);
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -107,7 +113,7 @@ export interface Particles {
   uniforms: ShaderMaterial["uniforms"];
 }
 
-export function createParticles(count: number, targets: Record<ShapeName, Float32Array>): Particles {
+export function createParticles(count: number, targets: Record<ShapeName, Float32Array>, clusterOf: Float32Array): Particles {
   const r = mulberry32(7);
   const colors = new Float32Array(count * 3);
   const seeds = new Float32Array(count * 4);
@@ -129,6 +135,7 @@ export function createParticles(count: number, targets: Record<ShapeName, Float3
   geometry.setAttribute("aTo", attrs.noise);
   geometry.setAttribute("aColor", new BufferAttribute(colors, 3));
   geometry.setAttribute("aSeed", new BufferAttribute(seeds, 4));
+  geometry.setAttribute("aCluster", new BufferAttribute(clusterOf, 1));
 
   const material = new ShaderMaterial({
     vertexShader: VERTEX,
@@ -139,7 +146,7 @@ export function createParticles(count: number, targets: Record<ShapeName, Float3
     blending: AdditiveBlending,
     uniforms: {
       uMix: { value: 0 }, uTime: { value: 0 }, uSize: { value: 24 }, uDrift: { value: 0 }, uGain: { value: 1 },
-      uCool: { value: 0 }, uPulse: { value: 0 }, uSolid: { value: 0 }, uFromOrbit: { value: 0 }, uToOrbit: { value: 0 },
+      uCool: { value: 0 }, uPulse: { value: 0 }, uSolid: { value: 0 }, uHighlight: { value: new Vector2(-1, 0) }, uFromOrbit: { value: 0 }, uToOrbit: { value: 0 },
       uTilt: { value: new Vector4(...RING_TILT) },
     },
   });

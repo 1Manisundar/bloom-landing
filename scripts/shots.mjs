@@ -16,7 +16,7 @@ const VIEWS = [
   // Not asked for, but the commonest small laptop: it is where a tall chapter would run out of room.
   { name: "laptop", width: 1366, height: 768 },
 ];
-const CHAPTERS = ["hero", "noise", "sense", "graph", "mirror", "reflect", "practice", "today", "private", "begin"];
+const CHAPTERS = ["hero", "week", "reading", "pattern", "mirror", "promises", "practice", "today", "private", "begin"];
 
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 const problems = [];
