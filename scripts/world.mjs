@@ -18,8 +18,9 @@ const headed = args.includes("--headed");
 const all = args.includes("--all");
 const OUT = resolve("shots", args.find((a) => !a.startsWith("--")) ?? "world");
 
-const FIVE = [["hero", 0], ["sense", 0.3], ["graph", 0.3], ["mirror", 0.3], ["begin", 0.5]];
-const EVERY = [["hero", 0], ["noise", 0.3], ["sense", 0.3], ["sense", 1, "sense-to-graph"], ["graph", 0.3], ["mirror", 0.3], ["reflect", 0.3], ["practice", 0.3], ["today", 0.3], ["private", 0.3], ["begin", 0.5]];
+// Each stop is a chapter and how far its scene has played (0 to 1).
+const FIVE = [["week", 1], ["reading", 0.62], ["pattern", 0.97], ["mirror", 0.92], ["today", 0.62]];
+const EVERY = [["hero", 0.2], ["week", 1], ["reading", 0.2, "reading-early"], ["reading", 0.62], ["reading", 1, "reading-done"], ["pattern", 0.4, "pattern-early"], ["pattern", 0.97], ["mirror", 0.92], ["promises", 0.8], ["practice", 0.85], ["today", 0.62], ["private", 0.95], ["begin", 0.6]];
 const STOPS = all ? EVERY : FIVE;
 const VIEWS = [
   { name: "desktop", width: 1440, height: 900, scale: 1 },
@@ -61,7 +62,7 @@ try {
 
     let n = 1;
     for (const [id, t, label = id] of STOPS) {
-      await page.evaluate(([cid, at]) => window.__nd.scroll.jump(cid, at), [id, t]);
+      await page.evaluate(([cid, at]) => window.__nd.scroll.seek(cid, at * 0.55), [id, t]);
       await sleep(3200);
       await page.screenshot({ path: resolve(OUT, `${view.name}-${String(n).padStart(2, "0")}-${label}.png`) });
       // Count frames over three seconds with the page's own clock, while still.

@@ -29,6 +29,8 @@ export interface Scroll {
   refresh(): void;
   /** Go straight to a point in a chapter: t = 0 is its start, 1 its end. Used by the screenshot script. */
   jump(id: string, t?: number): void;
+  /** Go straight to the point where chapter id is `local` (0 to 1) of the way through, as the world counts it. */
+  seek(id: string, local: number): void;
 }
 
 export function setupScroll(reduced: boolean): Scroll {
@@ -45,14 +47,6 @@ export function setupScroll(reduced: boolean): Scroll {
   }
 
   const sections = Array.from(document.querySelectorAll<HTMLElement>("section.chapter"));
-  const topLabel = document.getElementById("top-chapter");
-
-  const labelOf = (section: HTMLElement): string => {
-    if (section.id === "hero") return "";
-    const label = section.querySelector(".label")?.cloneNode(true) as HTMLElement | undefined;
-    label?.querySelectorAll(".dim").forEach((extra) => extra.remove());
-    return label?.textContent?.trim() ?? "";
-  };
 
   // One marker per chapter: it runs from the chapter's top reaching the middle of the screen to its bottom
   // doing the same, so the markers tile the page and exactly one chapter is "in the middle" at a time.
@@ -81,7 +75,6 @@ export function setupScroll(reduced: boolean): Scroll {
     if (changed) {
       state.chapter = at.section.id;
       document.body.dataset.chapter = at.section.id;
-      if (topLabel) topLabel.textContent = labelOf(at.section);
     }
     emit(changed);
   };
@@ -95,6 +88,16 @@ export function setupScroll(reduced: boolean): Scroll {
     lock() { lenis?.stop(); },
     unlock() { lenis?.start(); },
     refresh() { lenis?.resize(); ScrollTrigger.refresh(); },
+    seek(id, local) {
+      const section = document.getElementById(id);
+      if (!section) return;
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const y = Math.max(0, top + local * section.offsetHeight - window.innerHeight / 2);
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo(0, y);
+      ScrollTrigger.update();
+      measure();
+    },
     jump(id, t = 0) {
       const section = document.getElementById(id);
       if (!section) return;

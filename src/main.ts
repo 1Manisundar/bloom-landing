@@ -12,6 +12,7 @@ import { setupScroll, type Scroll } from "./scroll";
 import { startPreloader } from "./ui/preloader";
 import { setupReveals } from "./ui/reveals";
 import { setupSound } from "./ui/sound";
+import { setupVerdicts } from "./ui/verdicts";
 import { setupWaitlist } from "./ui/waitlist";
 import type { World } from "./world";
 
@@ -60,6 +61,11 @@ const world: Promise<World | null> = canvas
 
 const sound = setupSound();
 setupWaitlist();
+setupVerdicts();
+
+// The hairline under the top bar shows how far through the story you are.
+const progressBar = document.getElementById("progress-bar");
+scroll.on((state) => { if (progressBar) progressBar.style.transform = `scaleX(${state.progress.toFixed(4)})`; });
 
 // A soft tick each time the story moves into a new chapter (only once sound is on).
 scroll.on((_state, chapterChanged) => { if (chapterChanged) sound.tick(); });

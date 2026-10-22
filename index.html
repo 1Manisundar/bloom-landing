@@ -25,18 +25,22 @@
   <p class="preloader__count mono" aria-hidden="true"><span id="preloader-count">0</span><span> / 100</span></p>
 </div>
 
-<!-- The one fixed canvas the 3D world draws into (milestone 3). Until then, and wherever WebGL is missing,
-     the poster layer behind it carries each chapter's mood. -->
+<!-- The one fixed canvas the 3D world draws into. Wherever WebGL is missing, the poster behind it carries each
+     chapter's mood. -->
 <div class="poster" id="poster" aria-hidden="true"></div>
 <canvas class="world" id="world" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
+<!-- The annotations: names, times and pointer lines drawn over the 3D world, so the picture explains itself.
+     They repeat what the page's text already says, so screen readers skip them. -->
+<div class="annot" id="annot" aria-hidden="true"><svg class="annot__lines" id="annot-lines"></svg></div>
+<p class="example-note mono" id="example-note" aria-hidden="true">An example week. Not real data.</p>
 
 <header class="top">
   <a class="top__mark" href="#hero" aria-label="neuroditto, back to the top">neuroditto</a>
-  <p class="top__chapter mono" id="top-chapter" aria-hidden="true"></p>
   <button class="sound mono" id="sound" type="button" aria-pressed="false">
     <span class="sound__dot" aria-hidden="true"></span><span id="sound-label">Enable sound</span>
   </button>
+  <div class="progress" aria-hidden="true"><span class="progress__bar" id="progress-bar"></span></div>
 </header>
 
 <main id="main">
@@ -45,155 +49,139 @@
   <section class="chapter chapter--hero" id="hero" data-chapter="hero" style="--len: 1.2" aria-labelledby="hero-title">
     <div class="chapter__stick">
       <div class="hero">
-        <p class="label mono">A private, local-first learning companion</p>
         <h1 class="hero__title" id="hero-title">
           <span class="wordmark">neuroditto</span>
           <span class="hero__tag reveal">A mirror for your mind.</span>
         </h1>
-        <p class="lede hero__lede reveal">Most apps ask what you want to track. This one notices what you actually do, and reflects it back until you recognise yourself in it.</p>
-        <p class="cue mono" aria-hidden="true"><span class="cue__line"></span>Scroll to begin</p>
+        <p class="lede hero__lede reveal">A private, local-first learning companion. It notices what you actually do, and reflects it back until you recognise yourself in it.</p>
+        <p class="cue mono" aria-hidden="true"><span class="cue__line"></span>Scroll through an example week</p>
       </div>
     </div>
   </section>
 
-  <!-- I · The Noise -->
-  <section class="chapter chapter--left" id="noise" data-chapter="noise" style="--len: 1.2" aria-labelledby="noise-title">
+  <!-- From here down, one example person's week runs through the whole page. Its pieces come from the
+       product's own docs (VISION.md): the goal they stated, where their attention went, the pattern in their
+       longest sessions, and the question they keep asking. -->
+
+  <!-- 1 · The week -->
+  <section class="chapter chapter--bottom" id="week" data-chapter="week" style="--len: 1.5" aria-labelledby="week-title">
     <div class="chapter__stick">
       <div class="copy">
-        <p class="label mono"><span class="label__num">I</span> · The Noise</p>
-        <h2 class="line reveal" id="noise-title">You read. You watch. You build. You wander.</h2>
-        <p class="lede reveal">A paper at lunch. A lecture at midnight. Half a repo, three highlights, a question you keep asking. It all scatters.</p>
-        <ul class="fragments mono" aria-label="The fragments of a week">
-          <li>Paper</li><li>Video</li><li>Code</li><li>Highlight</li><li>Note</li><li>Chat</li><li>Bookmark</li>
+        <h2 class="line reveal" id="week-title">You read. You watch. You build. It scatters.</h2>
+        <p class="lede reveal">Here is one person’s week, as an example. Their stated goal: becoming an AI engineer.</p>
+        <!-- The week itself. The 3D world reads its cards from this list, so this is the one copy of it. -->
+        <ul class="sample" id="week-items" aria-label="The example week">
+          <li data-source="arXiv" data-time="Tue 23:40" data-concepts="Gaussian splatting|Rendering">3D Gaussian Splatting for Real-Time Rendering</li>
+          <li data-source="YouTube" data-time="Wed 00:15" data-concepts="Backprop">Backpropagation, step by step</li>
+          <li data-source="Local code" data-time="Wed 22:10" data-concepts="Ray tracing">raytracer/ (half built)</li>
+          <li data-source="Kindle" data-time="Thu 07:30" data-concepts="Explaining">A highlight from The Feynman Lectures</li>
+          <li data-source="Chat" data-time="Thu 23:55" data-concepts="Backprop|Explaining">“Explain backprop like I’m five”</li>
+          <li data-source="Notes" data-time="Fri 21:30" data-concepts="Ray tracing|Explaining">How a ray tracer works (for a friend)</li>
+          <li data-source="arXiv" data-time="Sat 01:10" data-concepts="NeRF|Neural networks">NeRF: Scenes as Neural Radiance Fields</li>
+          <li data-source="Bookmark" data-time="Sat 15:20" data-concepts="Shaders">Shadertoy</li>
+          <li data-source="YouTube" data-time="Sun 10:05" data-concepts="Neural networks">Neural networks, chapter 3</li>
+          <li data-source="Readwise" data-time="Sun 18:40" data-concepts="Attention">A highlight on attention</li>
+          <li data-source="Chat" data-time="Mon 23:20" data-concepts="Ray tracing|Sampling">“Why does my ray tracer look noisy?”</li>
+          <li data-source="Notes" data-time="Mon 22:45" data-concepts="Gradient descent|Explaining">Gradient descent, explained to a friend</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- II · The Sense -->
-  <section class="chapter chapter--right" id="sense" data-chapter="sense" style="--len: 1.8" aria-labelledby="sense-title">
+  <!-- 2 · Reading -->
+  <section class="chapter chapter--top" id="reading" data-chapter="reading" style="--len: 2" aria-labelledby="reading-title">
     <div class="chapter__stick">
       <div class="copy">
-        <p class="label mono"><span class="label__num">II</span> · The Sense</p>
-        <h2 class="line reveal" id="sense-title">It notices what you actually do. Not what you say you’ll do.</h2>
-        <p class="lede reveal">Feed it what you already have. It reads along, quietly.</p>
-        <ul class="adapters" aria-label="What it can take in">
-          <li>arXiv papers</li>
-          <li>Kindle and Readwise highlights</li>
-          <li>YouTube transcripts</li>
-          <li>GitHub stars</li>
-          <li>Browser bookmarks and history</li>
-          <li>Markdown and Obsidian notes</li>
-          <li>ChatGPT and Claude exports</li>
-          <li>Zotero</li>
-          <li>RSS feeds</li>
-          <li>Local codebases</li>
-        </ul>
-        <p class="aside reveal">It notices what you return to at 11 PM.</p>
+        <h2 class="line reveal" id="reading-title">It reads along, and keeps the ideas.</h2>
+        <p class="lede reveal">Each paper, video, note or chat leaves concepts behind. When an idea comes back, it grows.</p>
+        <p class="fine">Takes in arXiv, YouTube, Kindle, Readwise, Zotero, GitHub stars, RSS, browser bookmarks and history, Markdown and Obsidian notes, ChatGPT and Claude exports, and local code.</p>
       </div>
     </div>
   </section>
 
-  <!-- III · The Graph -->
-  <section class="chapter chapter--left" id="graph" data-chapter="graph" style="--len: 1.5" aria-labelledby="graph-title">
+  <!-- 3 · The pattern -->
+  <section class="chapter chapter--top" id="pattern" data-chapter="pattern" style="--len: 2" aria-labelledby="pattern-title">
     <div class="chapter__stick">
       <div class="copy">
-        <p class="label mono"><span class="label__num">III</span> · The Graph</p>
-        <h2 class="line reveal" id="graph-title">Everything you take in becomes a map of how you think.</h2>
-        <p class="lede reveal">Every source leaves concepts behind. Linked together, they are one graph of one person.</p>
-        <p class="tagrow mono"><span class="tag">Example concepts</span> Attention · Compilers · Stoicism</p>
+        <h2 class="line reveal" id="pattern-title">The ideas link up into a map of how you think.</h2>
+        <p class="lede reveal">A link forms where two things share an idea. The more time you spend, the bigger the node.</p>
+        <p class="sample-line">In this week, most hours went to 3D graphics, and 9 of the 11 longest sessions were spent explaining something.</p>
       </div>
     </div>
   </section>
 
-  <!-- IV · The Mirror -->
-  <!-- It comes in two beats. First the mirror itself, with room to be seen; then, with the camera close on
-       the reflection, what it says. -->
-  <section class="chapter chapter--left" id="mirror" data-chapter="mirror" style="--len: 1.3" aria-labelledby="mirror-title">
+  <!-- 4 · The mirror -->
+  <section class="chapter chapter--mirror" id="mirror" data-chapter="mirror" style="--len: 2.2" aria-labelledby="mirror-title">
     <div class="chapter__stick">
-      <div class="copy">
-        <p class="label mono"><span class="label__num">IV</span> · The Mirror</p>
+      <div class="copy copy--mirror">
         <h2 class="line reveal" id="mirror-title">No grades. Only possibilities.</h2>
-        <p class="lede reveal">It shows you where your attention went, and what that might mean. A record, not a verdict.</p>
-      </div>
-    </div>
-  </section>
+        <p class="lede reveal">It sets what you said beside what you did, and offers a guess, with its evidence.</p>
 
-  <section class="chapter chapter--wide" id="reflect" data-chapter="reflect" style="--len: 1.7" aria-label="What the mirror says">
-    <div class="chapter__stick">
-      <div class="copy copy--wide">
-        <p class="label mono"><span class="label__num">IV</span> · The Mirror <span class="dim">· What it says</span></p>
-
-        <!-- Two separate examples, both in the product's own words (VISION.md §III and §IV): the gap between
-             what you said and what you did, and one evidence-cited possibility. -->
-        <div class="gap">
-          <p class="tagrow mono"><span class="tag">Example</span> The gap, reflected back</p>
-          <div class="saiddid">
-            <div class="saiddid__col">
-              <p class="label mono">What you said</p>
-              <p class="saiddid__text">“Becoming an AI engineer is the aim.”</p>
-            </div>
-            <div class="saiddid__col">
-              <p class="label mono">What you did</p>
-              <p class="saiddid__text">Most of your deep attention this month went to 3D-graphics papers.</p>
-            </div>
-          </div>
-          <p class="gap__ask">Two honest readings: distraction, or a signal worth taking seriously. Which is it?</p>
-          <p class="verdicts mono" aria-label="The three answers you can give"><span>Drift</span><span>Signal</span><span>Not sure yet</span></p>
-        </div>
-
-        <article class="possibility" aria-labelledby="possibility-title">
-          <p class="tagrow mono"><span class="tag">Example</span> <span class="scale" aria-label="The scale it speaks in: possible, plausible, likely">possible <span aria-hidden="true">→</span> plausible <span aria-hidden="true">→</span> <b>likely</b></span></p>
+        <article class="possibility" id="possibility" aria-labelledby="possibility-title">
+          <p class="scale mono" aria-label="The scale it speaks in: possible, plausible, likely">possible <span aria-hidden="true">→</span> plausible <span aria-hidden="true">→</span> <b>likely</b></p>
           <p class="possibility__text" id="possibility-title"><b>Likely</b> — explaining systems is where you come alive.</p>
           <p class="possibility__why"><span class="mono dim">Evidence</span> 9 of your 11 longest voluntary sessions this month were teaching-shaped.</p>
           <p class="possibility__why"><span class="mono dim">This week’s test</span> One lunch-and-learn.</p>
+          <div class="verdicts" role="group" aria-label="Your answer">
+            <button class="verdict" type="button" data-verdict="drift" aria-pressed="false">Drift</button>
+            <button class="verdict" type="button" data-verdict="signal" aria-pressed="false">Signal</button>
+            <button class="verdict" type="button" data-verdict="unsure" aria-pressed="false">Not sure yet</button>
+          </div>
+          <p class="possibility__record" id="verdict-status" role="status" aria-live="polite">Try it: your answer tests the mirror, not you.</p>
           <p class="possibility__pen">Not right? Change it. <span class="dim">You hold the pen.</span></p>
         </article>
+      </div>
+    </div>
+  </section>
 
-        <div class="promises">
-          <div class="promise">
-            <h3 class="promise__title">We never grade you.</h3>
-            <p>No scores on people. Not now, not in a later version.</p>
-          </div>
-          <div class="promise">
-            <h3 class="promise__title">The mirror is the one that gets graded.</h3>
-            <p>Every possibility is a logged bet. If it turns out wrong, its record goes down. Not yours.</p>
-          </div>
-          <div class="promise">
-            <h3 class="promise__title">You hold the pen.</h3>
-            <p>Anything it says about you is a draft until you correct it.</p>
-          </div>
+  <!-- 5 · The promises -->
+  <section class="chapter chapter--promises" id="promises" data-chapter="promises" style="--len: 1.4" aria-label="Three promises">
+    <div class="chapter__stick">
+      <div class="copy copy--promises">
+        <div class="promise">
+          <h3 class="promise__title reveal">We never grade you.</h3>
+          <p>No scores on people. Not now, not in a later version.</p>
+        </div>
+        <div class="promise">
+          <h3 class="promise__title reveal">The mirror is the one that gets graded.</h3>
+          <p>Every possibility is a logged bet. If it turns out wrong, its record goes down. Not yours.</p>
+        </div>
+        <div class="promise">
+          <h3 class="promise__title reveal">You hold the pen.</h3>
+          <p>Anything it says about you is a draft until you correct it.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- V · The Practice -->
-  <section class="chapter chapter--right" id="practice" data-chapter="practice" style="--len: 1.4" aria-labelledby="practice-title">
+  <!-- 6 · Practice -->
+  <section class="chapter chapter--bottom" id="practice" data-chapter="practice" style="--len: 1.6" aria-labelledby="practice-title">
     <div class="chapter__stick">
       <div class="copy copy--roomy">
-        <p class="label mono"><span class="label__num">V</span> · The Practice <span class="dim">· Brain gym</span></p>
         <h2 class="line reveal" id="practice-title">Remember by returning.<br>Understand by explaining.</h2>
-        <p class="lede reveal">Flashcards come back at widening intervals. A Feynman coach asks you to explain it simply.</p>
-        <div class="feynman">
-          <p class="tagrow mono"><span class="tag">Example</span> Feynman · Backprop</p>
-          <p class="feynman__ask">“Explain it like I’m five.”</p>
-        </div>
+        <p class="lede reveal">A flashcard comes back a little later each time. A Feynman coach asks you to explain it simply.</p>
       </div>
     </div>
   </section>
 
-  <!-- VI · Today -->
-  <section class="chapter chapter--center" id="today" data-chapter="today" style="--len: 1.2" aria-labelledby="today-title">
+  <!-- 7 · Today -->
+  <section class="chapter chapter--center" id="today" data-chapter="today" style="--len: 1.5" aria-labelledby="today-title">
     <div class="chapter__stick">
       <div class="copy copy--center">
-        <p class="label mono"><span class="label__num">VI</span> · Today</p>
         <h2 class="line reveal" id="today-title">One next step. That’s all.</h2>
-        <article class="todaycard" aria-label="An example of today's one session">
-          <p class="tagrow mono"><span class="tag">Example</span> Today’s session</p>
+        <article class="todaycard" id="todaycard" aria-label="An example of today's one session">
+          <p class="todaycard__label mono">Today’s session</p>
           <p class="todaycard__title">10-minute Feynman drill: Backprop</p>
           <p class="todaycard__why">Because you’ve asked this question fourteen different ways.</p>
         </article>
+        <!-- The fourteen ways, which the 3D world gathers into the card. -->
+        <ul class="sample" id="today-questions" aria-label="The fourteen ways it was asked">
+          <li>how does backprop work?</li><li>chain rule in neural nets?</li><li>why do gradients vanish?</li>
+          <li>backprop vs gradient descent?</li><li>what is a computational graph?</li><li>backprop by hand</li>
+          <li>why multiply the gradients?</li><li>what is ∂L/∂w?</li><li>backprop in PyTorch</li>
+          <li>why does my loss explode?</li><li>intuition for backprop</li><li>backprop through a ReLU</li>
+          <li>what does .backward() do?</li><li>backprop, explained simply</li>
+        </ul>
         <ul class="quiet" aria-label="Also inside">
           <li><b>Compass</b> finds your why in evidence, not introspection.</li>
           <li><b>Chapters</b> is a quarterly story of your mind, which you co-write.</li>
@@ -202,24 +190,21 @@
     </div>
   </section>
 
-  <!-- VII · Private by design -->
-  <section class="chapter chapter--left" id="private" data-chapter="private" style="--len: 1.3" aria-labelledby="private-title">
+  <!-- 8 · Private -->
+  <section class="chapter chapter--top" id="private" data-chapter="private" style="--len: 1.5" aria-labelledby="private-title">
     <div class="chapter__stick">
       <div class="copy">
-        <p class="label mono"><span class="label__num">VII</span> · Private by design</p>
         <h2 class="line reveal" id="private-title">It lives on your machine. Your mind stays yours.</h2>
-        <p class="lede reveal">The graph, the record, the mirror: all of it runs on your own computer. Privacy isn’t a feature here. It’s the precondition for an honest mirror.</p>
-        <p class="fine">Run it with a local model and nothing leaves. Or bring one API key. Your choice.</p>
+        <p class="lede reveal">The graph, the record and the mirror all run on your own computer. Run a local model and nothing leaves, or bring one API key. Your choice.</p>
         <p class="aside reveal">Rough week? It’s context, not character.</p>
       </div>
     </div>
   </section>
 
-  <!-- VIII · Begin -->
+  <!-- 9 · Begin -->
   <section class="chapter chapter--center chapter--last" id="begin" data-chapter="begin" style="--len: 1" aria-labelledby="begin-title">
     <div class="chapter__stick">
       <div class="copy copy--center">
-        <p class="label mono"><span class="label__num">VIII</span> · Begin</p>
         <h2 class="line line--big reveal" id="begin-title">Meet the mind you already have.</h2>
         <p class="lede reveal">Want to know when it opens?</p>
         <form class="waitlist" id="waitlist" novalidate>
@@ -239,7 +224,7 @@
 <footer class="foot">
   <p class="foot__mark">neuroditto</p>
   <nav class="foot__nav mono" aria-label="Footer">
-    <a href="#sense">Product</a>
+    <a href="#reading">How it works</a>
   </nav>
   <p class="foot__year mono">© <span id="year">2026</span> neuroditto</p>
 </footer>

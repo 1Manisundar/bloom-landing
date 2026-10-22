@@ -1,8 +1,7 @@
 // Every particle has a place in every shape. This file works out those places: one Float32Array of
 // x, y, z per shape, all built around the origin. A fixed seed means the world looks the same on every visit.
 
-export type ShapeName = "hero" | "noise" | "brain" | "graph" | "mirror" | "orbit" | "card" | "box";
-export const SHAPE_NAMES: ShapeName[] = ["noise", "brain", "hero", "graph", "mirror", "orbit", "card", "box"];
+export type ShapeName = "hero" | "noise" | "brain" | "graph" | "mirror" | "orbit" | "card" | "laptop";
 
 export type Rng = () => number;
 
@@ -111,7 +110,19 @@ function hero(n: number, r: Rng, cloud: Float32Array, mind: Float32Array): Float
   return a;
 }
 
-// ---------- III · the graph: concepts as nodes, links as lines ----------
+// ---------- the graph: the example week's ideas, in named clusters ----------
+/**
+ * The clusters of the example week, in the order they are built. The first is the heaviest: most of the
+ * week's hours went there. The story names their hubs and some of their members (see story.ts).
+ */
+export const CLUSTERS = [
+  { name: "3D graphics", centre: [1.25, 0.55, -0.1], share: 0.4, reach: 1.1, hub: 1 },
+  { name: "Ray tracing", centre: [2.55, -1.05, 0.7], share: 0.14, reach: 0.62, hub: 0.62 },
+  { name: "Backprop", centre: [-1.3, -1.05, 0.6], share: 0.14, reach: 0.66, hub: 0.68 },
+  { name: "Neural networks", centre: [-2.35, 0.85, -0.45], share: 0.12, reach: 0.62, hub: 0.5 },
+  { name: "Explaining", centre: [0.35, -1.55, 1.1], share: 0.2, reach: 0.78, hub: 0.9 },
+] as const;
+
 export interface GraphData {
   /** x, y, z per node. */
   nodes: Float32Array;
@@ -119,22 +130,34 @@ export interface GraphData {
   sizes: Float32Array;
   /** Node index pairs. */
   edges: Uint16Array;
+  /** Which cluster each node belongs to. */
+  cluster: Uint8Array;
+  /** Each cluster's first node (its hub) and how many nodes it has. */
+  ranges: Array<{ start: number; count: number }>;
 }
 
 export function buildGraph(r: Rng): GraphData {
-  const centres = [[-1.7, 0.7, 0.3], [1.6, 1.0, -0.5], [0.3, -1.3, 0.7], [-0.3, 0.5, -1.7], [2.0, -1.0, 0.9]];
-  const count = 64;
-  const nodes = new Float32Array(count * 3);
-  const sizes = new Float32Array(count);
-  for (let i = 0; i < count; i++) {
-    const c = centres[i % centres.length];
-    const hub = i < centres.length;
-    const u = r() * 2 - 1, th = r() * TAU, s = Math.sqrt(1 - u * u), rad = hub ? 0 : 0.35 + Math.cbrt(r()) * 0.85;
-    nodes[i * 3] = c[0] + s * Math.cos(th) * rad;
-    nodes[i * 3 + 1] = c[1] + u * rad * 0.85;
-    nodes[i * 3 + 2] = c[2] + s * Math.sin(th) * rad;
-    sizes[i] = hub ? 1 : 0.25 + r() * 0.4;
-  }
+  const total = 64;
+  const counts = CLUSTERS.map((c) => Math.round(c.share * total));
+  counts[0] += total - counts.reduce((a, b) => a + b, 0);
+  const nodes = new Float32Array(total * 3);
+  const sizes = new Float32Array(total);
+  const cluster = new Uint8Array(total);
+  const ranges: GraphData["ranges"] = [];
+  let i = 0;
+  CLUSTERS.forEach((c, k) => {
+    ranges.push({ start: i, count: counts[k] });
+    for (let m = 0; m < counts[k]; m++, i++) {
+      const hub = m === 0;
+      const u = r() * 2 - 1, th = r() * TAU, sq = Math.sqrt(1 - u * u), rad = hub ? 0 : c.reach * (0.4 + Math.cbrt(r()) * 0.75);
+      nodes[i * 3] = c.centre[0] + sq * Math.cos(th) * rad;
+      nodes[i * 3 + 1] = c.centre[1] + u * rad * 0.85;
+      nodes[i * 3 + 2] = c.centre[2] + sq * Math.sin(th) * rad;
+      // The heavy cluster's members are heavier too.
+      sizes[i] = hub ? c.hub : (k === 0 ? 0.35 : 0.22) + r() * 0.35;
+      cluster[i] = k;
+    }
+  });
 
   const seen = new Set<number>();
   const pairs: number[] = [];
@@ -147,48 +170,69 @@ export function buildGraph(r: Rng): GraphData {
   };
   const dist = (a: number, b: number) =>
     Math.hypot(nodes[a * 3] - nodes[b * 3], nodes[a * 3 + 1] - nodes[b * 3 + 1], nodes[a * 3 + 2] - nodes[b * 3 + 2]);
-  // Each concept links to its two nearest neighbours and to its cluster's hub; the hubs link to each other.
-  for (let i = 0; i < count; i++) {
-    const near = Array.from({ length: count }, (_, j) => j).filter((j) => j !== i).sort((p, q) => dist(i, p) - dist(i, q));
-    link(i, near[0]);
-    link(i, near[1]);
-    if (i >= centres.length && r() < 0.55) link(i, i % centres.length);
+  // Each idea links to its two nearest neighbours, and often to its cluster's hub.
+  for (let n = 0; n < total; n++) {
+    const near = Array.from({ length: total }, (_, j) => j).filter((j) => j !== n).sort((p, q) => dist(n, p) - dist(n, q));
+    link(n, near[0]);
+    link(n, near[1]);
+    const hub = ranges[cluster[n]].start;
+    if (n !== hub && r() < 0.6) link(n, hub);
   }
-  for (let i = 0; i < centres.length; i++) link(i, (i + 1) % centres.length);
-  link(0, 2); link(1, 3);
+  // The links between clusters are the week's real crossings: explaining ties to everything they explained.
+  const hubOf = (k: number) => ranges[k].start;
+  link(hubOf(4), hubOf(1)); link(hubOf(4), hubOf(2)); link(hubOf(4), hubOf(0));
+  link(hubOf(0), hubOf(1)); link(hubOf(2), hubOf(3)); link(hubOf(0), hubOf(3));
 
-  return { nodes, sizes, edges: Uint16Array.from(pairs) };
+  return { nodes, sizes, edges: Uint16Array.from(pairs), cluster, ranges };
 }
+
+/**
+ * Half the particles (those with i % 20 >= 10) sit on nodes, the other half on links. The mirror and the
+ * laptop reuse the node half, so the same particle stands for the same idea wherever it goes.
+ */
+const onNode = (i: number) => i % 20 >= 10;
 
 function graph(n: number, r: Rng, g: GraphData): Float32Array {
   const a = new Float32Array(n * 3);
   const nodeCount = g.sizes.length, edgeCount = g.edges.length / 2;
   // Bigger nodes gather more particles.
-  const total = g.sizes.reduce((sum, s) => sum + s * s + 0.1, 0);
+  const total = g.sizes.reduce((sum, v) => sum + v * v + 0.1, 0);
   const pickNode = () => {
     let t = r() * total;
     for (let i = 0; i < nodeCount; i++) { t -= g.sizes[i] * g.sizes[i] + 0.1; if (t <= 0) return i; }
     return nodeCount - 1;
   };
   for (let i = 0; i < n; i++) {
-    if (r() < 0.46) {
-      const j = pickNode(), spread = 0.035 + 0.11 * g.sizes[j];
-      const u = r() * 2 - 1, th = r() * TAU, s = Math.sqrt(1 - u * u), rad = spread * (r() < 0.6 ? 1 : r());
-      a[i * 3] = g.nodes[j * 3] + s * Math.cos(th) * rad;
+    if (onNode(i)) {
+      const j = pickNode(), spread = 0.035 + 0.12 * g.sizes[j];
+      const u = r() * 2 - 1, th = r() * TAU, sq = Math.sqrt(1 - u * u), rad = spread * (r() < 0.6 ? 1 : r());
+      a[i * 3] = g.nodes[j * 3] + sq * Math.cos(th) * rad;
       a[i * 3 + 1] = g.nodes[j * 3 + 1] + u * rad;
-      a[i * 3 + 2] = g.nodes[j * 3 + 2] + s * Math.sin(th) * rad;
+      a[i * 3 + 2] = g.nodes[j * 3 + 2] + sq * Math.sin(th) * rad;
+      PARTICLE_CLUSTER_SCRATCH[i] = g.cluster[j];
     } else {
       const e = Math.floor(r() * edgeCount), p = g.edges[e * 2], q = g.edges[e * 2 + 1], t = r();
       for (let c = 0; c < 3; c++) a[i * 3 + c] = g.nodes[p * 3 + c] + (g.nodes[q * 3 + c] - g.nodes[p * 3 + c]) * t + gauss(r) * 0.012;
+      PARTICLE_CLUSTER_SCRATCH[i] = -1;
     }
   }
   return a;
 }
+/** Filled in by graph(): which cluster each particle's node is in, or -1 for a particle on a link. */
+let PARTICLE_CLUSTER_SCRATCH = new Float32Array(0);
 
-// ---------- IV · the mirror: an oval frame, and a small brain looking back out of it ----------
-function mirror(n: number, r: Rng, mind: Float32Array): Float32Array {
+// ---------- the mirror: an oval frame, and your graph looking back out of it ----------
+export const MIRROR = { A: 1.95, B: 2.65 };
+/** Where a point of the graph lands in the mirror's reflection: smaller, and pressed into the glass. */
+export function intoMirror(x: number, y: number, z: number, out: number[] = []): number[] {
+  out[0] = x * 0.5 - 0.1; out[1] = y * 0.5 + 0.12; out[2] = z * 0.22 - 0.25;
+  return out;
+}
+
+function mirror(n: number, r: Rng, net: Float32Array): Float32Array {
   const a = new Float32Array(n * 3);
-  const A = 1.95, B = 2.65;
+  const { A, B } = MIRROR;
+  const p: number[] = [];
   for (let i = 0; i < n; i++) {
     const kind = i % 20;
     let x: number, y: number, z: number;
@@ -201,8 +245,9 @@ function mirror(n: number, r: Rng, mind: Float32Array): Float32Array {
       const th = r() * TAU, rad = Math.sqrt(r()) * 0.9;
       x = Math.cos(th) * A * rad; y = Math.sin(th) * B * rad; z = -0.14;
     } else {
-      // You, reflected: the same brain, smaller and pressed flat into the glass.
-      x = mind[i * 3] * 0.56; y = (mind[i * 3 + 1] - 0.2) * 0.56 + 0.12; z = mind[i * 3 + 2] * 0.2 - 0.3;
+      // What it reflects is your own map: the same ideas, the same particles.
+      intoMirror(net[i * 3], net[i * 3 + 1], net[i * 3 + 2], p);
+      [x, y, z] = p;
     }
     a[i * 3] = x; a[i * 3 + 1] = y; a[i * 3 + 2] = z;
   }
@@ -267,33 +312,60 @@ function card(n: number, r: Rng): Float32Array {
   return a;
 }
 
-// ---------- VII · private: one small box, with everything inside it ----------
-function box(n: number, r: Rng): Float32Array {
+// ---------- private: a laptop, with your map on its screen ----------
+const TILT = 0.26;
+export const LAPTOP = {
+  /** The hinge, along the back edge of the base. */
+  hinge: [0, -0.62, -0.95] as const,
+  /** Half the width, and the screen's height. */
+  halfWidth: 1.45, screen: 1.85,
+  /** The screen leans back a little. */
+  up: [0, Math.cos(TILT), -Math.sin(TILT)] as const,
+};
+/** A point on the screen: u from -1 to 1 across, v from 0 (hinge) to 1 (top). */
+export function onScreen(u: number, v: number, out: number[] = []): number[] {
+  const { hinge, halfWidth, screen, up } = LAPTOP;
+  out[0] = hinge[0] + u * halfWidth; out[1] = hinge[1] + up[1] * v * screen; out[2] = hinge[2] + up[2] * v * screen + 0.02;
+  return out;
+}
+
+function laptop(n: number, r: Rng, net: Float32Array): Float32Array {
   const a = new Float32Array(n * 3);
-  const S = 0.58;
+  const W = LAPTOP.halfWidth, D = 0.95, y0 = LAPTOP.hinge[1], T = 0.07;
+  const p: number[] = [];
   for (let i = 0; i < n; i++) {
-    const kind = r();
-    const p = [0, 0, 0];
-    if (kind < 0.5) {
-      const axis = Math.floor(r() * 3);
-      p[axis] = between(r, -S, S);
-      p[(axis + 1) % 3] = (r() < 0.5 ? -S : S) + gauss(r) * 0.008;
-      p[(axis + 2) % 3] = (r() < 0.5 ? -S : S) + gauss(r) * 0.008;
-    } else if (kind < 0.72) {
-      const axis = Math.floor(r() * 3);
-      p[axis] = r() < 0.5 ? -S : S;
-      p[(axis + 1) % 3] = between(r, -S, S);
-      p[(axis + 2) % 3] = between(r, -S, S);
-    } else if (kind < 0.9) {
-      // What it keeps: a small warm glow in the middle.
-      const u = r() * 2 - 1, th = r() * TAU, s = Math.sqrt(1 - u * u), rad = Math.abs(gauss(r)) * 0.3;
-      p[0] = s * Math.cos(th) * rad; p[1] = u * rad; p[2] = s * Math.sin(th) * rad;
+    let x: number, y: number, z: number;
+    if (onNode(i)) {
+      // The screen shows your map.
+      onScreen(net[i * 3] / 3.4, 0.5 + net[i * 3 + 1] / 4.8, p);
+      [x, y, z] = p;
     } else {
-      // The surface it rests on, as a faint ring of light.
-      const th = r() * TAU, rad = 1.05 + gauss(r) * 0.32;
-      p[0] = Math.cos(th) * rad; p[1] = -S - 0.03; p[2] = Math.sin(th) * rad;
+      const kind = r();
+      if (kind < 0.36) {
+        // The screen's edge.
+        const t = r() * 4;
+        const u = t < 1 ? t * 2 - 1 : t < 2 ? 1 : t < 3 ? (t - 2) * 2 - 1 : -1;
+        const v = t < 1 ? 0 : t < 2 ? t - 1 : t < 3 ? 1 : t - 3;
+        onScreen(u * 1.0 + gauss(r) * 0.004, v + gauss(r) * 0.004, p);
+        [x, y, z] = p;
+      } else if (kind < 0.7) {
+        // The base's edges.
+        const edge = Math.floor(r() * 4), t = r() * 2 - 1;
+        x = edge < 2 ? t * W : (edge === 2 ? -W : W);
+        z = edge < 2 ? (edge === 0 ? -D : D) : t * D;
+        y = y0 - (r() < 0.5 ? 0 : T);
+      } else if (kind < 0.9) {
+        // The keyboard: a faint grid of keys.
+        x = (Math.floor(r() * 14) / 13 - 0.5) * W * 1.6 + gauss(r) * 0.01;
+        z = (Math.floor(r() * 5) / 4 - 0.5) * D * 0.9 - 0.15 + gauss(r) * 0.01;
+        y = y0 + 0.005;
+      } else {
+        // The light the screen throws on the desk.
+        const th = r() * TAU, rad = Math.abs(gauss(r)) * 1.8;
+        x = Math.cos(th) * rad * 1.3; z = Math.sin(th) * rad * 0.6 + 0.6; y = y0 - T - 0.02;
+      }
     }
-    a[i * 3] = p[0]; a[i * 3 + 1] = p[1]; a[i * 3 + 2] = p[2];
+    a[i * 3] = x; a[i * 3 + 1] = y; a[i * 3 + 2] = z;
   }
   return a;
 }
@@ -301,6 +373,8 @@ function box(n: number, r: Rng): Float32Array {
 export interface Shapes {
   targets: Record<ShapeName, Float32Array>;
   graph: GraphData;
+  /** Which cluster each particle's idea belongs to (-1 for none): the story lights clusters up by this. */
+  clusterOf: Float32Array;
 }
 
 /** Builds every shape, pausing between them so the preloader can show the work as it happens. */
@@ -308,16 +382,17 @@ export async function buildShapes(count: number, onStep: (done: number, of: numb
   const r = mulberry32(20261012);
   const pause = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
   const g = buildGraph(r);
+  PARTICLE_CLUSTER_SCRATCH = new Float32Array(count).fill(-1);
   const targets = {} as Record<ShapeName, Float32Array>;
   const steps: Array<[ShapeName, () => Float32Array]> = [
     ["noise", () => noise(count, r)],
     ["brain", () => brain(count, r)],
     ["hero", () => hero(count, r, targets.noise, targets.brain)],
     ["graph", () => graph(count, r, g)],
-    ["mirror", () => mirror(count, r, targets.brain)],
+    ["mirror", () => mirror(count, r, targets.graph)],
     ["orbit", () => orbit(count, r)],
     ["card", () => card(count, r)],
-    ["box", () => box(count, r)],
+    ["laptop", () => laptop(count, r, targets.graph)],
   ];
   for (let i = 0; i < steps.length; i++) {
     const [name, make] = steps[i];
@@ -325,5 +400,5 @@ export async function buildShapes(count: number, onStep: (done: number, of: numb
     onStep(i + 1, steps.length);
     await pause();
   }
-  return { targets, graph: g };
+  return { targets, graph: g, clusterOf: PARTICLE_CLUSTER_SCRATCH };
 }
