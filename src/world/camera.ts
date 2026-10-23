@@ -7,6 +7,9 @@ import { CHAPTERS, type Chapter, type Shot } from "./chapters";
 
 const FOV_WIDE = 40;
 const FOV_TALL = 56;
+/** The phone the tall shots were framed on (390 × 844). On a tall screen the scene is framed by its width. */
+const PHONE_ASPECT = 390 / 844;
+const PHONE_HALF_WIDTH = Math.tan(MathUtils.degToRad(FOV_TALL / 2)) * PHONE_ASPECT;
 
 export interface Rig {
   /**
@@ -33,7 +36,10 @@ export function createRig(camera: PerspectiveCamera): Rig {
     resize(aspect) {
       wideness = MathUtils.smoothstep(aspect, 0.7, 1.3);
       camera.aspect = aspect;
-      camera.fov = MathUtils.lerp(FOV_TALL, FOV_WIDE, wideness);
+      // Every upright screen sees the same width of the scene as that phone: a tablet's extra width brings the
+      // subject closer, rather than leaving air on either side of it.
+      const tallFov = MathUtils.clamp(MathUtils.radToDeg(2 * Math.atan(PHONE_HALF_WIDTH / aspect)), FOV_WIDE, FOV_TALL);
+      camera.fov = MathUtils.lerp(tallFov, FOV_WIDE, wideness);
       camera.updateProjectionMatrix();
     },
     update(along, time, pointer) {

@@ -22,7 +22,7 @@
 <div class="preloader" id="preloader" role="status" aria-live="polite">
   <div class="preloader__neurons" id="preloader-neurons" aria-hidden="true"></div>
   <p class="preloader__line">Waking the neurons…</p>
-  <p class="preloader__count mono" aria-hidden="true"><span id="preloader-count">0</span><span> / 100</span></p>
+  <p class="preloader__count" aria-hidden="true"><span id="preloader-count">0</span><span> / 100</span></p>
 </div>
 
 <!-- The one fixed canvas the 3D world draws into. Wherever WebGL is missing, the poster behind it carries each
@@ -33,13 +33,17 @@
 <!-- The annotations: names, times and pointer lines drawn over the 3D world, so the picture explains itself.
      They repeat what the page's text already says, so screen readers skip them. -->
 <div class="annot" id="annot" aria-hidden="true"><svg class="annot__lines" id="annot-lines"></svg></div>
-<p class="example-note mono" id="example-note" aria-hidden="true">An example week. Not real data.</p>
+<p class="example-note" id="example-note" aria-hidden="true">An example week. Not real data.</p>
 
+<!-- The bar: the name, the one thing to do, and the sound, kept quiet. -->
 <header class="top">
   <a class="top__mark" href="#hero" aria-label="neuroditto, back to the top">neuroditto</a>
-  <button class="sound mono" id="sound" type="button" aria-pressed="false">
-    <span class="sound__dot" aria-hidden="true"></span><span id="sound-label">Enable sound</span>
-  </button>
+  <div class="top__actions">
+    <button class="sound" id="sound" type="button" aria-pressed="false">
+      <span class="sound__dot" aria-hidden="true"></span><span id="sound-label">Enable sound</span>
+    </button>
+    <a class="top__cta" href="#begin">Get notified</a>
+  </div>
   <div class="progress" aria-hidden="true"><span class="progress__bar" id="progress-bar"></span></div>
 </header>
 
@@ -54,7 +58,7 @@
           <span class="hero__tag reveal">A mirror for your mind.</span>
         </h1>
         <p class="lede hero__lede reveal">A private, local-first learning companion. It notices what you actually do, and reflects it back until you recognise yourself in it.</p>
-        <p class="cue mono" aria-hidden="true"><span class="cue__line"></span>Scroll through an example week</p>
+        <p class="cue" aria-hidden="true"><span class="cue__line"></span>Scroll through an example week</p>
       </div>
     </div>
   </section>
@@ -118,10 +122,10 @@
         <p class="lede reveal">It sets what you said beside what you did, and offers a guess, with its evidence.</p>
 
         <article class="possibility" id="possibility" aria-labelledby="possibility-title">
-          <p class="scale mono" aria-label="The scale it speaks in: possible, plausible, likely">possible <span aria-hidden="true">→</span> plausible <span aria-hidden="true">→</span> <b>likely</b></p>
+          <p class="scale" aria-label="The scale it speaks in: possible, plausible, likely">Possible <span aria-hidden="true">→</span> plausible <span aria-hidden="true">→</span> <b>likely</b></p>
           <p class="possibility__text" id="possibility-title"><b>Likely</b> — explaining systems is where you come alive.</p>
-          <p class="possibility__why"><span class="mono dim">Evidence</span> 9 of your 11 longest voluntary sessions this month were teaching-shaped.</p>
-          <p class="possibility__why"><span class="mono dim">This week’s test</span> One lunch-and-learn.</p>
+          <p class="possibility__why"><b>Evidence:</b> 9 of your 11 longest voluntary sessions this month were teaching-shaped.</p>
+          <p class="possibility__why"><b>This week’s test:</b> One lunch-and-learn.</p>
           <div class="verdicts" role="group" aria-label="Your answer">
             <button class="verdict" type="button" data-verdict="drift" aria-pressed="false">Drift</button>
             <button class="verdict" type="button" data-verdict="signal" aria-pressed="false">Signal</button>
@@ -170,7 +174,7 @@
       <div class="copy copy--center">
         <h2 class="line reveal" id="today-title">One next step. That’s all.</h2>
         <article class="todaycard" id="todaycard" aria-label="An example of today's one session">
-          <p class="todaycard__label mono">Today’s session</p>
+          <p class="todaycard__label">Today’s session</p>
           <p class="todaycard__title">10-minute Feynman drill: Backprop</p>
           <p class="todaycard__why">Because you’ve asked this question fourteen different ways.</p>
         </article>
@@ -208,7 +212,7 @@
         <h2 class="line line--big reveal" id="begin-title">Meet the mind you already have.</h2>
         <p class="lede reveal">Want to know when it opens?</p>
         <form class="waitlist" id="waitlist" novalidate>
-          <label class="waitlist__label mono" for="waitlist-email">Your email</label>
+          <label class="waitlist__label" for="waitlist-email">Your email</label>
           <div class="waitlist__row">
             <input class="waitlist__input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="you@example.com" aria-describedby="waitlist-status">
             <button class="btn" id="waitlist-submit" type="submit">Get notified</button>
@@ -223,10 +227,10 @@
 
 <footer class="foot">
   <p class="foot__mark">neuroditto</p>
-  <nav class="foot__nav mono" aria-label="Footer">
+  <nav class="foot__nav" aria-label="Footer">
     <a href="#reading">How it works</a>
   </nav>
-  <p class="foot__year mono">© <span id="year">2026</span> neuroditto</p>
+  <p class="foot__year">© <span id="year">2026</span> neuroditto</p>
 </footer>
 
 <noscript>

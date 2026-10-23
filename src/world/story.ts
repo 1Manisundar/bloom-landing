@@ -57,6 +57,24 @@ const HUB_CONCEPT = ["Rendering", "Ray tracing", "Backprop", "Neural networks", 
 
 const SVG = "http://www.w3.org/2000/svg";
 
+/** A box on the screen, in CSS pixels. */
+interface Box { left: number; top: number; right: number; bottom: number }
+const overlaps = (a: Box, b: Box) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+/** What every label needs to know about the frame it is being placed in. */
+interface Frame {
+  width: number;
+  height: number;
+  /** The page's own words on screen. A label never sits on them: it fades out instead. */
+  words: Box[];
+  /** The labels already placed this frame, in the order they were shown. */
+  placed: Box[];
+  /** On a tall screen there is no room for labels to share: a later one gives way to an earlier one. */
+  crowded: boolean;
+  /** How far a label's fade moves toward its target this frame, 0 to 1 (1 = at once). */
+  ease: number;
+}
+
 /** One label: an HTML chip, and optionally a pointer line and a dot at the point it names. */
 class Chip {
   readonly el: HTMLElement;
@@ -64,10 +82,13 @@ class Chip {
   private dot: SVGCircleElement | null = null;
   private on = false;
   private w = 0;
+  private h = 0;
+  /** 1 while the label has the room it needs, easing to 0 while it gives way. */
+  private room = 1;
   private last = "";
 
   constructor(layer: HTMLElement, svg: SVGSVGElement, className: string, html: string, pointer: "none" | "line" | "dash" | "dot",
-    private bounds: () => { width: number; height: number }) {
+    private frame: Frame) {
     this.el = document.createElement("div");
     this.el.className = `chip ${className}`;
     this.el.innerHTML = html;
@@ -90,19 +111,31 @@ class Chip {
    */
   show(x: number, y: number, opacity: number, scale = 1, ax?: number, ay?: number, alignRight = false): void {
     if (opacity < 0.01) { this.hide(); return; }
-    this.on = true;
     // Never past the edge of the screen: a label that would run off is nudged back in.
-    if (!this.w) this.w = this.el.offsetWidth;
-    const { width, height } = this.bounds(), w = this.w * scale;
+    if (!this.w) { this.w = this.el.offsetWidth; this.h = this.el.offsetHeight; }
+    const { width, height } = this.frame, w = this.w * scale;
     x = alignRight ? MathUtils.clamp(x, w + 12, width - 12) : MathUtils.clamp(x, 12, width - w - 12);
-    // Nor under the top bar.
-    y = MathUtils.clamp(y, width > height ? 84 : 104, height - 48);
+    // Nor under the top bar (and, on a phone, the example note just below it).
+    y = MathUtils.clamp(y, width > height ? 84 : 116, height - 48);
+
+    // Where it would land, with a little air around it. If that is on the page's words, or (on a tall screen) on a
+    // label already placed, it gives way: it fades out rather than jumping somewhere else.
+    const left = alignRight ? x - this.w : x;
+    const box = { left: left - 6, top: y - 6, right: left + w + 6, bottom: y + this.h * scale + 6 };
+    const clear = !this.frame.words.some((b) => overlaps(box, b)) && !(this.frame.crowded && this.frame.placed.some((b) => overlaps(box, b)));
+    this.room = this.on ? this.room + (Number(clear) - this.room) * this.frame.ease : Number(clear);
+    this.on = true;
+    if (clear) this.frame.placed.push(box);
+    opacity *= this.room;
+
     // Only touch the page when something actually moved: most labels sit still most of the time.
     const transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)${alignRight ? " translateX(-100%)" : ""} scale(${scale.toFixed(3)})`;
     const key = transform + opacity.toFixed(2);
     if (key === this.last && ax === undefined) return;
     this.last = key;
     this.el.style.opacity = opacity.toFixed(3);
+    // A label that has given way all the way is put away, not left lying invisible over the words.
+    this.el.style.visibility = opacity < 0.01 ? "hidden" : "visible";
     this.el.style.transform = transform;
     if (ax === undefined || ay === undefined) return;
     const o = opacity.toFixed(3);
@@ -119,6 +152,7 @@ class Chip {
     this.on = false;
     this.last = "";
     this.el.style.opacity = "0";
+    this.el.style.visibility = "hidden";
     if (this.line) this.line.style.opacity = "0";
     if (this.dot) this.dot.style.opacity = "0";
   }
@@ -203,23 +237,29 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
   });
 
   // ---- the chips ----
+  const frame: Frame = { width: 0, height: 0, words: [], placed: [], crowded: false, ease: 1 };
   const itemChips = items.map((it) => new Chip(layer, svg, "chip--item",
-    `<span class="chip__meta"><b>${escape(it.source)}</b><span>${escape(it.time)}</span></span><span class="chip__title">${escape(it.title)}</span>`, "none", size));
-  const conceptChips = concepts.map((c) => new Chip(layer, svg, "chip--tag", escape(c.name), "dot", size));
-  const hoursNote = new Chip(layer, svg, "chip--note", `<span class="mono">Where the hours went</span>3D graphics, by a distance`, "line", size);
-  const sessions = new Chip(layer, svg, "chip--sessions-wrap", `<span class="chip--sessions">${"<i></i>".repeat(11)}</span>`, "line", size);
+    `<span class="chip__meta"><b>${escape(it.source)}</b><span>${escape(it.time)}</span></span><span class="chip__title">${escape(it.title)}</span>`, "none", frame));
+  const conceptChips = concepts.map((c) => new Chip(layer, svg, "chip--tag", escape(c.name), "dot", frame));
+  const hoursNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">Where the hours went</span>3D graphics, by a distance`, "line", frame);
+  const sessions = new Chip(layer, svg, "chip--sessions-wrap", `<span class="chip--sessions">${"<i></i>".repeat(11)}</span>`, "line", frame);
   const sessionDots = Array.from(sessions.el.querySelectorAll("i"));
-  const sessionsNote = new Chip(layer, svg, "chip--note", "<span class=\"mono\">Your 11 longest sessions</span>9 of 11 spent explaining something", "none", size);
-  const saidNote = new Chip(layer, svg, "chip--note", `<span class="mono">What you said</span>“Becoming an AI engineer is the aim.”`, "dash", size);
-  const didNote = new Chip(layer, svg, "chip--note", `<span class="mono">What you did</span>Mostly 3D graphics`, "line", size);
+  const sessionsNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">Your 11 longest sessions</span>9 of 11 spent explaining something`, "none", frame);
+  let sessionsLit = -1;
+  const saidNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">What you said</span>“Becoming an AI engineer is the aim.”`, "dash", frame);
+  const didNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">What you did</span>Mostly 3D graphics`, "line", frame);
   const evidence = [0, 1, 2].map(() => new Thread(svg));
-  const flashcard = new Chip(layer, svg, "chip--card", `<span class="mono">Flashcard · Backprop</span><span>Why does it need the chain rule?</span>`, "none", size);
-  const reviews = [0, 1, 2, 3].map((n) => new Chip(layer, svg, "chip--tag", `Review ${n + 1}`, "dot", size));
-  const feynman = new Chip(layer, svg, "chip--note", `<span class="mono">Feynman coach</span>“Explain it like I’m five.”`, "line", size);
-  const askChips = questions.map((q) => new Chip(layer, svg, "chip--ask", escape(q.text), "none", size));
-  const yoursTag = new Chip(layer, svg, "chip--tag is-big", "Your computer", "line", size);
-  const localNote = new Chip(layer, svg, "chip--note", `<span class="mono">With a local model</span>Nothing leaves`, "line", size);
-  const keyNote = new Chip(layer, svg, "chip--note", `<span class="mono">Or, if you choose</span>One API key`, "dash", size);
+  const flashcard = new Chip(layer, svg, "chip--card", `<span class="chip__kicker">Flashcard · Backprop</span><span class="chip__title">Why does it need the chain rule?</span>`, "none", frame);
+  const reviews = [0, 1, 2, 3].map((n) => new Chip(layer, svg, "chip--tag", `Review ${n + 1}`, "dot", frame));
+  const feynman = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">Feynman coach</span>“Explain it like I’m five.”`, "line", frame);
+  const askChips = questions.map((q) => new Chip(layer, svg, "chip--ask", escape(q.text), "none", frame));
+  const yoursTag = new Chip(layer, svg, "chip--tag is-big", "Your computer", "line", frame);
+  const localNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">With a local model</span>Nothing leaves`, "line", frame);
+  const keyNote = new Chip(layer, svg, "chip--note", `<span class="chip__kicker">Or, if you choose</span>One API key`, "dash", frame);
+
+  // The page's words for each chapter, in story order, so the labels can keep off them.
+  const words = Array.from(document.querySelectorAll<HTMLElement>("section.chapter")).map((section) => section.querySelector<HTMLElement>(".copy, .hero"));
+  let lastTime = -1;
 
   // ---- placing things ----
   const v = new Vector3(), view = new Vector3();
@@ -255,6 +295,19 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
       // Read the page before writing to it, so the browser never has to lay it out twice in one frame.
       const box = chapter === SCENE.mirror ? possibility?.getBoundingClientRect() : undefined;
       const wide = width > height;
+      // A narrow screen has room for two columns of the week's cards, not three: the middle one stays in the list.
+      const narrow = width < 600;
+
+      // Where the words are this frame: only this chapter's and its neighbours' can be on screen.
+      frame.width = width; frame.height = height; frame.crowded = !wide;
+      frame.words.length = 0; frame.placed.length = 0;
+      for (let n = Math.max(0, chapter - 1); n <= Math.min(words.length - 1, chapter + 1); n++) {
+        const r = words[n]?.getBoundingClientRect();
+        if (r && r.width && r.bottom > 0 && r.top < height) frame.words.push({ left: r.left - 10, top: r.top - 10, right: r.right + 10, bottom: r.bottom + 10 });
+      }
+      // Under reduced motion the clock stands still, and each picture is final: labels give way at once.
+      frame.ease = time > lastTime ? 1 - Math.exp(-(time - lastTime) * 10) : 1;
+      lastTime = time;
       const cue: Cue = { highlight: [-1, 0], reveal: 1, flare: 0 };
       // How far along the story is, as one number: 2.5 is halfway through the turn out of chapter 2.
       const at = chapter + turn;
@@ -265,6 +318,7 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
       items.forEach((it, k) => {
         const chip = itemChips[k];
         let p: number[] = it.home, opacity = 0, scale = 1;
+        if (narrow && k % 3 === 1) { chip.hide(); return; }
         if (chapter === SCENE.week) {
           opacity = after(beat, k * 0.045, 0.12);
         } else if (chapter === SCENE.reading) {
@@ -277,7 +331,8 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
         if (opacity < 0.01) { chip.hide(); return; }
         const bob = Math.sin(time * 0.6 + k * 1.7) * 0.05;
         const s = project([p[0], p[1] + bob, p[2]]);
-        const depthScale = MathUtils.clamp(8.5 / s.depth, 0.62, 1.25) * (wide ? 1 : 0.74);
+        // Nearer cards are a little larger, but never so far away that their words shrink below a readable size.
+        const depthScale = MathUtils.clamp(8.5 / s.depth, 0.92, 1.2);
         chip.show(s.x, s.y, opacity, depthScale * scale);
       });
 
@@ -287,6 +342,58 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
           const since = beat - arrive(k);
           if (since >= 0 && since < 0.035) cue.flare = Math.max(cue.flare, 1 - since / 0.035);
         }
+      }
+
+      // ---------- the pattern: where the hours went, and what the longest sessions were ----------
+      // (The findings are placed before the ideas' names, so where there is room for only one, the name gives way.)
+      const inPattern = during(SCENE.pattern);
+      if (chapter === SCENE.pattern) cue.reveal = smooth(beat / 0.42);
+      if (inPattern > 0) {
+        const h0 = project(node(hub(0)));
+        hoursNote.show(h0.x - 30, h0.y - 185, after(beat, 0.3) * inPattern, 1, h0.x, h0.y, true);
+        const h4 = project(node(hub(4)));
+        const counting = clamp01((beat - 0.56) / 0.34);
+        const lit = Math.round(counting * 9);
+        sessionDots.forEach((dot, n) => dot.classList.toggle("is-on", n < lit));
+        const show = after(beat, 0.5, 0.08) * inPattern;
+        sessions.show(h4.x + 40, h4.y + 46, show, 1, h4.x, h4.y);
+        if (lit !== sessionsLit) {
+          sessionsLit = lit;
+          sessionsNote.el.innerHTML = `<span class="chip__kicker">Your 11 longest sessions</span>${lit} of 11 spent explaining something`;
+        }
+        sessionsNote.show(h4.x + 40, h4.y + 84, show);
+        cue.highlight = beat < 0.53 ? [0, after(beat, 0.3, 0.15) * 0.7] : [4, after(beat, 0.55, 0.2)];
+      } else {
+        hoursNote.hide(); sessions.hide(); sessionsNote.hide();
+      }
+
+      // ---------- the mirror: said, did, and the guess with its evidence ----------
+      const inMirror = during(SCENE.mirror) * (chapter === SCENE.mirror ? 1 : 0);
+      if (inMirror > 0) {
+        const n3 = node(hub(3)), n0 = node(hub(0));
+        const goal = intoMirror(n3[0], n3[1], n3[2]), mass = intoMirror(n0[0], n0[1], n0[2]);
+        const g = { ...project(goal) }, m = { ...project(mass) };
+        // The notes sit just outside the mirror, on the far side from the page's words.
+        const side = wide ? Math.min(width * 0.8, width - 300) : g.x;
+        const saidY = project([0, 1.9, 0]).y, didY = project([0, -1.35, 0]).y;
+        saidNote.show(side, saidY, after(beat, 0.08) * inMirror, 1, g.x, g.y);
+        didNote.show(side, didY, after(beat, 0.24) * inMirror, 1, m.x, m.y);
+
+        // Lines from the guess on the page to the ideas it is built on.
+        const threads = after(beat, 0.42, 0.14) * inMirror;
+        const anchors = [hub(4), hub(4) + 1, hub(4) + 2];
+        evidence.forEach((t, n) => {
+          if (!box || !wide) { t.hide(); return; }
+          const map = node(anchors[n]);
+          const e = project(intoMirror(map[0], map[1], map[2]));
+          t.show(box.right, box.top + box.height * (0.3 + n * 0.08), e.x, e.y, threads * 0.8);
+        });
+
+        const verdict = document.body.dataset.answer;
+        const strength = verdict === "signal" ? 1.35 : verdict === "drift" ? 0.2 : verdict === "unsure" ? 0.55 : 0.8;
+        cue.highlight = [4, after(beat, 0.42, 0.14) * strength];
+      } else {
+        saidNote.hide(); didNote.hide(); evidence.forEach((t) => t.hide());
       }
 
       // ---------- the ideas ----------
@@ -326,54 +433,6 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
         chip.show(s.x + 7, isHub ? s.y - 24 : s.y + 6, opacity, 1, s.x, s.y);
       });
 
-      // ---------- the pattern: where the hours went, and what the longest sessions were ----------
-      const inPattern = during(SCENE.pattern);
-      if (chapter === SCENE.pattern) cue.reveal = smooth(beat / 0.42);
-      if (inPattern > 0) {
-        const h0 = project(node(hub(0)));
-        hoursNote.show(h0.x - 30, h0.y - 185, after(beat, 0.3) * inPattern, 1, h0.x, h0.y, true);
-        const h4 = project(node(hub(4)));
-        const counting = clamp01((beat - 0.56) / 0.34);
-        const lit = Math.round(counting * 9);
-        sessionDots.forEach((dot, n) => dot.classList.toggle("is-on", n < lit));
-        const show = after(beat, 0.5, 0.08) * inPattern;
-        sessions.show(h4.x + 40, h4.y + 46, show, 1, h4.x, h4.y);
-        sessionsNote.el.innerHTML = `<span class="mono">Your 11 longest sessions</span>${lit} of 11 spent explaining something`;
-        sessionsNote.show(h4.x + 40, h4.y + 76, show);
-        cue.highlight = beat < 0.53 ? [0, after(beat, 0.3, 0.15) * 0.7] : [4, after(beat, 0.55, 0.2)];
-      } else {
-        hoursNote.hide(); sessions.hide(); sessionsNote.hide();
-      }
-
-      // ---------- the mirror: said, did, and the guess with its evidence ----------
-      const inMirror = during(SCENE.mirror) * (chapter === SCENE.mirror ? 1 : 0);
-      if (inMirror > 0) {
-        const n3 = node(hub(3)), n0 = node(hub(0));
-        const goal = intoMirror(n3[0], n3[1], n3[2]), mass = intoMirror(n0[0], n0[1], n0[2]);
-        const g = { ...project(goal) }, m = { ...project(mass) };
-        // The notes sit just outside the mirror, on the far side from the page's words.
-        const side = wide ? Math.min(width * 0.8, width - 300) : g.x;
-        const saidY = project([0, 1.9, 0]).y, didY = project([0, -1.35, 0]).y;
-        saidNote.show(side, saidY, after(beat, 0.08) * inMirror, wide ? 1 : 0.85, g.x, g.y);
-        didNote.show(side, didY, after(beat, 0.24) * inMirror, wide ? 1 : 0.85, m.x, m.y);
-
-        // Lines from the guess on the page to the ideas it is built on.
-        const threads = after(beat, 0.42, 0.14) * inMirror;
-        const anchors = [hub(4), hub(4) + 1, hub(4) + 2];
-        evidence.forEach((t, n) => {
-          if (!box || !wide) { t.hide(); return; }
-          const map = node(anchors[n]);
-          const e = project(intoMirror(map[0], map[1], map[2]));
-          t.show(box.right, box.top + box.height * (0.3 + n * 0.08), e.x, e.y, threads * 0.8);
-        });
-
-        const verdict = document.body.dataset.answer;
-        const strength = verdict === "signal" ? 1.35 : verdict === "drift" ? 0.2 : verdict === "unsure" ? 0.55 : 0.8;
-        cue.highlight = [4, after(beat, 0.42, 0.14) * strength];
-      } else {
-        saidNote.hide(); didNote.hide(); evidence.forEach((t) => t.hide());
-      }
-
       // ---------- practice: one card, coming back on wider and wider rings ----------
       const inPractice = during(SCENE.practice);
       if (inPractice > 0) {
@@ -383,7 +442,7 @@ export function createStory({ layer, svg, subject, camera, graph, size }: Option
         const angleOn = (ring: number) => 0.9 + ring * 0.6 + time * SPEED[ring];
         const p = lerp3(onRing(ringNow, angleOn(ringNow)), onRing(Math.min(3, ringNow + 1), angleOn(Math.min(3, ringNow + 1))), hop);
         const s = project(p);
-        flashcard.show(s.x - 20, s.y - 30, inPractice * after(beat, 0.02, 0.08), wide ? 1 : 0.85);
+        flashcard.show(s.x - 20, s.y - 30, inPractice * after(beat, 0.02, 0.08));
         reviews.forEach((chip, ring) => {
           const reached = ring <= ringNow;
           const q = project(onRing(ring, -1.9 + ring * 0.15));

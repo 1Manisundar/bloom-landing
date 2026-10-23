@@ -50,9 +50,13 @@ export function setupScroll(reduced: boolean): Scroll {
 
   // One marker per chapter: it runs from the chapter's top reaching the middle of the screen to its bottom
   // doing the same, so the markers tile the page and exactly one chapter is "in the middle" at a time.
+  // On a small screen the words are held at the bottom of the screen instead (see base.css), so the line is
+  // drawn lower: a chapter takes over as its words come up into view.
+  const small = window.matchMedia("(max-width: 900px), (max-height: 640px)");
+  const line = () => (small.matches ? "70%" : "center");
   const marks = sections.map((section) => ({
     section,
-    trigger: ScrollTrigger.create({ trigger: section, start: "top center", end: "bottom center" }),
+    trigger: ScrollTrigger.create({ trigger: section, start: () => `top ${line()}`, end: () => `bottom ${line()}` }),
   }));
   const main = document.getElementById("main");
   const story = main ? ScrollTrigger.create({ trigger: main, start: "top top", end: "bottom bottom" }) : null;

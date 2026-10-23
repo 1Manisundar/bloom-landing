@@ -27,12 +27,12 @@ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const root = document.documentElement;
 root.classList.add("js", "is-loading");
 
-/** The faces the first screen is set in. The preloader waits for these, and only these. */
+/** The faces the first screen is set in. The preloader waits for these, and only these. (The mono face is only
+ *  for the week's cards, further down, so it loads on its own.) */
 const FACES = [
   '400 1em "Instrument Serif"',
   'italic 400 1em "Instrument Serif"',
   '400 1em "Manrope Variable"',
-  '500 1em "JetBrains Mono Variable"',
 ];
 
 const windowLoaded = new Promise<void>((resolve) => {
