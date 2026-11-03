@@ -26,7 +26,7 @@ import { STUDY } from "../data/content";
       </div>
     </dl>
 
-    <p class="why__body">In a study of about 1,000 students, AI that gave answers made students score 17% worse once it was taken away. The same AI, built to give hints, did not. AI isn’t the problem. How it’s built is.</p>
+    <p class="why__body">In a study of about 1,000 students, AI that gave answers made students score 17% worse once it was taken away. The same AI, built to give hints, largely avoided that drop. AI isn’t the problem. How it’s built is.</p>
     <p class="why__source">
       <a href={STUDY.url} rel="noopener" target="_blank">{STUDY.cite}<Icon name="external-link" size={16} /><span class="visually-hidden"> (opens in a new tab)</span></a>
     </p>
@@ -68,6 +68,7 @@ import { STUDY } from "../data/content";
   @media (max-width: 640px) {
     .why__stats { grid-template-columns: minmax(0, 1fr); }
     .why__key { white-space: normal; }
+    .why__dim { display: inline; }
     .why__glow { width: 12rem; height: 12rem; right: -4rem; bottom: -6rem; }
   }
 </style>

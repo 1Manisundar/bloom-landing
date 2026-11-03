@@ -78,4 +78,9 @@ const first = MOMENTS[0];
   .demo__pip { width: 8px; height: 8px; border-radius: var(--r-round); background: var(--c-jade); opacity: 0.45; }
   .demo__pip.is-on { width: 24px; background: var(--primary); opacity: 1; }
   .demo__caption { margin-top: var(--space-2); text-align: center; }
+  @media (max-width: 600px) {
+    .demo__panel { gap: 0.75rem; padding: 1rem 1rem 0.875rem; }
+    .demo__speaks :global(.demo__hoot) { --companion-w: 6rem; }
+    .demo__line { margin-bottom: 1.75rem; }
+  }
 </style>

@@ -105,3 +105,14 @@
 @media (min-width: 1024px) {
   :root { --section-pad: clamp(6rem, 8vw, 10rem); }
 }
+
+/* Phone: kit minimum hero size, section headlines about 30-32px, a wider text column. */
+@media (max-width: 600px) {
+  :root {
+    --gutter: 1rem;
+    --fs-hero: 2.5rem;       /* 40 */
+    --fs-h2: 1.875rem;       /* 30 */
+    --fs-h2-night: 2rem;     /* 32 */
+    --fs-h2-why: 1.875rem;   /* 30 */
+  }
+}

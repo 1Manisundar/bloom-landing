@@ -9,7 +9,10 @@ import Icon from "../components/Icon.astro";
     <div class="hero__copy">
       <SectionLabel>Building in public</SectionLabel>
       <h1 class="hero__title" id="hero-title">A fitness tracker for your mind.</h1>
-      <p class="hero__lead">Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern.</p>
+      <p class="hero__lead hero__lead--long">Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern.</p>
+      <!-- Phone only: a shorter subline and a small waitlist link, so the demo fits on the first screen. -->
+      <p class="hero__lead hero__lead--short">Share a moment. See how you reacted. Over weeks, see the pattern.</p>
+      <a class="hero__link" href="#join">Join the waitlist<Icon name="arrow-right" size={18} /></a>
       <div class="hero__actions">
         <Button href="#join" arrow>Join the waitlist</Button>
         <Button href="#how" variant="secondary">See how it works</Button>
@@ -32,6 +35,7 @@ import Icon from "../components/Icon.astro";
   .hero__copy { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
   .hero__title { font-size: var(--fs-hero); line-height: 1.04; max-width: 14ch; }
   .hero__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 34ch; }
+  .hero__lead--short, .hero__link { display: none; }
   .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: var(--space-1); }
   .hero__note { display: flex; align-items: center; gap: 0.5rem; font-size: var(--fs-small); color: var(--text-2); }
   .hero__note :global(.icon) { color: var(--primary); flex: none; }
@@ -40,8 +44,24 @@ import Icon from "../components/Icon.astro";
     .hero__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
     .hero__demo { max-width: 30rem; }
   }
-  @media (max-width: 480px) {
-    .hero__actions { width: 100%; }
-    .hero__actions :global(.btn) { flex: 1 1 100%; }
+
+  /* Phone: headline, short subline, small link, then the demo, all on the first screen. */
+  @media (max-width: 600px) {
+    .hero { padding-top: var(--space-2); }
+    .hero__grid { gap: var(--space-2); }
+    .hero__copy { display: contents; }
+    .hero__copy > :global(.label) { order: 1; }
+    .hero__title { order: 2; max-width: none; }
+    .hero__lead--long, .hero__actions { display: none; }
+    .hero__lead--short { display: block; order: 3; font-size: var(--fs-body); line-height: 1.5; }
+    .hero__link {
+      order: 4; display: inline-flex; align-items: center; gap: 0.375rem;
+      min-height: 44px; justify-self: start;
+      font-weight: 600; color: var(--primary); text-decoration: underline; text-underline-offset: 0.2em;
+    }
+    .hero__link :global(.icon) { transition: transform var(--dur) var(--ease); }
+    .hero__link:hover :global(.icon) { transform: translateX(4px); }
+    .hero__demo { order: 5; max-width: none; }
+    .hero__note { order: 6; margin-top: var(--space-1); }
   }
 </style>
