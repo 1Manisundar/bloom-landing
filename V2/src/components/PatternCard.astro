@@ -59,10 +59,13 @@ const id = `pcard-${word.toLowerCase().replace(/\s+/g, "-")}`;
   .pcard__turn [hidden] { display: none; }
 
   /* ---- Turning card (script adds .is-turnable) ---- */
-  .pcard.is-turnable .pcard__faces { display: grid; }
-  .pcard.is-turnable .pcard__face { grid-area: 1 / 1; transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease), visibility 0s linear var(--dur-slow); }
+  /* The face on show sets the card's height; the other is lifted out of the flow while it fades. */
+  .pcard.is-turnable .pcard__faces { display: block; position: relative; }
+  .pcard.is-turnable .pcard__face { position: relative; transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease), visibility 0s linear var(--dur-slow); }
+  .pcard.is-turnable:not(.is-turned) .pcard__back,
+  .pcard.is-turned .pcard__front { position: absolute; top: 0; left: 0; right: 0; }
   .pcard.is-turnable .pcard__back {
-    border-top: 0; padding-top: 0; margin-top: 0; justify-content: center; gap: var(--space-2);
+    border-top: 0; padding-top: 0; margin-top: 0; gap: var(--space-2);
     opacity: 0; transform: translateY(12px); visibility: hidden;
   }
   .pcard.is-turnable .pcard__ex-word {
@@ -83,8 +86,18 @@ const id = `pcard-${word.toLowerCase().replace(/\s+/g, "-")}`;
     const back = button.querySelector<HTMLElement>("[data-label-back]");
     card.classList.add("is-turnable");
     button.hidden = false;
+    const faces = card.querySelector<HTMLElement>(".pcard__faces");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     button.addEventListener("click", () => {
+      const from = faces?.offsetHeight ?? 0;
       const turned = card.classList.toggle("is-turned");
+      const to = faces?.offsetHeight ?? 0;
+      // Ease the card to its new height (400ms, brand easing); instant with reduced motion.
+      if (faces && from !== to && !reduce.matches) {
+        faces.style.overflow = "hidden";
+        faces.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration: 400, easing: "cubic-bezier(0.22, 1, 0.36, 1)" })
+          .finished.finally(() => { faces.style.overflow = ""; });
+      }
       button.setAttribute("aria-expanded", String(turned));
       if (front) front.hidden = turned;
       if (back) back.hidden = !turned;

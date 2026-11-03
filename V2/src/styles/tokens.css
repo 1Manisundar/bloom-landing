@@ -108,6 +108,11 @@
 }
 
 /* Phone: kit minimum hero size, section headlines about 30-32px, a wider text column. */
+/* The header wraps to two rows here; JS replaces this with the measured height. */
+@media (max-width: 860px) {
+  :root { --header-h: 104px; }
+}
+
 @media (max-width: 600px) {
   :root {
     --gutter: 1rem;

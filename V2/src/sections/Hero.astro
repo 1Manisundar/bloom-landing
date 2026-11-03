@@ -9,8 +9,6 @@ import Icon from "../components/Icon.astro";
     <div class="hero__copy">
       <SectionLabel>Building in public</SectionLabel>
       <h1 class="hero__title" id="hero-title">A fitness tracker for your mind.</h1>
-      <!-- Optional idea for Gate B (?idea=cycle). Hidden unless switched on. -->
-      <p class="hero__cycle" data-idea="cycle" hidden>See where you <span class="hero__cycle-word" data-cycle-word>jump</span>.</p>
       <p class="hero__lead hero__lead--long">Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern.</p>
       <!-- Phone only: a shorter subline and a small waitlist link, so the demo fits on the first screen. -->
       <p class="hero__lead hero__lead--short">Share a moment. See how you reacted. Over weeks, see the pattern.</p>
@@ -38,10 +36,7 @@ import Icon from "../components/Icon.astro";
   .hero__title { font-size: var(--fs-hero); line-height: 1.04; max-width: 14ch; }
   .hero__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 34ch; }
   .hero__lead--short, .hero__link { display: none; }
-  .hero__cycle { font-family: var(--font-serif); font-weight: 500; font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); line-height: 1.2; margin-top: calc(-1 * var(--space-1)); }
-  .hero__cycle[hidden] { display: none; }
-  .hero__cycle-word { color: var(--accent-text); display: inline-block; transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }
-  .hero__cycle-word.is-out { opacity: 0; transform: translateY(-8px); }
+
   .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: var(--space-1); }
   .hero__note { display: flex; align-items: center; gap: 0.5rem; font-size: var(--fs-small); color: var(--text-2); }
   .hero__note :global(.icon) { color: var(--primary); flex: none; }
@@ -58,7 +53,6 @@ import Icon from "../components/Icon.astro";
     .hero__copy { display: contents; }
     .hero__copy > :global(.label) { order: 1; }
     .hero__title { order: 2; max-width: none; }
-    .hero__cycle { order: 2; font-size: 1.375rem; margin-top: 0; }
     .hero__lead--long, .hero__actions { display: none; }
     .hero__lead--short { display: block; order: 3; font-size: var(--fs-body); line-height: 1.5; }
     .hero__link {

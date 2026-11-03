@@ -3,8 +3,7 @@
 //
 // Shots are what a visitor sees: the screen at the start of each section (and at its end when the
 // section is taller than the screen), after its reveal has played. Then the interaction states
-// (demo, pattern card, companion shelf, FAQ, waitlist) and the two optional ideas (?idea=cycle,
-// ?idea=contrast). It serves the built site itself, drives the installed Chrome, and prints anything
+// (demo, pattern card, companion shelf, FAQ, waitlist). It serves the built site itself, drives the installed Chrome, and prints anything
 // that looks wrong: console errors, failed requests, sideways scrolling, missing fonts, a waitlist that
 // claims success without saving.
 
@@ -32,7 +31,7 @@ const server = await preview({ root: process.cwd(), server: { port: 4329, host: 
 const url = `http://127.0.0.1:${server.port}/`;
 const browser = await chromium.launch({ channel: "chrome" });
 
-async function open(view, motion, query = "") {
+async function open(view, motion) {
   const context = await browser.newContext({
     viewport: { width: view.width, height: view.height },
     deviceScaleFactor: view.mobile ? 2 : 1,
@@ -41,12 +40,12 @@ async function open(view, motion, query = "") {
     reducedMotion: motion,
   });
   const page = await context.newPage();
-  const tag = `${view.name}${motion === "reduce" ? "-reduced" : ""}${query ? `-${query}` : ""}`;
+  const tag = `${view.name}${motion === "reduce" ? "-reduced" : ""}`;
   page.on("console", (msg) => { if (msg.type() === "error" && !/favicon/.test(msg.location().url)) problems.push(`${tag}: console: ${msg.text()}`); });
   page.on("pageerror", (err) => problems.push(`${tag}: page error: ${err.message}`));
   page.on("requestfailed", (req) => problems.push(`${tag}: request failed: ${req.url()}`));
   page.on("response", (res) => { if (res.status() >= 400 && !/favicon/.test(res.url())) problems.push(`${tag}: HTTP ${res.status()}: ${res.url()}`); });
-  await page.goto(url + (query ? `?idea=${query}` : ""), { waitUntil: "networkidle" });
+  await page.goto(url, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => window.__nd?.ready);
   await sleep(300);
@@ -113,6 +112,13 @@ try {
       await page.locator(".pcard__turn").first().click();
       await sleep(600);
       await page.locator(".patterns__grid").screenshot({ path: resolve(OUT, `${tag}-42-pattern-turned.png`) });
+      await page.locator(".pcard").first().screenshot({ path: resolve(OUT, `${tag}-42b-pattern-turned-card.png`) });
+      const fit = await page.evaluate(() => {
+        const card = document.querySelector(".pcard");
+        const back = card.querySelector(".pcard__back"), btn = card.querySelector(".pcard__turn");
+        return Math.round(card.getBoundingClientRect().bottom - btn.getBoundingClientRect().bottom) - Math.round(parseFloat(getComputedStyle(card).paddingBottom));
+      });
+      if (view.mobile && fit > 4) problems.push(`${tag}: turned pattern card has ${fit}px of empty space under its button`);
       if ((await page.locator(".pcard__turn").first().getAttribute("aria-expanded")) !== "true") problems.push(`${tag}: pattern card did not report turned`);
 
       await goTo(page, "companions", "start");
@@ -146,22 +152,6 @@ try {
       if (sideways > 1) problems.push(`${tag}: the page scrolls sideways by ${sideways}px`);
       await context.close();
 
-      // The two optional ideas (motion only; the cycle never runs under reduced motion).
-      if (motion === "no-preference") {
-        const cyc = await open(view, motion, "cycle");
-        for (const [ms, name] of [[0, "a-jump"], [2700, "b-hesitate"], [2500, "c-sure-and-wrong"]]) {
-          await sleep(ms);
-          await cyc.page.locator("#top").screenshot({ path: resolve(OUT, `${view.name}-60-idea-cycle-${name}.png`) });
-        }
-        await cyc.context.close();
-        const con = await open(view, motion, "contrast");
-        let k = 0;
-        for (const id of ["how", "patterns", "companions"]) {
-          await goTo(con.page, id, "start");
-          await shot(con.page, view.name, `61-idea-contrast-${k++}-${id}`);
-        }
-        await con.context.close();
-      }
     }
   }
 } finally {

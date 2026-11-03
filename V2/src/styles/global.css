@@ -1,7 +1,7 @@
 @import "./tokens.css";
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--header-h); }
 body {
   margin: 0;
   background: var(--bg);
@@ -37,6 +37,8 @@ a:hover { text-decoration-thickness: 2px; }
   border-radius: 4px;
 }
 .night :focus-visible { outline-color: var(--night-accent); }
+/* Headings take focus after an in-page jump; no ring for a mouse click. */
+h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
 
 ::selection { background: var(--c-sage); color: var(--c-ink); }
 
@@ -85,8 +87,9 @@ a:hover { text-decoration-thickness: 2px; }
   mix-blend-mode: overlay;
 }
 
-/* Optional idea (?idea=contrast): colour-contrast headlines on light sections. 5.73:1 on ivory. */
-.idea-contrast [data-dim] { color: var(--c-eucalyptus); }
+/* Colour-contrast headlines on light sections (approved at Gate B): supporting words in eucalyptus,
+   key words in deep ink. Eucalyptus on ivory is 5.73:1. */
+[data-dim] { color: var(--c-eucalyptus); }
 
 /* Placeholders the founders still have to fill. Visible on purpose. */
 .placeholder {

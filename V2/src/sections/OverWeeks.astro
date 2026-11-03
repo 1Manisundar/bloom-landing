@@ -23,6 +23,7 @@ import Companion from "../components/Companion.astro";
         </figure>
       </div>
     </div>
+    <p class="weeks__count" aria-hidden="true">Week <span data-week-n>1</span> of 6</p>
     <div class="weeks__night night" data-tone="night">
       <div class="container">
         <h2 class="weeks__line" id="weeks-title">One moment is a moment. Six weeks is a pattern.</h2>
@@ -31,7 +32,7 @@ import Companion from "../components/Companion.astro";
   </div>
 </section>
 <style>
-  .weeks__grain { display: none; }
+  .weeks__grain, .weeks__count { display: none; }
   .weeks__day { padding-bottom: calc(var(--section-pad) * 0.75); }
   .weeks__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-5); align-items: end; }
   .weeks__copy { display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-start; }
@@ -90,5 +91,10 @@ import Companion from "../components/Companion.astro";
     .weeks.is-scene .weeks__copy :global(.weeks__sprout) { --companion-w: 104px; }
     .weeks.is-scene .weeks__grid { gap: var(--space-3); }
     .weeks.is-scene .weeks__night { top: 56%; bottom: auto; padding-bottom: 0; }
+    .weeks.is-scene .weeks__count {
+      display: block; position: absolute; left: var(--gutter); bottom: 13vh; margin: 0;
+      font-family: var(--font-accent); font-weight: 700; font-size: 1rem; letter-spacing: 0.04em;
+      color: var(--c-bronze); font-variant-numeric: tabular-nums;
+    }
   }
 </style>

@@ -65,6 +65,80 @@ window.addEventListener("scroll", () => {
   requestAnimationFrame(() => { headerQueued = false; updateHeader(); });
 }, { passive: true });
 
+/* ---------------- In-page links ----------------
+   One offset only: the measured header height. CSS uses it as scroll-padding-top (--header-h, for
+   native hash jumps and no-script), and this handler uses the same number. The target is measured at
+   click time, so jumps across the pinned scene land where the section really is. After the jump the
+   header tone is updated and focus moves to the section's heading. */
+const headerHeight = () => header?.getBoundingClientRect().height ?? 0;
+function targetY(el: HTMLElement) {
+  return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - headerHeight()));
+}
+function focusHeading(section: HTMLElement) {
+  const heading = section.matches("h1, h2") ? section : section.querySelector<HTMLElement>("h2, h1");
+  const target = heading ?? section;
+  if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+  target.focus({ preventScroll: true });
+}
+function arrive(section: HTMLElement) {
+  // Correct any last-pixel drift (a pin or a late image can move the target during the jump).
+  const y = targetY(section);
+  if (Math.abs(window.scrollY - y) > 1) window.__nd.jump(y);
+  updateHeader();
+  focusHeading(section);
+}
+function goToSection(section: HTMLElement, smooth: boolean) {
+  const y = targetY(section);
+  if (lenis) {
+    lenis.scrollTo(y, smooth ? { duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 4), onComplete: () => arrive(section) } : { immediate: true, force: true, onComplete: () => arrive(section) });
+    if (!smooth) arrive(section);
+    return;
+  }
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!smooth || reduce) { window.scrollTo(0, y); arrive(section); return; }
+  let done = false;
+  const finish = () => { if (done) return; done = true; arrive(section); };
+  window.addEventListener("scrollend", finish, { once: true });
+  window.setTimeout(finish, 1500);
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+document.addEventListener("click", (event) => {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const link = (event.target as Element).closest<HTMLAnchorElement>("a[href*='#']");
+  if (!link) return;
+  const url = new URL(link.href, location.href);
+  if (url.pathname !== location.pathname || !url.hash || url.hash === "#") return;
+  const section = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+  if (!section) return;
+  event.preventDefault();
+  if (location.hash !== url.hash) history.pushState(null, "", url.hash);
+  goToSection(section, true);
+});
+window.addEventListener("popstate", () => {
+  const section = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+  if (section) goToSection(section, false);
+});
+
+/* ---------------- Keep scroll positions true ----------------
+   Refresh ScrollTrigger once fonts and images have loaded, and whenever the page's height changes
+   (a pattern card turning, a companion card opening, an FAQ answer), so pins and jumps stay right. */
+let refreshQueued = 0;
+function queueRefresh() {
+  window.clearTimeout(refreshQueued);
+  refreshQueued = window.setTimeout(() => { measureHeader(); ScrollTrigger.refresh(); }, 120);
+}
+document.fonts?.ready.then(queueRefresh);
+window.addEventListener("load", queueRefresh);
+const main = document.getElementById("main");
+if (main && "ResizeObserver" in window) {
+  let lastHeight = 0;
+  new ResizeObserver(([entry]) => {
+    const h = Math.round(entry.contentRect.height);
+    if (lastHeight && Math.abs(h - lastHeight) > 1) queueRefresh();
+    lastHeight = h;
+  }).observe(main);
+}
+
 /* ---------------- Modes ---------------- */
 const mm = gsap.matchMedia();
 mm.add(
@@ -91,7 +165,13 @@ mm.add(
     if (motion) reveals();
 
     ScrollTrigger.refresh();
-    requestAnimationFrame(() => { updateHeader(); markReady(); });
+    requestAnimationFrame(() => {
+      // A page opened with #section lands under the header once the pins exist.
+      const section = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+      if (section) goToSection(section, false);
+      updateHeader();
+      markReady();
+    });
     return () => {
       cleanups.forEach((fn) => fn());
       $("#weeks")?.classList.remove("is-scene");
@@ -108,10 +188,8 @@ if (!window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
 
 /* ---------------- Smooth scroll (Lenis) ---------------- */
 function smoothScroll() {
-  lenis = new Lenis({
-    lerp: 0.12,
-    anchors: { offset: -(header?.getBoundingClientRect().height ?? 72) },
-  });
+  // No `anchors` option: in-page links are handled below, with one offset (the measured header).
+  lenis = new Lenis({ lerp: 0.12 });
   lenis.on("scroll", ScrollTrigger.update);
   const tick = (time: number) => lenis?.raf(time * 1000);
   gsap.ticker.add(tick);
@@ -141,6 +219,8 @@ function overWeeksScene() {
   const grid = $(".weeks__grid", stage);
   const line = $(".weeks__line", stage);
   const grain = $(".weeks__grain", stage);
+  const counter = $(".weeks__count", stage);
+  const counterN = $("[data-week-n]", stage);
 
   const c = {
     ivory: token("--c-ivory"), emerald: token("--c-emerald"), sage: token("--c-sage"),
@@ -148,6 +228,7 @@ function overWeeksScene() {
     gold: token("--c-gold"), lightGold: token("--c-light-gold"),
     border: token("--c-border"), darkCard: token("--c-dark-card"),
     eucalyptus: token("--c-eucalyptus"), darkText2: token("--c-dark-text-2"),
+    bronze: token("--c-bronze"),
   };
 
   const tl = gsap.timeline({
@@ -203,12 +284,23 @@ function overWeeksScene() {
   tl.to(fadeOut, { opacity: 0, y: -12, duration: 0.8 }, 5.4)
     .to(day, { y: lift, duration: 1.6, ease: "settle" }, 5.8)
     .fromTo(stage, { backgroundColor: c.ivory }, { keyframes: { backgroundColor: [c.ivory, c.sage, c.forest, c.emerald] }, duration: 2.0 }, 5.8)
-    .to(stones, { fill: c.jade, duration: 0.8 }, 6.0)
+    // Pebbles follow the ground: forest on ivory and sage, ivory on forest, light gold on deep emerald.
+    // Same keyframe timing as the background, so each stop lands together.
+    .to(stones, { keyframes: { fill: [c.forest, c.forest, c.ivory, c.lightGold] }, duration: 2.0 }, 5.8)
     .to(thread, { stroke: c.lightGold, duration: 1.2 }, 6.6)
     .to(dot, { fill: c.lightGold, duration: 1.2 }, 6.6)
     .to(ground, { stroke: c.darkCard, duration: 1.2 }, 6.6)
     .to(weekText, { fill: c.darkText2, duration: 0.8 }, 6.4);
   if (grain) tl.fromTo(grain, { opacity: 0 }, { opacity: Number(token("--grain-opacity")) || 0.03, duration: 2.0 }, 5.8);
+
+  // Phone and tablet: "Week N of 6" in the lower third; bronze on light, light gold on dark.
+  if (counter) tl.to(counter, { keyframes: { color: [c.bronze, c.bronze, c.lightGold, c.lightGold] }, duration: 2.0 }, 5.8);
+  if (counterN) {
+    tl.eventCallback("onUpdate", () => {
+      const week = Math.min(6, Math.max(1, Math.floor((tl.time() - 0.3) / 0.75) + 1));
+      if (counterN.textContent !== String(week)) counterN.textContent = String(week);
+    });
+  }
 
   // 7.6 → 8.8: the night line settles in. 8.8 → 10: hold.
   if (line) tl.fromTo(line, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.2, ease: "settle" }, 7.6);
