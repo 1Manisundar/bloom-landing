@@ -100,8 +100,8 @@ h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-
   font-weight: 600;
   background: var(--c-champagne);
   color: var(--c-ink);
-  padding: 0 0.3em;
-  border-radius: 4px;
+  padding: 0 0.12em;
+  border-radius: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -9,7 +9,7 @@
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright-core";
-import { preview } from "astro";
+import { serveStatic } from "./lib/serve.mjs";
 
 const folder = process.argv[2] ?? "navtest";
 const OUT = resolve("shots", folder);
@@ -25,7 +25,7 @@ const failures = [];
 const rows = [];
 
 await mkdir(OUT, { recursive: true });
-const server = await preview({ root: process.cwd(), server: { port: 4343, host: "127.0.0.1" }, logLevel: "warn" });
+const server = await serveStatic({ port: 4343 });
 const browser = await chromium.launch({ channel: "chrome" });
 
 async function settle(page) {

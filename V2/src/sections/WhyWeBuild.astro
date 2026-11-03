@@ -56,8 +56,10 @@ import { STUDY } from "../data/content";
     border-radius: var(--r-card);
     padding: var(--space-4) var(--space-3) var(--space-3);
     display: flex; flex-direction: column; gap: var(--space-1); justify-content: flex-end;
+    container-type: inline-size;
   }
-  .stat__num { order: 2; font-variant-numeric: tabular-nums; font-family: var(--font-accent); font-weight: 800; font-size: var(--fs-number); line-height: 1; letter-spacing: -0.02em; color: var(--night-text); }
+  /* Sized to its own card: "1,000" in Syne 800 is about 4.2em wide, so 22cqi always fits. */
+  .stat__num { order: 2; font-variant-numeric: tabular-nums; font-family: var(--font-accent); font-weight: 800; font-size: min(var(--fs-number), 22cqi); line-height: 1; margin-left: -0.06em; /* optical: Syne digits carry left side-bearing */ letter-spacing: -0.02em; color: var(--night-text); }
   .stat__num--key { color: var(--night-accent); }
   .stat__pre { order: 1; margin-bottom: -0.25rem; font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-lead); letter-spacing: 0; color: var(--night-text-2); }
   .stat__label { order: 3; font-size: var(--fs-small); color: var(--night-text-2); max-width: 26ch; }

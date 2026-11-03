@@ -1,8 +1,8 @@
 // Measures the phone first screen and how many lines each h1/h2 takes at 390x844.
 // Usage: npm run build && node scripts/measure.mjs
 import { chromium } from "playwright-core";
-import { preview } from "astro";
-const server = await preview({ root: process.cwd(), server: { port: 4340, host: "127.0.0.1" }, logLevel: "warn" });
+import { serveStatic } from "./lib/serve.mjs";
+const server = await serveStatic({ port: 4340 });
 const browser = await chromium.launch({ channel: "chrome" });
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await ctx.newPage();

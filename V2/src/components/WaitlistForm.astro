@@ -29,7 +29,7 @@ const endpoint = (import.meta.env.PUBLIC_WAITLIST_URL ?? "").trim();
   </div>
   <Button type="submit" id="waitlist-submit"><span data-label-idle>Join the waitlist</span><span data-label-busy hidden>Sending…</span></Button>
   <p class="waitlist__status" id="waitlist-status" role="status" aria-live="polite"></p>
-  <p class="waitlist__note" id="waitlist-note">We only ask for your email. <a href="/privacy">How we use it</a>.</p>
+  <p class="waitlist__note" id="waitlist-note">We’ll only email you about <span translate="no">Neuroditto</span>. Leave anytime.</p>
 </form>
 <style>
   .waitlist { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; width: 100%; max-width: 34rem; }
@@ -118,7 +118,7 @@ const endpoint = (import.meta.env.PUBLIC_WAITLIST_URL ?? "").trim();
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ email: input.value.trim() }),
+        body: JSON.stringify({ email: input.value.trim(), company: trap?.value ?? "" }),
         signal: controller.signal,
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

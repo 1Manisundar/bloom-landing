@@ -1,44 +1,34 @@
 ---
-// /privacy: what the waitlist collects, where it is stored, how to leave.
-// Only claims the founders have made. Placeholders stay visible until they give the facts.
+// /privacy, in two parts. "Your data stays on your phone" describes the app ONLY, never the waitlist.
+// Placeholders stay visible until the founders give the facts.
 import Base from "../layouts/Base.astro";
 const updated = "3 November 2026";
 ---
 <Base
   title="Privacy · Neuroditto"
-  description="What the Neuroditto waitlist collects (your email address only), where it is kept, and how to leave the list."
+  description="What the Neuroditto website and waitlist store (your email and sign-up date), who can see it, and how to be removed. In the Neuroditto app, your data stays on your phone."
   path="/privacy"
 >
   <section class="section policy" aria-labelledby="privacy-title">
     <div class="container policy__inner">
       <h1 id="privacy-title">Privacy</h1>
-      <p class="policy__lead">This page covers this website and its waitlist.</p>
+      <p class="policy__lead">Two parts: this website with its waitlist, and the Neuroditto app.</p>
 
-      <div class="policy__block">
-        <h2>What the waitlist collects</h2>
-        <p>Your email address. Nothing else.</p>
-      </div>
+      <section class="policy__part" aria-labelledby="part-site">
+        <h2 id="part-site">This website and the waitlist</h2>
+        <ul class="policy__list" role="list">
+          <li>We store your email address and the date you signed up, in <span translate="no">Supabase</span> (<mark class="placeholder">[REGION]</mark>).</li>
+          <li>Only the two founders, Jyothi and Krishna, can see it.</li>
+          <li>We use it only to email you about <span translate="no">Neuroditto</span>.</li>
+          <li>To be removed, email <mark class="placeholder">[CONTACT EMAIL]</mark>.</li>
+          <li>This site uses no cookies and no trackers.</li>
+        </ul>
+      </section>
 
-      <div class="policy__block">
-        <h2>Where it is kept</h2>
-        <p>Your email address is stored with <mark class="placeholder">[WAITLIST SERVICE]</mark>, the service that runs our waitlist.</p>
-      </div>
-
-      <div class="policy__block">
-        <h2>What we use it for</h2>
-        <p>To write to you when there is something to try.</p>
-      </div>
-
-      <div class="policy__block">
-        <h2>How to leave the list</h2>
-        <p><mark class="placeholder">[HOW TO LEAVE]</mark></p>
-        <p>Questions: <mark class="placeholder">[CONTACT EMAIL]</mark></p>
-      </div>
-
-      <div class="policy__block">
-        <h2>In the app</h2>
+      <section class="policy__part" aria-labelledby="part-app">
+        <h2 id="part-app">The <span translate="no">Neuroditto</span> app</h2>
         <p>Your data stays on your phone.</p>
-      </div>
+      </section>
 
       <p class="caption">Last updated {updated}.</p>
       <p><a href="/">Back to the home page</a></p>
@@ -46,9 +36,17 @@ const updated = "3 November 2026";
   </section>
 </Base>
 <style>
-  .policy__inner { max-width: calc(var(--prose) + 2 * var(--gutter)); display: flex; flex-direction: column; gap: var(--space-2); }
+  /* Same left edge as the header and every home-page section; the reading column stays 680px. */
+  .policy__inner { display: flex; flex-direction: column; gap: var(--space-2); }
+  .policy__inner > * { max-width: var(--prose); }
   .policy h1 { font-size: var(--fs-hero); line-height: 1.04; margin-bottom: var(--space-1); }
   .policy__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); margin-bottom: var(--space-3); }
-  .policy__block { border-top: var(--hairline); padding-top: var(--space-3); padding-bottom: var(--space-2); display: flex; flex-direction: column; gap: var(--space-1); }
-  .policy__block h2 { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); letter-spacing: 0; }
+  .policy__part { border-top: var(--hairline); padding-block: var(--space-3) var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+  .policy__part h2 { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); letter-spacing: 0; }
+  .policy__list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .policy__list li { position: relative; padding-left: 1.25rem; }
+  .policy__list li::before {
+    content: ""; position: absolute; left: 0; top: 0.65em;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--c-jade);
+  }
 </style>

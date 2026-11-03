@@ -30,6 +30,7 @@ const id = `pcard-${word.toLowerCase().replace(/\s+/g, "-")}`;
     border-radius: var(--r-panel);
     padding: clamp(1.5rem, 2.5vw, 2rem);
     display: flex; flex-direction: column; gap: var(--space-3);
+    container-type: inline-size;
   }
   .pcard__faces { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
   .pcard__face { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -37,7 +38,8 @@ const id = `pcard-${word.toLowerCase().replace(/\s+/g, "-")}`;
   .pcard__art :global(.companion) { --companion-w: 132px; }
   .pcard__word {
     font-family: var(--font-accent); font-weight: 800;
-    font-size: var(--fs-pattern); line-height: 1.05; letter-spacing: -0.01em;
+    /* Sized to its card: "Hesitate" in Syne 800 is about 6.1em wide, so 15cqi always fits. */
+    font-size: min(var(--fs-pattern), 15cqi); line-height: 1.05; letter-spacing: -0.01em;
     color: var(--primary);
   }
   .pcard__body { color: var(--text); }

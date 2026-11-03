@@ -10,7 +10,7 @@
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright-core";
-import { preview } from "astro";
+import { serveStatic } from "./lib/serve.mjs";
 
 const args = process.argv.slice(2);
 const phase = args.find((a) => !a.startsWith("--")) ?? "latest";
@@ -27,7 +27,7 @@ const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 const problems = [];
 
 await mkdir(OUT, { recursive: true });
-const server = await preview({ root: process.cwd(), server: { port: 4329, host: "127.0.0.1" }, logLevel: "warn" });
+const server = await serveStatic({ port: 4329 });
 const url = `http://127.0.0.1:${server.port}/`;
 const browser = await chromium.launch({ channel: "chrome" });
 
