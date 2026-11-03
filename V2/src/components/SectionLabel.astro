@@ -1,0 +1,14 @@
+---
+interface Props { tone?: "light" | "night"; id?: string }
+const { tone = "light", id } = Astro.props;
+---
+<p class:list={["label", { "label--night": tone === "night" }]} id={id}><slot /></p>
+<style>
+  .label {
+    font-family: var(--font-accent); font-weight: 600;
+    font-size: var(--fs-label); line-height: 1.4;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--accent-text);
+  }
+  .label--night { color: var(--night-accent); }
+</style>

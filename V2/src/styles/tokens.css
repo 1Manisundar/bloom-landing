@@ -1,0 +1,107 @@
+/*
+  Neuroditto design tokens. The ONLY place colour values and font names live.
+  Source: docs/neuroditto-brand-kit.md (locked Oct 24, 2026) + docs/neuroditto-style-adapter.md.
+*/
+
+:root {
+  /* ---- The 20 brand-kit colours ---- */
+  /* Core */
+  --c-forest: #176849;       /* primary brand: buttons, links, active states */
+  --c-gold: #D99A2E;         /* signature accent: decoration only on light backgrounds */
+  --c-emerald: #002B20;      /* dark brand anchor: the night chapter */
+  --c-jade: #569878;         /* supporting green: shapes, never small text on light */
+  --c-champagne: #FFF4B8;    /* light gold highlight: the one night glow */
+  --c-light-gold: #F7D16C;   /* gold on deep emerald */
+  --c-bronze: #98560B;       /* readable gold-family text on ivory */
+  /* Supporting */
+  --c-ivory: #FBF8F2;        /* main background */
+  --c-oat: #F2EFE7;          /* the one oat section */
+  --c-sage: #E7F0E8;         /* tinted card */
+  --c-mist: #E9F2F3;         /* informational card */
+  --c-lavender: #F0EBF6;     /* companion card */
+  --c-blush: #F7E7DD;        /* founder card */
+  --c-ink: #14342B;          /* primary text */
+  --c-eucalyptus: #52675D;   /* secondary text */
+  --c-border: #D9E4DC;       /* hairlines, never the only interactive cue */
+  /* Dark-mode set */
+  --c-dark-bg: #10261F;
+  --c-dark-card: #1A362C;
+  --c-dark-text: #F7F5EE;
+  --c-dark-text-2: #C1D1C4;
+
+  /* ---- Roles (light) ---- */
+  --bg: var(--c-ivory);
+  --text: var(--c-ink);
+  --text-2: var(--c-eucalyptus);
+  --rule: var(--c-border);
+  --accent-text: var(--c-bronze);
+  --primary: var(--c-forest);
+  --on-primary: var(--c-ivory);
+
+  /* ---- Fonts (only DM Sans, Fraunces, Syne) ---- */
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-accent: "Syne", "DM Sans", system-ui, sans-serif;
+
+  /* ---- Type scale ---- */
+  --fs-hero: clamp(2.5rem, 1.6rem + 3.8vw, 4.5rem);   /* 40px phone → 72px desktop */
+  --fs-h2: clamp(2rem, 1.45rem + 2.2vw, 3rem);       /* 32 → 48 */
+  --fs-h2-night: clamp(2.25rem, 1.4rem + 3.4vw, 4rem); /* 36 → 64 */
+  --fs-h2-why: clamp(2rem, 1.3rem + 2.8vw, 3.5rem);    /* 32 → 56 */
+  --fs-h3: 1.5rem;                                   /* 24 */
+  --fs-lead: 1.25rem;                                /* 20 */
+  --lh-lead: 1.55;
+  --fs-body: 1.0625rem;                              /* 17 */
+  --lh-body: 1.5882;                                 /* 27px */
+  --fs-small: 0.9375rem;                             /* 15 */
+  --fs-caption: 0.875rem;                            /* 14 */
+  --fs-label: 0.8125rem;                             /* 13 */
+  --fs-pattern: clamp(2.25rem, 1.8rem + 1.4vw, 2.75rem);
+  --fs-number: clamp(3.5rem, 2.25rem + 4vw, 5.75rem);
+    --ls-label: 0.08em;
+  --ls-display: -0.02em;
+
+  /* ---- Space ---- */
+  --container: 1180px;
+  --prose: 680px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --section-pad: clamp(4rem, 8vw, 10rem);
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+
+  /* ---- Shape ---- */
+  --r-card: 20px;
+  --r-panel: 28px;
+  --r-button: 12px;
+  --r-round: 999px;
+  --hairline: 1px solid var(--rule);
+
+  /* ---- Night chapter (Dark Luxury, re-coloured) ---- */
+  --night-bg: var(--c-emerald);
+  --night-card: var(--c-dark-card);
+  --night-card-edge: inset 0 1px 0 color-mix(in srgb, var(--c-dark-text) 8%, transparent);
+  --night-text: var(--c-dark-text);
+  --night-text-2: var(--c-dark-text-2);
+  --night-accent: var(--c-light-gold);
+  --grain-opacity: 0.03;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --glow-opacity: 0.16;
+
+  /* ---- Motion ("settles like a stone") ---- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur: 240ms;
+  --dur-slow: 400ms;
+  --stagger: 90ms;
+
+  /* ---- Header ---- */
+  --header-bg: color-mix(in srgb, var(--c-ivory) 92%, transparent);
+}
+
+@media (min-width: 1024px) {
+  :root { --section-pad: clamp(6rem, 8vw, 10rem); }
+}

@@ -1,0 +1,47 @@
+---
+import Button from "../components/Button.astro";
+import SectionLabel from "../components/SectionLabel.astro";
+import MomentDemo from "../components/MomentDemo.astro";
+import Icon from "../components/Icon.astro";
+---
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <SectionLabel>Building in public</SectionLabel>
+      <h1 class="hero__title" id="hero-title">A fitness tracker for your mind.</h1>
+      <p class="hero__lead">Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern.</p>
+      <div class="hero__actions">
+        <Button href="#join" arrow>Join the waitlist</Button>
+        <Button href="#how" variant="secondary">See how it works</Button>
+      </div>
+      <p class="hero__note"><Icon name="smartphone" size={18} />Your data stays on your phone.</p>
+    </div>
+    <div class="hero__demo">
+      <MomentDemo />
+    </div>
+  </div>
+</section>
+<style>
+  .hero { padding-block: clamp(3rem, 6vw, 5.5rem) var(--section-pad); }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-5);
+    align-items: center;
+  }
+  .hero__copy { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+  .hero__title { font-size: var(--fs-hero); line-height: 1.04; max-width: 14ch; }
+  .hero__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 34ch; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: var(--space-1); }
+  .hero__note { display: flex; align-items: center; gap: 0.5rem; font-size: var(--fs-small); color: var(--text-2); }
+  .hero__note :global(.icon) { color: var(--primary); flex: none; }
+
+  @media (max-width: 900px) {
+    .hero__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+    .hero__demo { max-width: 30rem; }
+  }
+  @media (max-width: 480px) {
+    .hero__actions { width: 100%; }
+    .hero__actions :global(.btn) { flex: 1 1 100%; }
+  }
+</style>

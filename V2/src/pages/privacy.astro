@@ -1,0 +1,22 @@
+---
+// PLACEHOLDER page. Phase 3 writes the full /privacy page; this keeps the footer link from breaking.
+import Base from "../layouts/Base.astro";
+import SectionLabel from "../components/SectionLabel.astro";
+---
+<Base title="Privacy · Neuroditto" description="What the Neuroditto waitlist collects and how to leave it.">
+  <section class="section">
+    <div class="container prose">
+      <SectionLabel>Privacy</SectionLabel>
+      <h1>Privacy</h1>
+      <p>The waitlist collects your email address only.</p>
+      <p>It is stored with <mark class="placeholder">[WAITLIST SERVICE]</mark>.</p>
+      <p>To leave the list, <mark class="placeholder">[HOW TO LEAVE]</mark>.</p>
+      <p>In the app, your data stays on your phone.</p>
+      <p><a href="/">Back to the home page</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .prose { max-width: calc(var(--prose) + 2 * var(--gutter)); display: flex; flex-direction: column; gap: var(--space-2); }
+  .prose h1 { font-size: var(--fs-h2); line-height: 1.1; margin-bottom: var(--space-2); }
+</style>

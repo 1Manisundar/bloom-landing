@@ -1,0 +1,16 @@
+---
+// The signature line: a thin gold thread ending in the gold dot from the logo.
+interface Props { tone?: "light" | "night"; class?: string }
+const { tone = "light", class: cls = "" } = Astro.props;
+---
+<svg class={`thread thread--${tone} ${cls}`} viewBox="0 0 400 20" aria-hidden="true" focusable="false">
+  <path class="thread__line" d="M4 12 C80 4 140 17 200 10 C260 4 320 15 384 9" pathLength="1" />
+  <circle class="thread__dot" cx="392" cy="8" r="5" />
+</svg>
+<style>
+  .thread { width: 100%; height: auto; overflow: visible; }
+  .thread__line { fill: none; stroke: var(--c-gold); stroke-width: 3; stroke-linecap: round; }
+  .thread__dot { fill: var(--c-gold); }
+  .thread--night .thread__line { stroke: var(--night-accent); }
+  .thread--night .thread__dot { fill: var(--night-accent); }
+</style>

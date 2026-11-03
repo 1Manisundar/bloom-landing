@@ -1,0 +1,29 @@
+---
+import SectionLabel from "../components/SectionLabel.astro";
+import CompanionShelf from "../components/CompanionShelf.astro";
+---
+<section class="section companions" id="companions" aria-labelledby="companions-title">
+  <div class="container">
+    <div class="companions__head">
+      <div class="companions__titles">
+        <SectionLabel>Meet the companions</SectionLabel>
+        <h2 id="companions-title">The tracker sees. The companion speaks.</h2>
+      </div>
+      <p class="companions__lead">The tracker notices how you react. Your companion tells you what it saw, gently and in plain words. Pick from 30 companions, each with its own way of talking.</p>
+    </div>
+    <CompanionShelf />
+  </div>
+</section>
+<style>
+  .companions__head {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-2) var(--space-5); align-items: end;
+    margin-bottom: var(--space-5);
+  }
+  .companions__titles { display: flex; flex-direction: column; gap: var(--space-2); }
+  .companions__titles h2 { max-width: 16ch; }
+  .companions__lead { color: var(--text-2); max-width: 40ch; }
+  @media (max-width: 900px) {
+    .companions__head { grid-template-columns: minmax(0, 1fr); margin-bottom: var(--space-4); }
+  }
+</style>

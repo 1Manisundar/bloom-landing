@@ -1,0 +1,33 @@
+---
+import Icon from "./Icon.astro";
+import { FAQ } from "../data/content";
+// [CURRENT STAGE] stays a visible placeholder until the founders give the line.
+const parts = (a: string) => a.split(/(\[CURRENT STAGE\])/);
+---
+<div class="faq">
+  {FAQ.map((item) => (
+    <details class="faq__item">
+      <summary class="faq__q">
+        <span>{item.q}</span>
+        <Icon name="plus" size={22} class="faq__icon" />
+      </summary>
+      <p class="faq__a">
+        {parts(item.a).map((p) => p === "[CURRENT STAGE]" ? <mark class="placeholder">[CURRENT STAGE]</mark> : p)}
+      </p>
+    </details>
+  ))}
+</div>
+<style>
+  .faq { display: flex; flex-direction: column; border-top: var(--hairline); }
+  .faq__item { border-bottom: var(--hairline); }
+  .faq__q {
+    display: flex; justify-content: space-between; align-items: center; gap: var(--space-2);
+    min-height: 64px; padding: 0.875rem 0;
+    font-weight: 600; font-size: 1.125rem; line-height: 1.4;
+    cursor: pointer; list-style: none;
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__q :global(.faq__icon) { flex: none; color: var(--primary); transition: transform var(--dur) var(--ease); }
+  .faq__item[open] .faq__q :global(.faq__icon) { transform: rotate(45deg); }
+  .faq__a { color: var(--text-2); padding-bottom: var(--space-3); max-width: 60ch; }
+</style>

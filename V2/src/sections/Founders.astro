@@ -1,0 +1,53 @@
+---
+import SectionLabel from "../components/SectionLabel.astro";
+import FAQ from "../components/FAQ.astro";
+import { FOUNDERS } from "../data/content";
+---
+<section class="section founders" id="founders" aria-labelledby="founders-title">
+  <div class="container founders__grid">
+    <div class="founders__card">
+      <SectionLabel>The founders</SectionLabel>
+      <h2 id="founders-title">Built in public by Jyothi and Krishna.</h2>
+      <p class="founders__lead">We share what we build, what we learn and what goes wrong. Follow along.</p>
+      <ul class="founders__people" role="list">
+        {FOUNDERS.map((f) => (
+          <li class="person">
+            <!-- PLACEHOLDER: founder photo -->
+            <div class="person__photo" role="img" aria-label={`Photo placeholder for ${f.name}`}>Photo</div>
+            <div>
+              <p class="person__name">{f.name}</p>
+              <p class="person__role">{f.role}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="founders__faq">
+      <h2 class="faq-title" id="faq-title">Questions people ask us</h2>
+      <FAQ />
+    </div>
+  </div>
+</section>
+<style>
+  .founders__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: start; }
+  .founders__card {
+    background: var(--c-blush); border-radius: var(--r-panel);
+    padding: clamp(1.75rem, 3.5vw, 3rem);
+    display: flex; flex-direction: column; gap: var(--space-2);
+  }
+  .founders__card h2 { font-size: clamp(1.875rem, 1.6rem + 0.8vw, 2.25rem); line-height: 1.15; }
+  .founders__lead { color: var(--text-2); }
+  .founders__people { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+  .person { display: flex; align-items: center; gap: 0.75rem; }
+  .person__photo {
+    width: 64px; height: 64px; border-radius: 50%; flex: none;
+    background: var(--c-ivory); border: 2px dashed var(--c-jade);
+    display: grid; place-items: center;
+    font-size: var(--fs-label); color: var(--text-2);
+  }
+  .person__name { font-weight: 700; }
+  .person__role { font-size: var(--fs-small); color: var(--text-2); }
+  .founders__faq { display: flex; flex-direction: column; gap: var(--space-3); }
+  .faq-title { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); line-height: 1.25; letter-spacing: 0; }
+  @media (max-width: 900px) { .founders__grid { grid-template-columns: minmax(0, 1fr); } }
+</style>

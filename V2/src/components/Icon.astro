@@ -1,0 +1,17 @@
+---
+// Lucide icons (2px stroke), inlined from lucide-static at build time. Decorative unless `label` is given.
+import arrowRight from "lucide-static/icons/arrow-right.svg?raw";
+import smartphone from "lucide-static/icons/smartphone.svg?raw";
+import plus from "lucide-static/icons/plus.svg?raw";
+import externalLink from "lucide-static/icons/external-link.svg?raw";
+
+const ICONS = { "arrow-right": arrowRight, smartphone, plus, "external-link": externalLink } as const;
+interface Props { name: keyof typeof ICONS; size?: number; label?: string; class?: string }
+const { name, size = 20, label, class: cls = "" } = Astro.props;
+const svg = ICONS[name]
+  .replace(/<!--[\s\S]*?-->/, "")
+  .replace(/\swidth="24"/, ` width="${size}"`)
+  .replace(/\sheight="24"/, ` height="${size}"`)
+  .replace(/class="([^"]*)"/, `class="$1 icon ${cls}" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"'}`);
+---
+<Fragment set:html={svg} />

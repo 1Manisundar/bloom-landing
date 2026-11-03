@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+# Screenshots taken to check the page (npm run shots)
+shots/
+# taste-skill working files
+.taste-skill/
+.env
+.env.*
+!.env.example
+.vercel
+*.log
+.DS_Store
+.playwright-cli/

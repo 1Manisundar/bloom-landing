@@ -1,0 +1,73 @@
+---
+// The night chapter (Dark Luxury, re-coloured): colour-contrast Fraunces headline,
+// gold thread under "think for yourself", the real PNAS numbers, one soft champagne glow, 3% grain.
+// Phase 2 adds the count-up and the thread drawing; the numbers below are the final values.
+import SectionLabel from "../components/SectionLabel.astro";
+import GoldThread from "../components/GoldThread.astro";
+import Icon from "../components/Icon.astro";
+import { STUDY } from "../data/content";
+---
+<section class="night why" id="why" aria-labelledby="why-title">
+  <div class="container why__inner">
+    <SectionLabel tone="night">Why we’re building it</SectionLabel>
+    <h2 class="why__title" id="why-title">
+      <span class="why__dim">Most AI tools think for you.</span>{" "}<span class="why__bright">Neuroditto helps you</span>{" "}<span class="why__key">think for yourself.<GoldThread tone="night" class="why__thread" /><span class="why__glow" aria-hidden="true"></span></span>
+    </h2>
+
+    <dl class="why__stats">
+      <div class="stat">
+        <dt class="stat__label">Students in the study</dt>
+        <dd class="stat__pre">about</dd>
+        <dd class="stat__num">1,000</dd>
+      </div>
+      <div class="stat">
+        <dt class="stat__label">Lower scores once answer-giving AI was taken away</dt>
+        <dd class="stat__num stat__num--key">17%</dd>
+      </div>
+    </dl>
+
+    <p class="why__body">In a study of about 1,000 students, AI that gave answers made students score 17% worse once it was taken away. The same AI, built to give hints, did not. AI isn’t the problem. How it’s built is.</p>
+    <p class="why__source">
+      <a href={STUDY.url} rel="noopener" target="_blank">{STUDY.cite}<Icon name="external-link" size={16} /><span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+  </div>
+</section>
+<style>
+  .why { padding-block: calc(var(--section-pad) * 0.5) var(--section-pad); overflow: clip; }
+  .why__glow {
+    position: absolute; z-index: -1; pointer-events: none;
+    width: 18rem; height: 18rem; right: -9rem; bottom: -9rem;
+    border-radius: 50%;
+    background: var(--c-champagne);
+    opacity: var(--glow-opacity);
+    filter: blur(90px);
+  }
+  .why__inner { display: flex; flex-direction: column; gap: var(--space-4); }
+  .why__title { font-size: var(--fs-h2-why); line-height: 1.12; display: block; }
+  .why__dim { color: var(--night-text-2); display: block; }
+  .why__bright { color: var(--night-text); }
+  .why__key { color: var(--night-accent); position: relative; display: inline-block; white-space: nowrap; }
+  .why__key :global(.why__thread) { position: absolute; left: 0; right: 0; bottom: -0.32em; width: 100%; }
+
+  .why__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); max-width: 52rem; margin-top: var(--space-2); }
+  .stat {
+    background: var(--night-card);
+    box-shadow: var(--night-card-edge); /* taste-skill-ignore: adapter night card = inset top highlight */
+    border-radius: var(--r-card);
+    padding: var(--space-4) var(--space-3) var(--space-3);
+    display: flex; flex-direction: column; gap: var(--space-1); justify-content: flex-end;
+  }
+  .stat__num { order: 2; font-family: var(--font-accent); font-weight: 800; font-size: var(--fs-number); line-height: 1; letter-spacing: -0.02em; color: var(--night-text); }
+  .stat__num--key { color: var(--night-accent); }
+  .stat__pre { order: 1; margin-bottom: -0.25rem; font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-lead); letter-spacing: 0; color: var(--night-text-2); }
+  .stat__label { order: 3; font-size: var(--fs-small); color: var(--night-text-2); max-width: 26ch; }
+
+  .why__body { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--night-text-2); max-width: 54ch; }
+  .why__source a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; color: var(--night-accent); font-size: var(--fs-small); font-weight: 500; }
+
+  @media (max-width: 640px) {
+    .why__stats { grid-template-columns: minmax(0, 1fr); }
+    .why__key { white-space: normal; }
+    .why__glow { width: 12rem; height: 12rem; right: -4rem; bottom: -6rem; }
+  }
+</style>

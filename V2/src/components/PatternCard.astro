@@ -1,0 +1,39 @@
+---
+// Front: the pattern word and what it means. Back: an example line.
+// Phase 1 shows both faces (this is also the no-JS and reduced-motion layout); Phase 2 adds the flip.
+import Companion from "./Companion.astro";
+import type { Pose } from "../data/companions";
+interface Props { word: string; body: string; example: string; companion: string; pose: Pose }
+const { word, body, example, companion, pose } = Astro.props;
+---
+<li class="pcard">
+  <div class="pcard__face pcard__front">
+    <div class="pcard__art"><Companion name={companion} pose={pose} width={132} decorative /></div>
+    <h3 class="pcard__word">{word}</h3>
+    <p class="pcard__body">{body}</p>
+  </div>
+  <div class="pcard__face pcard__back">
+    <span class="pcard__ex">Example</span>
+    <p class="pcard__example">“{example}”</p>
+  </div>
+</li>
+<style>
+  .pcard {
+    background: var(--c-mist);
+    border-radius: var(--r-panel);
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    display: flex; flex-direction: column; gap: var(--space-3);
+  }
+  .pcard__face { display: flex; flex-direction: column; gap: 0.75rem; }
+  .pcard__art { height: 168px; display: flex; align-items: flex-end; }
+  .pcard__art :global(.companion) { --companion-w: 132px; }
+  .pcard__word {
+    font-family: var(--font-accent); font-weight: 800;
+    font-size: var(--fs-pattern); line-height: 1.05; letter-spacing: -0.01em;
+    color: var(--primary);
+  }
+  .pcard__body { color: var(--text); }
+  .pcard__back { border-top: var(--hairline); padding-top: var(--space-3); margin-top: auto; }
+  .pcard__ex { font-size: var(--fs-caption); font-weight: 600; color: var(--text-2); }
+  .pcard__example { font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-lead); line-height: 1.45; color: var(--text); }
+</style>

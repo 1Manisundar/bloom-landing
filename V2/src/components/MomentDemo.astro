@@ -1,0 +1,81 @@
+---
+// The hero demo. Three fixed example moments; the visitor never types and nothing is sent.
+// Phase 1: frame 0 is complete and static (moment 1 with its reaction and companion line).
+import Companion from "./Companion.astro";
+import { MOMENTS } from "../data/content";
+const first = MOMENTS[0];
+---
+<figure class="demo" aria-labelledby="demo-title" data-moments={JSON.stringify(MOMENTS)}>
+  <div class="demo__panel">
+    <div class="demo__head">
+      <span class="demo__today">Today</span>
+      <span class="demo__flag" id="demo-title">Example moments</span>
+    </div>
+
+    <p class="demo__moment"><span class="visually-hidden">Example moment: </span><span data-demo="text">{first.text}</span></p>
+
+    <div class="demo__react">
+      <span class="demo__react-label">How you reacted</span>
+      <span class="demo__tag" data-demo="tag">{first.tag}</span>
+    </div>
+
+    <div class="demo__speaks">
+      <Companion name="hoot" pose="discovering" animated width={128} eager class="demo__hoot" />
+      <p class="demo__line"><span class="visually-hidden">Professor Hoot says: </span><span data-demo="line">{first.line}</span></p>
+    </div>
+
+    <div class="demo__pips" aria-hidden="true">
+      {MOMENTS.map((_, i) => <span class:list={["demo__pip", { "is-on": i === 0 }]} />)}
+    </div>
+  </div>
+  <figcaption class="caption demo__caption">One of three example moments, written to show the idea.</figcaption>
+</figure>
+
+<style>
+  .demo { width: 100%; max-width: 30rem; margin-inline: auto; }
+  .demo__panel {
+    background: var(--c-sage);
+    border-radius: var(--r-panel);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    display: flex; flex-direction: column; gap: var(--space-2);
+  }
+  .demo__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+  .demo__today { font-family: var(--font-serif); font-weight: 600; font-size: var(--fs-h3); line-height: 1.2; }
+  .demo__flag {
+    font-family: var(--font-accent); font-weight: 600; font-size: var(--fs-label);
+    letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--accent-text);
+  }
+  .demo__moment {
+    align-self: flex-end; max-width: 88%;
+    background: var(--primary); color: var(--on-primary);
+    padding: 0.75rem 1rem;
+    border-radius: var(--r-card) var(--r-card) 6px var(--r-card);
+    font-size: var(--fs-body); line-height: 1.45;
+  }
+  .demo__react {
+    background: var(--c-ivory); border-radius: var(--r-card);
+    padding: 0.875rem 1rem;
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap;
+  }
+  .demo__react-label { font-size: var(--fs-small); font-weight: 500; color: var(--text-2); }
+  .demo__tag {
+    font-family: var(--font-accent); font-weight: 700; font-size: var(--fs-body);
+    color: var(--primary);
+    padding: 0.25rem 0.875rem; border-radius: var(--r-round);
+    border: 1.5px solid var(--primary);
+  }
+  .demo__speaks { display: flex; align-items: flex-end; gap: 0.25rem; margin-top: var(--space-1); }
+  .demo__speaks :global(.demo__hoot) { --companion-w: 7.5rem; flex: none; margin-left: -0.5rem; margin-bottom: -0.5rem; }
+  .demo__line {
+    flex: 1;
+    background: var(--c-lavender);
+    padding: 0.875rem 1rem;
+    border-radius: var(--r-card) var(--r-card) var(--r-card) 6px;
+    font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-body); line-height: 1.5;
+    margin-bottom: 2.5rem;
+  }
+  .demo__pips { display: flex; justify-content: center; gap: 6px; }
+  .demo__pip { width: 8px; height: 8px; border-radius: var(--r-round); background: var(--c-jade); opacity: 0.45; }
+  .demo__pip.is-on { width: 24px; background: var(--primary); opacity: 1; }
+  .demo__caption { margin-top: var(--space-2); text-align: center; }
+</style>
