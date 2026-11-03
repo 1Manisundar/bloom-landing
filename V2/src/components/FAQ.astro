@@ -27,6 +27,7 @@ const parts = (a: string) => a.split(/(\[CURRENT STAGE\])/);
     cursor: pointer; list-style: none;
   }
   .faq__q::-webkit-details-marker { display: none; }
+  .faq__q:hover { color: var(--primary); }
   .faq__q :global(.faq__icon) { flex: none; color: var(--primary); transition: transform var(--dur) var(--ease); }
   .faq__item[open] .faq__q :global(.faq__icon) { transform: rotate(45deg); }
   .faq__a { color: var(--text-2); padding-bottom: var(--space-3); max-width: 60ch; }

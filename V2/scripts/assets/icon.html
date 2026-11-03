@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- PLACEHOLDER icon until the logo file is in the repo: the brand's gold thread ending in the gold dot,
+     light gold on deep emerald. Rendered to favicon.svg / favicon-32.png / apple-touch-icon.png
+     by scripts/brand-assets.mjs. Colours come from the tokens. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<style>
+  html, body { margin: 0; background: transparent; }
+  svg { display: block; width: 100vw; height: 100vh; }
+  .bg { fill: var(--c-emerald); }
+  .line { fill: none; stroke: var(--c-light-gold); stroke-width: 5; stroke-linecap: round; }
+  .dot { fill: var(--c-light-gold); }
+  /* ?square: full-bleed for the Apple touch icon (iOS rounds it itself). */
+  .square .bg { rx: 0; }
+</style>
+</head>
+<body>
+  <script>if (location.search.includes("square")) document.documentElement.classList.add("square");</script>
+  <svg id="icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <rect class="bg" width="64" height="64" rx="14"/>
+    <path class="line" d="M12 42 C22 34 28 46 38 38"/>
+    <circle class="dot" cx="46" cy="30" r="8"/>
+  </svg>
+</body>
+</html>

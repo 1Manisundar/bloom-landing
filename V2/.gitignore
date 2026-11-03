@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-test-*/
 .astro/
 # Screenshots taken to check the page (npm run shots)
 shots/

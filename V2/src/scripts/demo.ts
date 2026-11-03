@@ -26,6 +26,11 @@ export function startDemo() {
   const controls = q("[data-demo='controls']");
   const pauseBtn = q<HTMLButtonElement>("[data-demo='pause']");
   const dots = [...fig.querySelectorAll<HTMLButtonElement>("[data-demo-go]")];
+  // Hoot's own looping animation stops with the cycle (pause button, end of cycle, reduced motion).
+  const hoot = q<HTMLImageElement>(".demo__hoot");
+  const hootMoving = hoot?.getAttribute("src") ?? "";
+  const hootStill = hootMoving.replace(/\.svg$/, "-still.svg");
+  if (hootStill !== hootMoving) new Image().src = hootStill;
   if (!text || !tag || !line || !controls || !pauseBtn) return;
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -48,7 +53,8 @@ export function startDemo() {
     });
   }
   function setPause() {
-    pauseBtn!.setAttribute("aria-label", playing ? "Pause the examples" : "Play the examples");
+    if (hoot && hootStill !== hootMoving) hoot.setAttribute("src", playing ? hootMoving : hootStill);
+    pauseBtn!.setAttribute("aria-label", playing ? "Pause the animation" : "Play the animation");
     pauseBtn!.querySelector<HTMLElement>("[data-icon='pause']")!.hidden = !playing;
     pauseBtn!.querySelector<HTMLElement>("[data-icon='play']")!.hidden = playing;
   }

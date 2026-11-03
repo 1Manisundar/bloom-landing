@@ -1,10 +1,14 @@
 ---
 // One email field. States: idle, sending, joined, error, not open yet.
-// Phase 1 wires only the honest fallback: with no endpoint, nothing is sent and the page says so.
-// "You're on the list" may only ever appear after a real successful save (Phase 3).
+//
+// The endpoint is PUBLIC_WAITLIST_URL, read at build time. If it is unset, nothing is ever sent and
+// the form says so. With an endpoint, the email is POSTed as JSON ({ "email": "..." }); the page says
+// "You're on the list" ONLY after the endpoint answers with a 2xx status. Anything else is an error,
+// and the error message says plainly that the address was not saved.
 import Button from "./Button.astro";
+const endpoint = (import.meta.env.PUBLIC_WAITLIST_URL ?? "").trim();
 ---
-<form class="waitlist" id="waitlist" novalidate data-state="idle">
+<form class="waitlist" id="waitlist" novalidate data-state={endpoint ? "idle" : "closed"} data-endpoint={endpoint || undefined}>
   <label class="visually-hidden" for="waitlist-email">Email address</label>
   <input
     class="waitlist__input"
@@ -16,10 +20,16 @@ import Button from "./Button.astro";
     spellcheck="false"
     required
     placeholder="you@example.com"
-    aria-describedby="waitlist-status"
+    aria-describedby="waitlist-status waitlist-note"
   />
-  <Button type="submit" id="waitlist-submit">Join the waitlist</Button>
+  <!-- Left empty by people; filled by bots. If it has a value, nothing is sent. -->
+  <div class="waitlist__trap" aria-hidden="true">
+    <label for="waitlist-company">Company</label>
+    <input id="waitlist-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+  <Button type="submit" id="waitlist-submit"><span data-label-idle>Join the waitlist</span><span data-label-busy hidden>Sending…</span></Button>
   <p class="waitlist__status" id="waitlist-status" role="status" aria-live="polite"></p>
+  <p class="waitlist__note" id="waitlist-note">We only ask for your email. <a href="/privacy">How we use it</a>.</p>
 </form>
 <style>
   .waitlist { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; width: 100%; max-width: 34rem; }
@@ -36,25 +46,90 @@ import Button from "./Button.astro";
   .waitlist__input:hover { border-color: var(--text); }
   .waitlist__input:focus-visible { border-color: var(--primary); outline-offset: 2px; }
   .waitlist__input[aria-invalid="true"] { border-color: var(--c-bronze); }
+  .waitlist__input:disabled { opacity: 0.7; }
+  .waitlist__trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; } /* taste-skill-ignore: off-screen spam trap, not a rule */
   @media (max-width: 480px) { .waitlist :global(.btn) { flex: 1 1 100%; } }
+  .waitlist :global(.btn [hidden]) { display: none; }
+  .waitlist[data-state="sending"] :global(.btn) { cursor: progress; opacity: 0.85; }
   .waitlist__status { flex-basis: 100%; color: var(--text-2); font-size: var(--fs-small); }
+  .waitlist__status:empty { display: none; }
+  /* Joined: the one success state, shown only after a real save. */
+  .waitlist[data-state="joined"] .waitlist__status {
+    background: var(--c-sage); color: var(--text);
+    border-radius: var(--r-card); padding: 1rem 1.375rem;
+    font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-lead);
+  }
+  .waitlist[data-state="error"] .waitlist__status { color: var(--text); }
+  /* While sending, the button says "Sending…"; the status line keeps it for screen readers only. */
+  .waitlist[data-state="sending"] .waitlist__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* After a real save, the field and button go; only the confirmation stays. */
+  .waitlist[data-state="joined"] .waitlist__input, .waitlist[data-state="joined"] :global(.btn) { display: none; }
+  .waitlist__status:focus:not(:focus-visible) { outline: none; }
+  .waitlist__note { flex-basis: 100%; font-size: var(--fs-caption); color: var(--text-2); }
 </style>
 <script>
+  type State = "idle" | "sending" | "joined" | "error" | "closed";
   const form = document.getElementById("waitlist") as HTMLFormElement | null;
   const input = document.getElementById("waitlist-email") as HTMLInputElement | null;
+  const trap = document.getElementById("waitlist-company") as HTMLInputElement | null;
   const status = document.getElementById("waitlist-status");
-  form?.addEventListener("submit", (event) => {
+  const submit = document.getElementById("waitlist-submit") as HTMLButtonElement | null;
+  const endpoint = form?.dataset.endpoint ?? "";
+
+  const MESSAGES = {
+    invalid: "Please enter a full email address, like you@example.com.",
+    closed: "The list isn’t open yet. Nothing was sent.",
+    joined: "You’re on the list. We’ll be in touch.",
+    error: "That didn’t go through, so you’re not on the list yet. Please try again in a moment.",
+  };
+
+  function setState(state: State, message = "") {
+    if (!form || !status || !submit || !input) return;
+    form.dataset.state = state;
+    status.textContent = message;
+    const busy = state === "sending";
+    submit.disabled = busy;
+    input.disabled = busy;
+    form.setAttribute("aria-busy", String(busy));
+    submit.querySelector<HTMLElement>("[data-label-idle]")!.hidden = busy;
+    submit.querySelector<HTMLElement>("[data-label-busy]")!.hidden = !busy;
+  }
+
+  form?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!input || !status) return;
+    if (!input || !status || form.dataset.state === "sending") return;
     if (!input.checkValidity()) {
       input.setAttribute("aria-invalid", "true");
-      status.textContent = "Please enter a full email address, like you@example.com.";
+      setState(endpoint ? "idle" : "closed", MESSAGES.invalid);
       input.focus();
       return;
     }
     input.removeAttribute("aria-invalid");
-    // Phase 3 sends to PUBLIC_WAITLIST_URL. Until then the list is not open and nothing leaves the page.
-    form.dataset.state = "not-open";
-    status.textContent = "The list isn't open yet. Nothing was sent.";
+
+    // No endpoint configured: the list is not open, and nothing leaves the page.
+    if (!endpoint) { setState("closed", MESSAGES.closed); return; }
+    // Bot filled the hidden field: send nothing.
+    if (trap?.value) { setState("idle"); return; }
+
+    setState("sending", "Sending…");
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ email: input.value.trim() }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      setState("joined", MESSAGES.joined);
+      input.value = "";
+      status!.setAttribute("tabindex", "-1");
+      status!.focus();
+    } catch {
+      setState("error", MESSAGES.error);
+    } finally {
+      window.clearTimeout(timeout);
+    }
   });
 </script>

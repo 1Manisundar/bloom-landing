@@ -1,7 +1,7 @@
 ---
 import SectionLabel from "../components/SectionLabel.astro";
 import FAQ from "../components/FAQ.astro";
-import { FOUNDERS } from "../data/content";
+import { FOUNDERS, LINKS } from "../data/content";
 ---
 <section class="section founders" id="founders" aria-labelledby="founders-title">
   <div class="container founders__grid" data-reveal-group>
@@ -9,6 +9,7 @@ import { FOUNDERS } from "../data/content";
       <SectionLabel>The founders</SectionLabel>
       <h2 id="founders-title">Built in public by Jyothi and Krishna.</h2>
       <p class="founders__lead">We share what we build, what we learn and what goes wrong. Follow along.</p>
+      <p class="founders__follow"><a href={LINKS.instagram} rel="noopener" target="_blank">@neuroditto.ai on Instagram<span class="visually-hidden"> (opens in a new tab)</span></a></p>
       <ul class="founders__people" role="list">
         {FOUNDERS.map((f) => (
           <li class="person">
@@ -37,6 +38,7 @@ import { FOUNDERS } from "../data/content";
   }
   .founders__card h2 { font-size: clamp(1.875rem, 1.6rem + 0.8vw, 2.25rem); line-height: 1.15; }
   .founders__lead { color: var(--text-2); }
+  .founders__follow a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
   .founders__people { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
   .person { display: flex; align-items: center; gap: 0.75rem; }
   .person__photo {

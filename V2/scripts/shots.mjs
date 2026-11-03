@@ -150,6 +150,11 @@ try {
 
       const sideways = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       if (sideways > 1) problems.push(`${tag}: the page scrolls sideways by ${sideways}px`);
+
+      // The /privacy page.
+      await page.goto(`${url}privacy`, { waitUntil: "networkidle" });
+      await page.evaluate(() => window.__nd?.ready);
+      await page.screenshot({ path: resolve(OUT, `${tag}-60-privacy-page.png`), fullPage: true });
       await context.close();
 
     }

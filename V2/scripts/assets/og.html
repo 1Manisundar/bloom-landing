@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- Open Graph image template, 1200x630. Rendered to public/og.png by scripts/brand-assets.mjs.
+     Uses the site's tokens and fonts, and the real Hoot file. No colour values here. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<link rel="stylesheet" href="../../node_modules/@fontsource/dm-sans/latin-500.css">
+<link rel="stylesheet" href="../../node_modules/@fontsource/dm-sans/latin-700.css">
+<link rel="stylesheet" href="../../node_modules/@fontsource/fraunces/latin-600.css">
+<link rel="stylesheet" href="../../node_modules/@fontsource/syne/latin-600.css">
+<style>
+  html, body { margin: 0; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: var(--c-ivory); color: var(--c-ink); font-family: var(--font-sans); }
+  .card { position: relative; box-sizing: border-box; width: 1200px; height: 630px; padding: 64px 72px; display: grid; grid-template-columns: 1fr 360px; gap: 40px; align-items: center; }
+  .copy { display: flex; flex-direction: column; gap: 22px; }
+  .mark { font-weight: 700; font-size: 30px; letter-spacing: -0.01em; }
+  .label { font-family: var(--font-accent); font-weight: 600; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-bronze); margin-top: 28px; }
+  h1 { margin: 0; font-family: var(--font-serif); font-weight: 600; font-size: 84px; line-height: 1.02; letter-spacing: -0.02em; }
+  p { margin: 0; font-size: 28px; line-height: 1.4; font-weight: 500; color: var(--c-eucalyptus); max-width: 30ch; }
+  .art { display: flex; align-items: flex-end; justify-content: center; height: 100%; }
+  .art img { width: 340px; height: auto; }
+  .thread { position: absolute; left: 72px; bottom: 54px; width: 300px; }
+  .thread path { fill: none; stroke: var(--c-gold); stroke-width: 3; stroke-linecap: round; }
+  .thread circle { fill: var(--c-gold); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="copy">
+      <div class="mark">Neuroditto</div>
+      <div class="label">Building in public</div>
+      <h1>A fitness tracker for your mind.</h1>
+      <p>Share a moment. See how you reacted. Over weeks, see the pattern.</p>
+    </div>
+    <div class="art"><img src="../../public/companions/hoot/actions/hoot-discovering-still.svg" alt=""></div>
+    <svg class="thread" viewBox="0 0 400 20" aria-hidden="true"><path d="M4 12 C80 4 140 17 200 10 C260 4 320 15 384 9"/><circle cx="392" cy="8" r="5"/></svg>
+  </div>
+</body>
+</html>

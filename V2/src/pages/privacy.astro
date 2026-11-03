@@ -1,22 +1,54 @@
 ---
-// PLACEHOLDER page. Phase 3 writes the full /privacy page; this keeps the footer link from breaking.
+// /privacy: what the waitlist collects, where it is stored, how to leave.
+// Only claims the founders have made. Placeholders stay visible until they give the facts.
 import Base from "../layouts/Base.astro";
-import SectionLabel from "../components/SectionLabel.astro";
+const updated = "3 November 2026";
 ---
-<Base title="Privacy · Neuroditto" description="What the Neuroditto waitlist collects and how to leave it.">
-  <section class="section">
-    <div class="container prose">
-      <SectionLabel>Privacy</SectionLabel>
-      <h1>Privacy</h1>
-      <p>The waitlist collects your email address only.</p>
-      <p>It is stored with <mark class="placeholder">[WAITLIST SERVICE]</mark>.</p>
-      <p>To leave the list, <mark class="placeholder">[HOW TO LEAVE]</mark>.</p>
-      <p>In the app, your data stays on your phone.</p>
+<Base
+  title="Privacy · Neuroditto"
+  description="What the Neuroditto waitlist collects (your email address only), where it is kept, and how to leave the list."
+  path="/privacy"
+>
+  <section class="section policy" aria-labelledby="privacy-title">
+    <div class="container policy__inner">
+      <h1 id="privacy-title">Privacy</h1>
+      <p class="policy__lead">This page covers this website and its waitlist.</p>
+
+      <div class="policy__block">
+        <h2>What the waitlist collects</h2>
+        <p>Your email address. Nothing else.</p>
+      </div>
+
+      <div class="policy__block">
+        <h2>Where it is kept</h2>
+        <p>Your email address is stored with <mark class="placeholder">[WAITLIST SERVICE]</mark>, the service that runs our waitlist.</p>
+      </div>
+
+      <div class="policy__block">
+        <h2>What we use it for</h2>
+        <p>To write to you when there is something to try.</p>
+      </div>
+
+      <div class="policy__block">
+        <h2>How to leave the list</h2>
+        <p><mark class="placeholder">[HOW TO LEAVE]</mark></p>
+        <p>Questions: <mark class="placeholder">[CONTACT EMAIL]</mark></p>
+      </div>
+
+      <div class="policy__block">
+        <h2>In the app</h2>
+        <p>Your data stays on your phone.</p>
+      </div>
+
+      <p class="caption">Last updated {updated}.</p>
       <p><a href="/">Back to the home page</a></p>
     </div>
   </section>
 </Base>
 <style>
-  .prose { max-width: calc(var(--prose) + 2 * var(--gutter)); display: flex; flex-direction: column; gap: var(--space-2); }
-  .prose h1 { font-size: var(--fs-h2); line-height: 1.1; margin-bottom: var(--space-2); }
+  .policy__inner { max-width: calc(var(--prose) + 2 * var(--gutter)); display: flex; flex-direction: column; gap: var(--space-2); }
+  .policy h1 { font-size: var(--fs-hero); line-height: 1.04; margin-bottom: var(--space-1); }
+  .policy__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); margin-bottom: var(--space-3); }
+  .policy__block { border-top: var(--hairline); padding-top: var(--space-3); padding-bottom: var(--space-2); display: flex; flex-direction: column; gap: var(--space-1); }
+  .policy__block h2 { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); letter-spacing: 0; }
 </style>

@@ -18,6 +18,9 @@ img, svg { display: block; max-width: 100%; }
 h1, h2, h3, p, figure, blockquote, ol, ul, dl, dd { margin: 0; }
 ol, ul { padding: 0; list-style: none; }
 button, input { font: inherit; color: inherit; }
+a, button, summary, input, label { touch-action: manipulation; }
+/* Tap feedback comes from each control's own active and focus states. */
+* { -webkit-tap-highlight-color: transparent; }
 
 h1, h2 {
   font-family: var(--font-serif);

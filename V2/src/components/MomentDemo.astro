@@ -40,7 +40,7 @@ const first = MOMENTS[0];
           </button>
         ))}
       </div>
-      <button class="demo__pause" type="button" data-demo="pause" aria-label="Pause the examples">
+      <button class="demo__pause" type="button" data-demo="pause" aria-label="Pause the animation">
         <span data-icon="pause"><Icon name="pause" size={18} /></span>
         <span data-icon="play" hidden><Icon name="play" size={18} /></span>
       </button>
@@ -85,7 +85,7 @@ const first = MOMENTS[0];
   .demo__speaks { display: flex; align-items: flex-end; gap: 0.25rem; margin-top: var(--space-1); }
   .demo__speaks :global(.demo__hoot) { --companion-w: 7.5rem; flex: none; margin-left: -0.5rem; margin-bottom: -0.5rem; }
   .demo__line {
-    flex: 1;
+    flex: 1; min-width: 0;
     background: var(--c-lavender);
     padding: 0.875rem 1rem;
     border-radius: var(--r-card) var(--r-card) var(--r-card) 6px;
