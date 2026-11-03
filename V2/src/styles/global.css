@@ -85,6 +85,9 @@ a:hover { text-decoration-thickness: 2px; }
   mix-blend-mode: overlay;
 }
 
+/* Optional idea (?idea=contrast): colour-contrast headlines on light sections. 5.73:1 on ivory. */
+.idea-contrast [data-dim] { color: var(--c-eucalyptus); }
+
 /* Placeholders the founders still have to fill. Visible on purpose. */
 .placeholder {
   font-family: var(--font-sans);

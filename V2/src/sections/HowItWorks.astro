@@ -3,13 +3,13 @@ import SectionLabel from "../components/SectionLabel.astro";
 import { STEPS } from "../data/content";
 ---
 <section class="section how" id="how" aria-labelledby="how-title">
-  <div class="container how__grid">
-    <div class="how__label"><SectionLabel>How it works</SectionLabel></div>
-    <h2 class="how__title" id="how-title">A fitness tracker doesn’t walk for you. It shows you how you move.</h2>
-    <p class="how__lead">Neuroditto doesn’t think for you. It shows you how you think.</p>
+  <div class="container how__grid" data-reveal-group>
+    <div class="how__label" data-reveal><SectionLabel>How it works</SectionLabel></div>
+    <h2 class="how__title" id="how-title" data-reveal><span data-dim>A fitness tracker doesn’t walk for you.</span> It shows you how you move.</h2>
+    <p class="how__lead" data-reveal>Neuroditto doesn’t think for you. It shows you how you think.</p>
     <ol class="steps">
       {STEPS.map((s, i) => (
-        <li class="step">
+        <li class="step" data-reveal data-rule>
           <svg class="step__mark" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
             {i === 0 && <path class="stone stone--forest" d="M6 24 C6 14 22 9 34 10 C48 11 60 16 58 26 C56 34 44 37 30 36 C16 35 6 32 6 24 Z" />}
             {i === 1 && <>
@@ -47,7 +47,13 @@ import { STEPS } from "../data/content";
     gap: var(--space-3);
     align-items: baseline;
     padding-block: var(--space-3);
-    border-top: var(--hairline);
+    position: relative;
+  }
+  /* Hairline as a pseudo-element so it can extend across on scroll (rule-extend). */
+  .step::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; /* taste-skill-ignore: adapter hairline (rule-extend) */
+    background: var(--rule);
+    transform: scaleX(var(--rule-x, 1)); transform-origin: left;
   }
   .step:last-child { border-bottom: var(--hairline); }
   .step__mark { width: 64px; height: 40px; align-self: center; }

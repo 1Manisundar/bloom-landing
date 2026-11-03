@@ -2,7 +2,7 @@
 import Button from "./Button.astro";
 import { NAV } from "../data/content";
 ---
-<header class="site-header" data-tone="light">
+<header class="site-header" data-tone="day">
   <nav class="site-header__bar container" aria-label="Main">
     <!-- PLACEHOLDER: the logo file is not in the repo yet; a text wordmark stands in. -->
     <a class="wordmark" href="/" aria-label="Neuroditto, home">Neuroditto</a>
@@ -15,11 +15,28 @@ import { NAV } from "../data/content";
 <style>
   .site-header {
     position: sticky; top: 0; z-index: 50;
+    background: transparent;
+    border-bottom: 1px solid transparent; /* taste-skill-ignore: adapter hairline, shown once scrolled */
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  /* Transparent at the top; blur and a hairline once the page scrolls (adapter). */
+  .site-header.is-scrolled {
     background: var(--header-bg);
     backdrop-filter: blur(10px); /* taste-skill-ignore: adapter navbar blur */
     -webkit-backdrop-filter: blur(10px); /* taste-skill-ignore: adapter navbar blur */
-    border-bottom: var(--hairline);
+    border-bottom-color: var(--rule);
   }
+  /* Over the night chapter the header switches to the dark tokens. */
+  .site-header[data-tone="night"] {
+    --text: var(--night-text);
+    --primary: var(--night-accent);
+    --on-primary: var(--c-emerald);
+    --rule: var(--c-dark-card);
+    --header-bg: color-mix(in srgb, var(--c-dark-bg) 88%, transparent);
+    color: var(--night-text);
+  }
+  .site-header[data-tone="night"] :global(.btn--primary:hover) { background: var(--c-champagne); border-color: var(--c-champagne); }
+  .site-header[data-tone="night"] :focus-visible { outline-color: var(--night-accent); }
   .site-header__bar {
     display: grid;
     grid-template-columns: auto 1fr auto;

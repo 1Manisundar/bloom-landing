@@ -3,10 +3,10 @@ import WaitlistForm from "../components/WaitlistForm.astro";
 import GoldThread from "../components/GoldThread.astro";
 ---
 <section class="section join" id="join" aria-labelledby="join-title">
-  <div class="container join__inner">
+  <div class="container join__inner" data-reveal-group>
     <GoldThread class="join__thread" />
-    <h2 class="join__title" id="join-title">See how you think.</h2>
-    <p class="join__lead">Join the waitlist. We’ll write when there’s something to try.</p>
+    <h2 class="join__title" id="join-title" data-reveal>See how you think.</h2>
+    <p class="join__lead" data-reveal>Join the waitlist. We’ll write when there’s something to try.</p>
     <WaitlistForm />
   </div>
 </section>

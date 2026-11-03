@@ -4,15 +4,15 @@ import PatternCard from "../components/PatternCard.astro";
 import { PATTERNS } from "../data/content";
 ---
 <section class="section patterns" id="patterns" aria-labelledby="patterns-title">
-  <div class="container">
-    <div class="patterns__head">
+  <div class="container" data-reveal-group>
+    <div class="patterns__head" data-reveal>
       <SectionLabel>What it notices</SectionLabel>
-      <h2 id="patterns-title">Where you jump. Where you hesitate. Where you’re sure and wrong.</h2>
+      <h2 id="patterns-title"><span data-dim>Where you jump. Where you hesitate.</span> Where you’re sure and wrong.</h2>
     </div>
     <ul class="patterns__grid" role="list">
       {PATTERNS.map((p) => <PatternCard {...p} />)}
     </ul>
-    <p class="caption patterns__note">Example lines, written to show the idea.</p>
+    <p class="caption patterns__note" data-reveal>Example lines, written to show the idea.</p>
   </div>
 </section>
 <style>
@@ -21,9 +21,9 @@ import { PATTERNS } from "../data/content";
   .patterns__note { margin-top: var(--space-3); }
   @media (max-width: 960px) { .patterns__grid { grid-template-columns: minmax(0, 1fr); } }
   @media (min-width: 600px) and (max-width: 960px) {
-    .patterns__grid :global(.pcard) { display: grid; grid-template-columns: 8rem minmax(0, 1fr); column-gap: var(--space-4); row-gap: 0.75rem; align-items: start; }
-    .patterns__grid :global(.pcard__front) { display: contents; }
-    .patterns__grid :global(.pcard__art) { grid-column: 1; grid-row: 1 / span 3; height: auto; }
-    .patterns__grid :global(.pcard__word), .patterns__grid :global(.pcard__body), .patterns__grid :global(.pcard__back) { grid-column: 2; }
+    .patterns__grid :global(.pcard__front) { display: grid; grid-template-columns: 8rem minmax(0, 1fr); column-gap: var(--space-4); row-gap: 0.75rem; align-items: start; }
+    .patterns__grid :global(.pcard__art) { grid-row: 1 / span 2; height: auto; }
+    .patterns__grid :global(.pcard__word), .patterns__grid :global(.pcard__body) { grid-column: 2; }
+    .patterns__grid :global(.pcard__back), .patterns__grid :global(.pcard__turn) { margin-left: calc(8rem + var(--space-4)); }
   }
 </style>

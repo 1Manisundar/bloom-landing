@@ -99,6 +99,7 @@
   --stagger: 90ms;
 
   /* ---- Header ---- */
+  --header-h: 72px; /* measured and updated by the motion script */
   --header-bg: color-mix(in srgb, var(--c-ivory) 92%, transparent);
 }
 

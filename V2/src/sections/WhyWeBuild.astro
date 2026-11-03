@@ -7,7 +7,7 @@ import GoldThread from "../components/GoldThread.astro";
 import Icon from "../components/Icon.astro";
 import { STUDY } from "../data/content";
 ---
-<section class="night why" id="why" aria-labelledby="why-title">
+<section class="night why" id="why" data-tone="night" aria-labelledby="why-title">
   <div class="container why__inner">
     <SectionLabel tone="night">Why we’re building it</SectionLabel>
     <h2 class="why__title" id="why-title">
@@ -18,11 +18,11 @@ import { STUDY } from "../data/content";
       <div class="stat">
         <dt class="stat__label">Students in the study</dt>
         <dd class="stat__pre">about</dd>
-        <dd class="stat__num">1,000</dd>
+        <dd class="stat__num"><span aria-hidden="true" data-count="1000">1,000</span><span class="visually-hidden">1,000</span></dd>
       </div>
       <div class="stat">
         <dt class="stat__label">Lower scores once answer-giving AI was taken away</dt>
-        <dd class="stat__num stat__num--key">17%</dd>
+        <dd class="stat__num stat__num--key"><span aria-hidden="true" data-count="17" data-suffix="%">17%</span><span class="visually-hidden">17%</span></dd>
       </div>
     </dl>
 
@@ -57,7 +57,7 @@ import { STUDY } from "../data/content";
     padding: var(--space-4) var(--space-3) var(--space-3);
     display: flex; flex-direction: column; gap: var(--space-1); justify-content: flex-end;
   }
-  .stat__num { order: 2; font-family: var(--font-accent); font-weight: 800; font-size: var(--fs-number); line-height: 1; letter-spacing: -0.02em; color: var(--night-text); }
+  .stat__num { order: 2; font-variant-numeric: tabular-nums; font-family: var(--font-accent); font-weight: 800; font-size: var(--fs-number); line-height: 1; letter-spacing: -0.02em; color: var(--night-text); }
   .stat__num--key { color: var(--night-accent); }
   .stat__pre { order: 1; margin-bottom: -0.25rem; font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-lead); letter-spacing: 0; color: var(--night-text-2); }
   .stat__label { order: 3; font-size: var(--fs-small); color: var(--night-text-2); max-width: 26ch; }

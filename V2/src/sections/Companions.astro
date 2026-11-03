@@ -4,12 +4,12 @@ import CompanionShelf from "../components/CompanionShelf.astro";
 ---
 <section class="section companions" id="companions" aria-labelledby="companions-title">
   <div class="container">
-    <div class="companions__head">
-      <div class="companions__titles">
+    <div class="companions__head" data-reveal-group>
+      <div class="companions__titles" data-reveal>
         <SectionLabel>Meet the companions</SectionLabel>
-        <h2 id="companions-title">The tracker sees. The companion speaks.</h2>
+        <h2 id="companions-title"><span data-dim>The tracker sees.</span> The companion speaks.</h2>
       </div>
-      <p class="companions__lead">The tracker notices how you react. Your companion tells you what it saw, gently and in plain words. Pick from 30 companions, each with its own way of talking.</p>
+      <p class="companions__lead" data-reveal>The tracker notices how you react. Your companion tells you what it saw, gently and in plain words. Pick from 30 companions, each with its own way of talking.</p>
     </div>
     <CompanionShelf />
   </div>

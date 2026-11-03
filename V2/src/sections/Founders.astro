@@ -4,8 +4,8 @@ import FAQ from "../components/FAQ.astro";
 import { FOUNDERS } from "../data/content";
 ---
 <section class="section founders" id="founders" aria-labelledby="founders-title">
-  <div class="container founders__grid">
-    <div class="founders__card">
+  <div class="container founders__grid" data-reveal-group>
+    <div class="founders__card" data-reveal>
       <SectionLabel>The founders</SectionLabel>
       <h2 id="founders-title">Built in public by Jyothi and Krishna.</h2>
       <p class="founders__lead">We share what we build, what we learn and what goes wrong. Follow along.</p>
@@ -22,7 +22,7 @@ import { FOUNDERS } from "../data/content";
         ))}
       </ul>
     </div>
-    <div class="founders__faq">
+    <div class="founders__faq" data-reveal>
       <h2 class="faq-title" id="faq-title">Questions people ask us</h2>
       <FAQ />
     </div>

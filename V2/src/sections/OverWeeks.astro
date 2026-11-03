@@ -1,32 +1,37 @@
 ---
-// Static form of the "Over weeks" scene. This is also the stacked layout used with
-// reduced motion or a short viewport. Phase 2 pins it: pebbles drop, the thread draws,
-// and the background deepens from ivory to deep emerald, ending on the night line.
+// "Over weeks". Stacked layout by default (no JS, reduced motion, or a viewport under 700px tall).
+// In cinematic mode the motion script adds .is-scene: the stage pins for about 3 screen heights,
+// pebbles drop week 1 → 6, the gold thread draws, the ground deepens from ivory to deep emerald,
+// and the scene ends on the night line.
 import SectionLabel from "../components/SectionLabel.astro";
 import PebblePath from "../components/PebblePath.astro";
 import Companion from "../components/Companion.astro";
 ---
 <section class="weeks" id="weeks" aria-labelledby="weeks-title">
-  <div class="weeks__day section">
-    <div class="container weeks__grid">
-      <div class="weeks__copy">
-        <SectionLabel>Over weeks</SectionLabel>
-        <p class="weeks__lead">Each pebble is one time you jumped. The gold thread shows where it’s going.</p>
-        <Companion name="sprout" pose="idle" width={140} class="weeks__sprout" />
+  <div class="weeks__stage" data-tone="day">
+    <div class="weeks__grain" aria-hidden="true"></div>
+    <div class="weeks__day section">
+      <div class="container weeks__grid">
+        <div class="weeks__copy">
+          <SectionLabel>Over weeks</SectionLabel>
+          <p class="weeks__lead">Each pebble is one time you jumped. The gold thread shows where it’s going.</p>
+          <Companion name="sprout" pose="idle" width={140} class="weeks__sprout" />
+        </div>
+        <figure class="weeks__figure">
+          <PebblePath />
+          <figcaption class="caption">Example data, to show the idea.</figcaption>
+        </figure>
       </div>
-      <figure class="weeks__figure">
-        <PebblePath />
-        <figcaption class="caption">Example data, to show the idea.</figcaption>
-      </figure>
     </div>
-  </div>
-  <div class="weeks__night night">
-    <div class="container">
-      <h2 class="weeks__line" id="weeks-title">One moment is a moment. Six weeks is a pattern.</h2>
+    <div class="weeks__night night" data-tone="night">
+      <div class="container">
+        <h2 class="weeks__line" id="weeks-title">One moment is a moment. Six weeks is a pattern.</h2>
+      </div>
     </div>
   </div>
 </section>
 <style>
+  .weeks__grain { display: none; }
   .weeks__day { padding-bottom: calc(var(--section-pad) * 0.75); }
   .weeks__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-5); align-items: end; }
   .weeks__copy { display: flex; flex-direction: column; gap: var(--space-2); align-items: flex-start; }
@@ -47,5 +52,43 @@ import Companion from "../components/Companion.astro";
     .weeks__copy > :global(.label) { grid-column: 1 / -1; }
     .weeks__copy :global(.weeks__sprout) { --companion-w: 88px; margin-top: 0; }
     .weeks__line { max-width: none; }
+  }
+
+  /* ---- Cinematic scene (set by the motion script). Must fit 1366x768 and 390x844. ---- */
+  .weeks.is-scene .weeks__stage {
+    position: relative;
+    height: 100svh;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--c-ivory);
+    padding-top: var(--header-h);
+  }
+  .weeks.is-scene .weeks__grain {
+    display: block; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image: var(--grain); mix-blend-mode: overlay; opacity: 0;
+  }
+  .weeks.is-scene .weeks__day { padding-block: clamp(1.5rem, 6vh, 4rem) 0; }
+  /* In the scene the chart gets the full width under the text, so it fills the screen. */
+  .weeks.is-scene .weeks__grid { grid-template-columns: minmax(0, 1fr); gap: clamp(1rem, 3.5vh, 2.5rem); align-content: start; }
+  .weeks.is-scene .weeks__copy { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-3); align-items: end; }
+  .weeks.is-scene .weeks__copy > :global(.label) { grid-column: 1 / -1; }
+  .weeks.is-scene .weeks__lead { max-width: 34ch; }
+  .weeks.is-scene .weeks__copy :global(.weeks__sprout) { --companion-w: clamp(72px, 11vh, 112px); margin-top: 0; }
+  .weeks.is-scene .weeks__figure { width: 100%; max-width: min(100%, calc((100svh - var(--header-h)) * 1.7)); }
+  .weeks.is-scene .weeks__night {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: transparent;
+    padding-block: 0 clamp(2rem, 9vh, 5.5rem);
+  }
+  .weeks.is-scene .weeks__night::before { display: none; }
+
+  @media (max-width: 900px) {
+    /* Phone and tablet: centre the day content so the screen is balanced, larger lead and Sprout. */
+    .weeks.is-scene .weeks__day { padding-block: 0 18vh; height: 100%; display: flex; align-items: center; }
+    .weeks.is-scene .weeks__day > .container { width: 100%; }
+    .weeks.is-scene .weeks__lead { font-size: 1.375rem; }
+    .weeks.is-scene .weeks__copy :global(.weeks__sprout) { --companion-w: 104px; }
+    .weeks.is-scene .weeks__grid { gap: var(--space-3); }
+    .weeks.is-scene .weeks__night { top: 56%; bottom: auto; padding-bottom: 0; }
   }
 </style>
