@@ -6,7 +6,7 @@ const server = await serveStatic({ port: 4340 });
 const browser = await chromium.launch({ channel: "chrome" });
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await ctx.newPage();
-await page.goto("http://127.0.0.1:4340/", { waitUntil: "networkidle" });
+await page.goto(`${server.origin}/`, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
 const r = await page.evaluate(() => {
   const box = (s) => { const e = document.querySelector(s); const b = e.getBoundingClientRect(); return { top: Math.round(b.top), bottom: Math.round(b.bottom) }; };

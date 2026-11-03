@@ -48,7 +48,7 @@ try {
         deviceScaleFactor: 1, isMobile: Boolean(view.mobile), hasTouch: Boolean(view.mobile), reducedMotion: motion,
       });
       const page = await context.newPage();
-      await page.goto(`http://127.0.0.1:${server.port}/`, { waitUntil: "networkidle" });
+      await page.goto(`${server.origin}/`, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       await page.evaluate(() => window.__nd?.ready);
       await sleep(400);

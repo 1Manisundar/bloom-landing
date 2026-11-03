@@ -23,7 +23,7 @@ const problems = [];
 
 await mkdir(OUT, { recursive: true });
 const server = await serveStatic({ port: 4341 });
-const url = `http://127.0.0.1:${server.port}/`;
+const url = `${server.origin}/`;
 const browser = await chromium.launch({ channel: "chrome" });
 
 async function newPage(view, reducedMotion = "no-preference", height = view.height) {

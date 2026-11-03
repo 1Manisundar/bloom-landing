@@ -19,7 +19,7 @@ try {
     const context = await browser.newContext({ viewport: { width, height }, reducedMotion: "reduce", isMobile: width < 600, hasTouch: width < 600 });
     const page = await context.newPage();
     for (const path of PAGES) {
-      await page.goto(`http://127.0.0.1:${server.port}${path}`, { waitUntil: "networkidle" });
+      await page.goto(`${server.origin}${path}`, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       // Open every disclosure so hidden text is measured too.
       await page.evaluate(() => document.querySelectorAll("details").forEach((d) => { d.open = true; d.removeAttribute("name"); }));

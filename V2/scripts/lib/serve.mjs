@@ -14,6 +14,8 @@ const TYPES = {
 };
 
 export async function serveStatic({ port = 4329, root = resolve("dist/client") } = {}) {
+  // BASE_URL=https://… runs the same checks against a deployed site instead of the local build.
+  if (process.env.BASE_URL) return { port: null, origin: process.env.BASE_URL.replace(/\/$/, ""), stop: async () => {} };
   const server = createServer(async (req, res) => {
     try {
       const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
@@ -30,5 +32,5 @@ export async function serveStatic({ port = 4329, root = resolve("dist/client") }
     }
   });
   await new Promise((done) => server.listen(port, "127.0.0.1", done));
-  return { port, stop: () => new Promise((done) => server.close(done)) };
+  return { port, origin: `http://127.0.0.1:${port}`, stop: () => new Promise((done) => server.close(done)) };
 }
