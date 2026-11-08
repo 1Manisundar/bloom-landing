@@ -1,57 +1,66 @@
-// Words are copied from the approved prototype (docs/prototype/Main.dc.html, Nov 3 2026),
-// corrected where the brief or the product definition say otherwise (see the Gate A report).
+// Words come from the approved product page (docs/reference/product-page.html, Nov 9 2026).
+// Why we build it, Founders, FAQ and the waitlist keep the words they had before (update prompt, items 8–10).
+// Every screen uses the example person "Alex" and example data.
 
-/** The three fixed example moments for the hero demo. Nothing is typed by the visitor; nothing is sent. */
-export const MOMENTS = [
-  {
-    text: "Snapped at my sister over something small.",
-    tag: "Jump",
-    line: "You answered before she finished. Want to look at when that happens?",
-  },
-  {
-    text: "Rewrote the same email four times. Still not sent.",
-    tag: "Hesitate",
-    line: "You knew what to say. You waited anyway.",
-  },
-  {
-    text: "Was sure the call was at 3. It was at 2.",
-    tag: "Sure and wrong",
-    line: "You felt certain, so you didn’t check.",
-  },
+export const NAV = [
+  { hash: "#story", label: "How it works" },
+  { hash: "#demo", label: "Demo" },
+  { hash: "#privacy", label: "Privacy" },
+  { hash: "#why", label: "Why" },
 ] as const;
 
-export const STEPS = [
-  { title: "Share a moment", body: "A few words about something that happened today. No long journaling." },
-  { title: "See how you reacted", body: "Right away, the app shows you how you met that moment." },
-  { title: "See the pattern", body: "Over weeks, the moments add up. You start to see what you repeat." },
+export const HERO = {
+  kicker: "Neuroditto",
+  lines: ["A fitness tracker", "for your"],
+  key: "mind.",
+  support: "It tracks your thinking patterns and blind spots across every part of your life.",
+};
+
+/** The four story chapters; `bg` is the page colour (a brand token name) for each one. */
+export const CHAPTERS = [
+  { n: "01", title: "Just talk.", body: "Tell your companion about your day in a few words. Say it out loud or type it. That’s all it asks.", bg: "ivory" },
+  { n: "02", title: "Every moment, kept.", body: "Each moment becomes a pebble, coloured by how it felt. A year of them says more than any diary.", bg: "oat" },
+  { n: "03", title: "Your life, on one map.", body: "Work, body, people, play. See which parts of your life quietly pull on each other.", bg: "mist" },
+  { n: "04", title: "See it before it repeats.", body: "When money feels tight, you say yes to more work, and your mornings pay for it. Now you can see it. And choose.", bg: "lavender" },
 ] as const;
 
-export const PATTERNS = [
-  {
-    word: "Jump",
-    body: "You react before you’ve heard the whole thing.",
-    example: "You answered fast in three of your five work moments.",
-    companion: "biscuit",
-    pose: "talking",
-  },
-  {
-    word: "Hesitate",
-    body: "You wait, even when you already know what to do.",
-    example: "You rewrote that message four times before you sent it.",
-    companion: "tomo",
-    pose: "thinking",
-  },
-  {
-    word: "Sure and wrong",
-    body: "You feel certain, so you don’t check. And you miss.",
-    example: "You were certain about the time. It was an hour off.",
-    companion: "mochi",
-    pose: "thinking",
-  },
+/** Chapter 02: how each moment felt, darkest to brightest (token names). */
+export const FELT = [
+  { label: "Hard", token: "ink" },
+  { label: "Heavy", token: "eucalyptus" },
+  { label: "Mixed", token: "dark-text-2" },
+  { label: "Good", token: "jade" },
+  { label: "Wonderful", token: "gold" },
 ] as const;
+/** Example year: one column per month, each number is an index into FELT. */
+export const YEAR = [[3, 2], [1, 3, 3], [2, 4], [3, 3, 4], [4, 2, 3, 3], [1, 2], [3, 4, 4], [2, 3], [4, 4, 3, 2], [0, 1, 2], [3, 4], [4, 3, 4, 4]];
+export const MONTH_TICKS = ["Dec", "Mar", "Jun", "Sep", "Nov"];
 
-/** Example data from the prototype: times you jumped, per week. */
-export const WEEKS = [4, 4, 3, 3, 2, 1] as const;
+/** Chapter 03: life areas (name, weight) and the links between them (from, to, width). */
+export const AREAS: Array<[string, number]> = [["Work", 9], ["Body", 6], ["Partner", 4], ["Family", 5], ["Friends", 3], ["Money", 2], ["Home", 3], ["Play", 1]];
+export const AREA_LINKS: Array<[number, number, number]> = [[0, 1, 3.5], [0, 2, 2.5], [5, 0, 2], [3, 6, 1.5], [1, 7, 1.5]];
+
+/** Chapter 04: the if–then chain. */
+export const CHAIN = [
+  { k: "If", text: "Money feels tight" },
+  { k: "You think", text: "“I should take every chance to get ahead.”", thought: true },
+  { k: "Then you", text: "Say yes to more work, straight away" },
+  { k: "And", text: "Your mornings and evenings get moved" },
+] as const;
+/** true = it happened, false = it didn't. */
+export const STRIP = [true, true, true, false, true];
+
+/** Demo films. Empty `src` shows the placeholder. More than one film shows tabs under the frame. */
+export const FILMS = [
+  { src: "", poster: "", captions: "", label: "One evening, one moment, the pattern it caught" },
+];
+
+/** PLACEHOLDER: waiting for founder confirmation (update prompt, Honesty). Do not make these stronger. */
+export const PRIVACY_LINES = [
+  { title: "Kept here.", body: "What it remembers about you is stored on this phone." },
+  { title: "Words only, only to talk.", body: "When you talk, your words leave so it can answer. Nothing else does." },
+  { title: "Gone in one tap.", body: "Delete everything, any time, from Settings." },
+];
 
 export const STUDY = {
   cite: "Bastani et al., PNAS, 2025",
@@ -88,10 +97,3 @@ export const LINKS = {
   instagram: "https://www.instagram.com/neuroditto.ai/",
   linkedin: "#linkedin-placeholder", // PLACEHOLDER: no LinkedIn URL given yet
 };
-
-export const NAV = [
-  { href: "/#how", label: "How it works" },
-  { href: "/#patterns", label: "Patterns" },
-  { href: "/#companions", label: "Companions" },
-  { href: "/#privacy", label: "Privacy" },
-] as const;

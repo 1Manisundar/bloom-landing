@@ -1,74 +1,28 @@
 ---
-// The one oat section. Phase 2: the moment card drops into the phone shape.
-import SectionLabel from "../components/SectionLabel.astro";
-import Companion from "../components/Companion.astro";
-import { MOMENTS } from "../data/content";
-// Two of the example moments, saved on the phone.
-const saved = [MOMENTS[1], MOMENTS[2]];
+// PLACEHOLDER: the three privacy lines are waiting for founder confirmation. Do not make them stronger.
+import { PRIVACY_LINES } from "../data/content";
 ---
-<section class="section privacy" id="privacy" aria-labelledby="privacy-title">
-  <div class="container privacy__grid">
-    <div class="privacy__art" aria-hidden="true">
-      <div class="phone">
-        <div class="phone__screen">
-          <span class="phone__today">Today</span>
-          {saved.map((m) => (
-            <div class="phone__card">
-              <p class="phone__moment">{m.text}</p>
-              <span class="phone__tag">{m.tag}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <Companion name="button" pose="listening" width={150} decorative class="privacy__button" />
+<section class="priv dark" id="privacy" data-bg="emerald" data-fg="dark-text" aria-labelledby="pv-h">
+  <div class="wrap">
+    <div class="pv-lock rise" aria-hidden="true">
+      <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
     </div>
-    <div class="privacy__copy" data-reveal-group>
-      <div data-reveal><SectionLabel>Privacy</SectionLabel></div>
-      <h2 id="privacy-title" data-reveal>Your data stays on your phone.</h2>
-      <p class="privacy__lead" data-reveal>Neuroditto is a phone app for one person: you. The moments you share stay on your device.</p>
+    <h2 class="pv-h rise" id="pv-h">Your mind stays<br /><em>on your phone.</em></h2>
+    <div class="pv-grid">
+      {PRIVACY_LINES.map((l) => <div class="rise"><b>{l.title}</b><p>{l.body}</p></div>)}
     </div>
   </div>
 </section>
 <style>
-  .privacy { background: var(--c-oat); }
-  .privacy__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-5); align-items: center; }
-  .privacy__art { display: flex; align-items: flex-end; justify-content: center; gap: var(--space-2); }
-  .phone {
-    width: 15rem; aspect-ratio: 9 / 17;
-    background: var(--c-ink);
-    border-radius: 2.5rem;
-    padding: 0.625rem;
-  }
-  .phone__screen {
-    height: 100%;
-    background: var(--c-ivory);
-    border-radius: 2rem;
-    padding: 1.75rem 1rem 1rem;
-    display: flex; flex-direction: column; gap: 0.875rem;
-  }
-  .phone__today { font-family: var(--font-serif); font-weight: 600; font-size: 1.25rem; }
-  .phone__card {
-    background: var(--c-sage); border-radius: var(--r-card);
-    padding: 0.875rem; display: flex; flex-direction: column; gap: 0.625rem; align-items: flex-start;
-  }
-  .phone__moment { font-size: var(--fs-small); line-height: 1.45; }
-  .phone__tag {
-    font-family: var(--font-accent); font-weight: 700; font-size: var(--fs-label);
-    color: var(--primary); padding: 0.125rem 0.625rem;
-    border: 1.5px solid var(--primary); border-radius: var(--r-round);
-  }
-  .privacy__art :global(.privacy__button) { --companion-w: 150px; margin-bottom: -0.5rem; }
-  .privacy__copy { display: flex; flex-direction: column; gap: var(--space-2); }
-  .privacy__copy h2 { max-width: 14ch; }
-  .privacy__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 34ch; }
-
-  @media (max-width: 900px) {
-    .privacy__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
-    .privacy__copy { order: -1; }
-    .privacy__copy h2 { max-width: none; }
-    .privacy__art { justify-content: flex-start; }
-    .phone { width: 12.5rem; }
-    .phone__card + .phone__card { display: none; }
-    .privacy__art :global(.privacy__button) { --companion-w: 112px; }
+  .priv { padding-block: 80px; text-align: center; }
+  .pv-lock { display: grid; place-items: center; margin-bottom: 26px; color: var(--c-light-gold); }
+  .pv-h { font: 600 var(--fs-privacy)/.98 var(--font-serif); letter-spacing: -.04em; }
+  .pv-h em { font-style: italic; font-weight: 500; color: var(--c-light-gold); }
+  .pv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; max-width: 980px; margin: 64px auto 0; text-align: left; }
+  .pv-grid b { font: 600 22px/1.2 var(--font-serif); display: block; margin-bottom: 8px; }
+  .pv-grid p { color: var(--c-dark-text-2); }
+  @media (max-width: 860px) {
+    .priv { padding-block: 56px; }
+    .pv-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; margin-top: 44px; }
   }
 </style>

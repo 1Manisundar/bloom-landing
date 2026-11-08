@@ -1,114 +1,89 @@
 @import "./tokens.css";
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--header-h); }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; scroll-padding-top: var(--navh); }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--pbg);
   color: var(--text);
-  font-family: var(--font-sans);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  font-weight: 400;
+  font: 400 var(--fs-body)/1.6 var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   overflow-x: clip;
 }
+/* The notch area on phones takes the page colour too. */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--pbg); }
 img, svg { display: block; max-width: 100%; }
 h1, h2, h3, p, figure, blockquote, ol, ul, dl, dd { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
 ol, ul { padding: 0; list-style: none; }
 button, input { font: inherit; color: inherit; }
+a { color: inherit; }
 a, button, summary, input, label { touch-action: manipulation; }
-/* Tap feedback comes from each control's own active and focus states. */
 * { -webkit-tap-highlight-color: transparent; }
 
-h1, h2 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: var(--ls-display);
-  text-wrap: balance;
-}
-h2 { font-size: var(--fs-h2); line-height: 1.1; font-weight: 600; }
-h3 { font-size: var(--fs-h3); line-height: 1.25; font-weight: 600; }
-
-a { color: var(--primary); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
-a:hover { text-decoration-thickness: 2px; }
-
-:focus-visible {
-  outline: 3px solid var(--primary);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-.night :focus-visible { outline-color: var(--night-accent); }
-/* Headings take focus after an in-page jump; no ring for a mouse click. */
+:focus-visible { outline: 3px solid var(--c-forest); outline-offset: 3px; border-radius: 10px; }
+.dark :focus-visible { outline-color: var(--c-light-gold); }
 h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
-
 ::selection { background: var(--c-sage); color: var(--c-ink); }
 
-.container {
-  width: 100%;
-  max-width: calc(var(--container) + 2 * var(--gutter));
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-}
-.section { padding-block: var(--section-pad); }
+.wrap { max-width: var(--container); margin: 0 auto; padding-left: var(--gl); padding-right: var(--gr); }
+.sect { padding-block: 72px; }
+.center { text-align: center; display: grid; justify-items: center; gap: 18px; margin-bottom: 40px; }
+.eyebrow { font: 700 12px/1 var(--font-accent); letter-spacing: .14em; text-transform: uppercase; color: var(--accent-text); }
+.h2 { font: 600 var(--fs-h2)/1.02 var(--font-serif); letter-spacing: -.035em; max-width: 18ch; }
+.h2--big { font-size: var(--fs-h2-big); line-height: .98; }
+.h2 em, .h2--big em { font-style: italic; font-weight: 500; color: var(--c-forest); }
+.lead { color: var(--text-2); font-size: var(--fs-lead); max-width: 50ch; }
+.note { font-size: var(--fs-note); color: color-mix(in srgb, var(--pfg) 72%, var(--pbg)); }
 
-.lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 38ch; }
-.muted { color: var(--text-2); }
-.caption { font-size: var(--fs-caption); line-height: 1.5; color: var(--text-2); }
+/* Dark sections (Privacy, Why we build it). Text is fixed light; the page colour behind it blends. */
+.dark { color: var(--c-dark-text); --text: var(--c-dark-text); --text-2: var(--c-dark-text-2); }
+.dark .h2 em, .dark .h2--big em { color: var(--c-light-gold); }
+.dark .eyebrow { color: var(--c-light-gold); }
+
+/* Without the page script, each section paints its own colour (no blending, nothing unreadable). */
+html:not(.js) [data-bg="ivory"] { background: var(--c-ivory); }
+html:not(.js) [data-bg="emerald"] { background: var(--c-emerald); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 24px;
+  border-radius: var(--r-button); border: 0;
+  background: var(--c-forest); color: var(--c-ivory);
+  font: 600 16px/1 var(--font-sans);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--c-forest) 70%, transparent);
+  transition: transform .3s var(--spring), background-color .2s;
+}
+.btn:hover { background: var(--c-emerald); }
+.btn:active { transform: scale(.96); }
+.btn--soft { background: var(--c-sage); color: var(--c-ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-ink) 8%, transparent); }
+.btn--soft:hover { background: color-mix(in srgb, var(--c-sage) 88%, var(--c-ink)); }
+.btn--lg { min-height: 50px; padding: 0 26px; }
+
+/* Reveal: only items below the first screen wait (added by script), so content is never hidden without it. */
+.rise { transition: transform 1s var(--glide), opacity 1s var(--glide); }
+.rise.wait { transform: translateY(40px); opacity: 0; }
 
 .visually-hidden {
-  position: absolute !important;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0);
-  white-space: nowrap; border: 0;
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
-
 .skip-link {
-  position: absolute; left: var(--space-2); top: -100px; z-index: 100;
-  background: var(--primary); color: var(--on-primary);
-  padding: 12px 18px; border-radius: var(--r-button);
-  font-weight: 600; text-decoration: none;
+  position: absolute; left: 16px; top: -100px; z-index: 100;
+  background: var(--c-forest); color: var(--c-ivory);
+  padding: 12px 18px; border-radius: var(--r-button); font-weight: 600; text-decoration: none;
 }
-.skip-link:focus { top: var(--space-2); }
-
-/* The night chapter: deep emerald, light gold, 3% grain (Over weeks ending + Why we build it). */
-.night {
-  position: relative;
-  isolation: isolate;
-  background: var(--night-bg);
-  color: var(--night-text);
-  --text: var(--night-text);
-  --text-2: var(--night-text-2);
-  --primary: var(--night-accent);
-}
-.night::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background-image: var(--grain);
-  opacity: var(--grain-opacity);
-  mix-blend-mode: overlay;
-}
-
-/* Colour-contrast headlines on light sections (approved at Gate B): supporting words in eucalyptus,
-   key words in deep ink. Eucalyptus on ivory is 5.73:1. */
-[data-dim] { color: var(--c-eucalyptus); }
+.skip-link:focus { top: 16px; }
 
 /* Placeholders the founders still have to fill. Visible on purpose. */
-.placeholder {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  background: var(--c-champagne);
-  color: var(--c-ink);
-  padding: 0 0.12em;
-  border-radius: 3px;
+.placeholder { font-family: var(--font-sans); font-weight: 600; background: var(--c-champagne); color: var(--c-ink); padding: 0 .12em; border-radius: 3px; }
+
+@media (max-width: 600px) {
+  .sect { padding-block: 52px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .rise.wait { transform: none; opacity: 1; }
 }

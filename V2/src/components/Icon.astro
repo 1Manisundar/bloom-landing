@@ -1,13 +1,9 @@
 ---
 // Lucide icons (2px stroke), inlined from lucide-static at build time. Decorative unless `label` is given.
-import arrowRight from "lucide-static/icons/arrow-right.svg?raw";
-import smartphone from "lucide-static/icons/smartphone.svg?raw";
 import plus from "lucide-static/icons/plus.svg?raw";
 import externalLink from "lucide-static/icons/external-link.svg?raw";
-import pause from "lucide-static/icons/pause.svg?raw";
-import play from "lucide-static/icons/play.svg?raw";
 
-const ICONS = { "arrow-right": arrowRight, smartphone, plus, "external-link": externalLink, pause, play } as const;
+const ICONS = { plus, "external-link": externalLink } as const;
 interface Props { name: keyof typeof ICONS; size?: number; label?: string; class?: string }
 const { name, size = 20, label, class: cls = "" } = Astro.props;
 const svg = ICONS[name]

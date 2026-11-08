@@ -1,18 +1,26 @@
 ---
 import WaitlistForm from "../components/WaitlistForm.astro";
-import GoldThread from "../components/GoldThread.astro";
+import { JOIN_FACES, companionSrc } from "../data/companions";
 ---
-<section class="section join" id="join" aria-labelledby="join-title">
-  <div class="container join__inner" data-reveal-group>
-    <GoldThread class="join__thread" />
-    <h2 class="join__title" id="join-title" data-reveal>See how you think.</h2>
-    <p class="join__lead" data-reveal>Join the waitlist. We’ll write when there’s something to try.</p>
-    <WaitlistForm />
+<section class="sect" id="join" data-bg="ivory" aria-labelledby="join-h">
+  <div class="wrap">
+    <div class="joinbox rise">
+      <div class="faces2" aria-hidden="true">
+        {JOIN_FACES.map((c) => <img src={companionSrc(c.key, "waving")} width="72" height="86" alt="" loading="lazy" decoding="async" />)}
+      </div>
+      <h2 class="h2" id="join-h">See how you <em>think.</em></h2>
+      <p class="lead">Join the waitlist. We’ll write when there’s something to try.</p>
+      <WaitlistForm />
+    </div>
   </div>
 </section>
 <style>
-  .join__inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-3); }
-  .join__inner :global(.join__thread) { width: 7rem; }
-  .join__title { font-size: var(--fs-h2-why); line-height: 1.06; }
-  .join__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); max-width: 34ch; }
+  .joinbox {
+    background: linear-gradient(180deg, var(--c-sage), color-mix(in srgb, var(--c-sage) 50%, var(--c-ivory)));
+    border-radius: 40px; padding: 72px 24px;
+    text-align: center; display: grid; justify-items: center; gap: 18px;
+  }
+  .faces2 { display: flex; margin-bottom: 6px; }
+  .faces2 img { width: 72px; height: auto; margin-inline: -8px; }
+  @media (max-width: 600px) { .joinbox { border-radius: 30px; padding: 56px 18px; } }
 </style>

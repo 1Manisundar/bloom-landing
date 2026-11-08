@@ -1,70 +1,31 @@
 ---
-import Button from "../components/Button.astro";
-import SectionLabel from "../components/SectionLabel.astro";
-import MomentDemo from "../components/MomentDemo.astro";
-import Icon from "../components/Icon.astro";
+import { HERO } from "../data/content";
 ---
-<section class="hero" id="top" aria-labelledby="hero-title">
-  <div class="container hero__grid">
-    <div class="hero__copy">
-      <SectionLabel>Building in public</SectionLabel>
-      <h1 class="hero__title" id="hero-title">A fitness tracker for your mind.</h1>
-      <p class="hero__support">It tracks your thinking patterns and blind spots across every part of your life.</p>
-      <p class="hero__lead hero__lead--long">Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern.</p>
-      <!-- Phone only: a small waitlist link, so the demo fits on the first screen. -->
-      <a class="hero__link" href="#join">Join the waitlist<Icon name="arrow-right" size={18} /></a>
-      <div class="hero__actions">
-        <Button href="#join" arrow>Join the waitlist</Button>
-        <Button href="#how" variant="secondary">See how it works</Button>
-      </div>
-      <p class="hero__note"><Icon name="smartphone" size={18} />Your data stays on your phone.</p>
-    </div>
-    <div class="hero__demo">
-      <MomentDemo />
+<section class="ph" id="top" data-bg="ivory" aria-labelledby="h1">
+  <div class="wrap ph__in">
+    <p class="ph__kick" translate="no">{HERO.kicker}</p>
+    <h1 class="ph__h1" id="h1">
+      <span class="ln"><span>{HERO.lines[0]}</span></span>
+      <span class="ln"><span>{HERO.lines[1]} <em>{HERO.key}</em></span></span>
+    </h1>
+    <p class="ph__sub">{HERO.support}</p>
+    <div class="ph__ctas">
+      <a class="btn btn--lg" href="#join">Join the waitlist</a>
+      <a class="btn btn--soft btn--lg" href="#story">See how it works</a>
     </div>
   </div>
 </section>
 <style>
-  .hero { padding-block: clamp(3rem, 6vw, 5.5rem) var(--section-pad); }
-  .hero__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: var(--space-5);
-    align-items: center;
-  }
-  .hero__copy { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
-  .hero__title { font-size: var(--fs-hero); line-height: 1.04; max-width: 14ch; }
-  .hero__support { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text); max-width: 34ch; margin-top: calc(-1 * var(--space-1)); }
-  .hero__lead { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text-2); max-width: 40ch; }
-  .hero__link { display: none; }
-
-  .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: var(--space-1); }
-  .hero__note { display: flex; align-items: center; gap: 0.5rem; font-size: var(--fs-small); color: var(--text-2); }
-  .hero__note :global(.icon) { color: var(--primary); flex: none; }
-
-  @media (max-width: 900px) {
-    .hero__grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
-    .hero__demo { max-width: 30rem; }
-  }
-
-  /* Phone: headline, short subline, small link, then the demo, all on the first screen. */
-  @media (max-width: 600px) {
-    .hero { padding-top: var(--space-2); }
-    .hero__grid { gap: var(--space-2); }
-    .hero__copy { display: contents; }
-    .hero__copy > :global(.label) { order: 1; }
-    .hero__title { order: 2; max-width: none; }
-    .hero__lead--long, .hero__actions { display: none; }
-    .hero__support { order: 3; font-size: var(--fs-body); line-height: 1.5; margin-top: 0; max-width: none; }
-    /* Phone: the support line stands in for the steps line, so the demo stays on the first screen. */
-    .hero__link {
-      order: 4; display: inline-flex; align-items: center; gap: 0.375rem;
-      min-height: 44px; justify-self: start;
-      font-weight: 600; color: var(--primary); text-decoration: underline; text-underline-offset: 0.2em;
-    }
-    .hero__link :global(.icon) { transition: transform var(--dur) var(--ease); }
-    .hero__link:hover :global(.icon) { transform: translateX(4px); }
-    .hero__demo { order: 5; max-width: none; }
-    .hero__note { order: 6; margin-top: var(--space-1); }
-  }
+  .ph { padding: clamp(56px, 11vh, 120px) 0 clamp(24px, 5vh, 56px); text-align: center; }
+  .ph__in { display: grid; justify-items: center; gap: 22px; }
+  .ph__kick { font: 700 13px/1 var(--font-accent); letter-spacing: .2em; text-transform: uppercase; color: var(--accent-text); animation: phIn .9s var(--glide) both; }
+  .ph__h1 { font: 600 var(--fs-hero)/.92 var(--font-serif); letter-spacing: -.045em; }
+  .ln { display: block; overflow: hidden; padding-bottom: .08em; }
+  .ln > span { display: block; animation: phUp 1.3s var(--glide) both; }
+  .ln:nth-child(2) > span { animation-delay: .1s; }
+  .ph__h1 em { font-style: italic; font-weight: 500; color: var(--c-forest); }
+  .ph__sub { font-size: clamp(17px, 1.6vw, 22px); color: var(--text-2); max-width: 36ch; animation: phIn .9s .35s var(--glide) both; }
+  .ph__ctas { margin-top: 8px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; animation: phIn .9s .5s var(--glide) both; }
+  @keyframes phUp { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes phIn { from { opacity: .001; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 </style>

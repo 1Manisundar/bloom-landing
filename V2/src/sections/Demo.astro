@@ -1,0 +1,17 @@
+---
+import DemoFilm from "../components/DemoFilm.astro";
+import { FILMS } from "../data/content";
+---
+<section class="sect demo" id="demo" data-bg="ivory" aria-labelledby="dm-h">
+  <div class="wrap">
+    <div class="center rise">
+      <h2 class="h2 h2--big" id="dm-h">Watch it <em>notice.</em></h2>
+      <p class="lead">One evening. One moment. The pattern it caught.</p>
+    </div>
+    <div class="rise"><DemoFilm films={FILMS} /></div>
+  </div>
+</section>
+<style>
+  .demo { padding-block: 72px 40px; }
+  @media (max-width: 860px) { .demo { padding-block: 52px 20px; } }
+</style>

@@ -1,8 +1,8 @@
 // Tests every header nav link at 1440x900, 1366x768 and 390x844, with and without reduced motion.
 // Each link is clicked from the top of the page and again from the bottom (so jumps cross the pinned
-// "Over weeks" scene both ways). After the scroll settles it checks:
+// story both ways). On phones the links are in the menu, which is opened first. After the scroll
+// settles it checks:
 //   - the section's top sits flush under the header (within 2px), no strip of the previous section;
-//   - the header is in the right light/dark state;
 //   - keyboard focus is on the section's heading.
 // Usage: npm run build && node scripts/navtest.mjs <folder>   (screenshots to shots/<folder>/)
 
@@ -18,8 +18,8 @@ const VIEWS = [
   { name: "laptop", width: 1366, height: 768 },
   { name: "phone", width: 390, height: 844, mobile: true },
 ];
-const LINKS = ["how", "patterns", "companions", "privacy"];
-const SHOOT = new Set(["companions", "privacy"]);
+const LINKS = ["story", "demo", "privacy", "why"];
+const SHOOT = new Set(["demo", "privacy"]);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const failures = [];
 const rows = [];
@@ -61,29 +61,27 @@ try {
             window.__nd?.jump ? window.__nd.jump(y) : window.scrollTo(0, y);
           }, from);
           await sleep(300);
-          await page.click(`.site-header__links a[href$="#${id}"]`);
+          if (view.mobile) { await page.click("#menuBtn"); await page.click(`#dropMenu a[href$="#${id}"]`); }
+          else await page.click(`.links a[href$="#${id}"]`);
           await settle(page);
 
           const m = await page.evaluate((sid) => {
-            const header = document.querySelector(".site-header");
+            const header = document.getElementById("nav");
             const hb = header.getBoundingClientRect().bottom;
             const section = document.getElementById(sid);
             const st = section.getBoundingClientRect().top;
             const under = document.elementsFromPoint(innerWidth / 2, hb + 2).find((el) => !header.contains(el));
             const underSection = under?.closest("section, footer")?.id ?? "(none)";
             const heading = section.querySelector("h2, h1");
-            const toneEl = under?.closest("[data-tone]");
             return {
               delta: Math.round(st - hb),
               underSection,
-              headerTone: header.dataset.tone,
-              expectTone: toneEl?.dataset.tone ?? "day",
               focusOnHeading: document.activeElement === heading,
               focused: document.activeElement?.tagName + (document.activeElement?.id ? `#${document.activeElement.id}` : ""),
             };
           }, id);
-          const ok = Math.abs(m.delta) <= 2 && m.underSection === id && m.headerTone === m.expectTone && m.focusOnHeading;
-          rows.push(`${ok ? "PASS" : "FAIL"}  ${tag.padEnd(16)} from ${from.padEnd(6)} → ${id.padEnd(10)} gap ${String(m.delta).padStart(4)}px  under-header: ${m.underSection.padEnd(10)} tone ${m.headerTone}/${m.expectTone}  focus: ${m.focusOnHeading ? "heading" : m.focused}`);
+          const ok = Math.abs(m.delta) <= 2 && m.underSection === id && m.focusOnHeading;
+          rows.push(`${ok ? "PASS" : "FAIL"}  ${tag.padEnd(16)} from ${from.padEnd(6)} → ${id.padEnd(10)} gap ${String(m.delta).padStart(4)}px  under-header: ${m.underSection.padEnd(10)} focus: ${m.focusOnHeading ? "heading" : m.focused}`);
           if (!ok) failures.push(`${tag} ${from}→${id}`);
           if (from === "top" && SHOOT.has(id)) await page.screenshot({ path: resolve(OUT, `${tag}-${id}.png`) });
         }

@@ -1,20 +1,9 @@
-// Names, roles, sample lines and alt text come only from the exported companions.json.
+// Names and alt text come only from the exported companions.json. Art is only the real SVG files.
 import raw from "../../public/companions/companions.json";
 
-export interface Companion {
-  key: string;
-  name: string;
-  type: string;
-  role: string;      // e.g. "The Listener"
-  bestFor: string;   // e.g. "best for venting"
-  greeting: string;  // the sample line
-  alt: string;
-}
+export interface Companion { key: string; name: string; alt: string }
 
-const all: Companion[] = (raw as Array<Record<string, string>>).map((c) => {
-  const [role, bestFor = ""] = c.role.split(" · ");
-  return { key: c.key, name: c.name, type: c.type, role, bestFor, greeting: c.greeting, alt: c.alt };
-});
+const all: Companion[] = (raw as Array<Record<string, string>>).map((c) => ({ key: c.key, name: c.name, alt: c.alt }));
 
 // Jyothi does not want Nimbus used anywhere on the site.
 const BANNED = new Set(["nimbus"]);
@@ -26,16 +15,20 @@ export function companion(key: string): Companion {
   return found;
 }
 
-export type Pose =
-  | "front" | "idle" | "listening" | "thinking" | "talking"
-  | "waving" | "discovering" | "reading" | "writing" | "sleeping";
+export type Pose = "front" | "waving";
 
-/** Path to a real exported SVG. Only `animated: true` returns a moving file. */
+/** Path to a real exported SVG. Only `animated: true` returns a moving file (one on screen at a time). */
 export function companionSrc(key: string, pose: Pose = "front", animated = false): string {
   companion(key);
   if (pose === "front") return `/companions/${key}/${key}.svg`;
   return `/companions/${key}/actions/${key}-${pose}${animated ? "" : "-still"}.svg`;
 }
 
-// The shelf: 8 companions. Not Nimbus; not Dev (his sample line quotes invented numbers).
-export const SHELF = ["mira", "hoot", "biscuit", "tomo", "lumo", "sprout", "mochi", "latte"].map(companion);
+/** Face tiles use light brand tints in turn (the kit's 20 colours only). */
+export const TINTS = ["sage", "mist", "lavender", "blush", "oat", "champagne"] as const;
+
+// The two scrolling rows, in the reference page's order (29 companions, no Nimbus).
+export const ROW_A = ["mira", "kai", "nani", "pop", "anand", "theo", "ren", "luna", "amara", "dev", "zara", "jamal", "leila", "obi"].map(companion);
+export const ROW_B = ["mochi", "hoot", "biscuit", "tomo", "ember", "pip", "nellie", "pebble", "hazel", "leo", "lumo", "sprout", "button", "nova", "latte"].map(companion);
+export const BENTO_FACES = ["mira", "hoot", "mochi", "kai", "sprout", "nani"].map(companion);
+export const JOIN_FACES = ["biscuit", "hoot", "mira"].map(companion);

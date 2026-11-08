@@ -5,7 +5,6 @@
 // the form says so. With an endpoint, the email is POSTed as JSON ({ "email": "..." }); the page says
 // "You're on the list" ONLY after the endpoint answers with a 2xx status. Anything else is an error,
 // and the error message says plainly that the address was not saved.
-import Button from "./Button.astro";
 const endpoint = (import.meta.env.PUBLIC_WAITLIST_URL ?? "").trim();
 ---
 <form class="waitlist" id="waitlist" novalidate data-state={endpoint ? "idle" : "closed"} data-endpoint={endpoint || undefined}>
@@ -27,45 +26,48 @@ const endpoint = (import.meta.env.PUBLIC_WAITLIST_URL ?? "").trim();
     <label for="waitlist-company">Company</label>
     <input id="waitlist-company" name="company" type="text" tabindex="-1" autocomplete="off" />
   </div>
-  <Button type="submit" id="waitlist-submit"><span data-label-idle>Join the waitlist</span><span data-label-busy hidden>Sending…</span></Button>
+  <button class="btn" type="submit" id="waitlist-submit"><span data-label-idle>Join the waitlist</span><span data-label-busy hidden>Sending…</span></button>
   <p class="waitlist__status" id="waitlist-status" role="status" aria-live="polite"></p>
   <p class="waitlist__note" id="waitlist-note">We’ll only email you about <span translate="no">Neuroditto</span>. Leave anytime.</p>
 </form>
 <style>
-  .waitlist { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; width: 100%; max-width: 34rem; }
+  .waitlist { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: min(520px, 100%); }
   .waitlist__input {
-    flex: 1 1 16rem; min-width: 0; min-height: 48px;
-    padding: 0 1.125rem;
-    border-radius: var(--r-button);
-    border: 1.5px solid var(--text-2);
-    background: var(--c-ivory); color: var(--text);
-    font-size: var(--fs-body);
-    transition: border-color var(--dur-fast) var(--ease);
+    flex: 1 1 16rem; min-width: 0; min-height: 52px; padding: 0 16px;
+    border-radius: var(--r-button); border: 1px solid var(--c-border);
+    background: var(--card); color: var(--c-ink);
+    font: 500 17px var(--font-sans);
+    transition: border-color .2s, box-shadow .2s;
   }
-  .waitlist__input::placeholder { color: var(--text-2); }
-  .waitlist__input:hover { border-color: var(--text); }
-  .waitlist__input:focus-visible { border-color: var(--primary); outline-offset: 2px; }
+  .waitlist__input::placeholder { color: var(--c-eucalyptus); }
+  .waitlist__input:hover { border-color: var(--c-eucalyptus); }
+  .waitlist__input:focus-visible { outline: none; border-color: var(--c-forest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-forest) 30%, transparent); }
   .waitlist__input[aria-invalid="true"] { border-color: var(--c-bronze); }
-  .waitlist__input:disabled { opacity: 0.7; }
-  .waitlist__trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; } /* taste-skill-ignore: off-screen spam trap, not a rule */
-  @media (max-width: 480px) { .waitlist :global(.btn) { flex: 1 1 100%; } }
-  .waitlist :global(.btn [hidden]) { display: none; }
-  .waitlist[data-state="sending"] :global(.btn) { cursor: progress; opacity: 0.85; }
-  .waitlist__status { flex-basis: 100%; color: var(--text-2); font-size: var(--fs-small); }
+  .waitlist__input:disabled { opacity: .7; }
+  .waitlist .btn { min-height: 52px; }
+  .waitlist__trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .waitlist .btn [hidden] { display: none; }
+  .waitlist[data-state="sending"] .btn { cursor: progress; opacity: .85; }
+  .waitlist__status { flex-basis: 100%; font-weight: 600; color: var(--c-forest); }
   .waitlist__status:empty { display: none; }
   /* Joined: the one success state, shown only after a real save. */
   .waitlist[data-state="joined"] .waitlist__status {
-    background: var(--c-sage); color: var(--text);
-    border-radius: var(--r-card); padding: 1rem 1.375rem;
-    font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-lead);
+    background: var(--card); color: var(--c-ink);
+    border-radius: var(--r-card); padding: 16px 22px;
+    font: 500 var(--fs-lead) var(--font-serif);
   }
-  .waitlist[data-state="error"] .waitlist__status { color: var(--text); }
+  .waitlist[data-state="error"] .waitlist__status { color: var(--c-ink); }
   /* While sending, the button says "Sending…"; the status line keeps it for screen readers only. */
   .waitlist[data-state="sending"] .waitlist__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* After a real save, the field and button go; only the confirmation stays. */
-  .waitlist[data-state="joined"] .waitlist__input, .waitlist[data-state="joined"] :global(.btn) { display: none; }
+  .waitlist[data-state="joined"] .waitlist__input, .waitlist[data-state="joined"] .btn { display: none; }
   .waitlist__status:focus:not(:focus-visible) { outline: none; }
-  .waitlist__note { flex-basis: 100%; font-size: var(--fs-caption); color: var(--text-2); }
+  .waitlist__note { flex-basis: 100%; font-size: 14px; color: var(--c-eucalyptus); }
+  /* Phone: one column. Last in the block so it wins over the flex-basis rules above. */
+  @media (max-width: 600px) {
+    .waitlist { flex-direction: column; flex-wrap: nowrap; }
+    .waitlist__input, .waitlist__status, .waitlist__note { flex: none; }
+  }
 </style>
 <script>
   type State = "idle" | "sending" | "joined" | "error" | "closed";

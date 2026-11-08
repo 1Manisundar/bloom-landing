@@ -1,76 +1,45 @@
 ---
-// The night chapter (Dark Luxury, re-coloured): colour-contrast Fraunces headline,
-// gold thread under "think for yourself", the real PNAS numbers, one soft champagne glow, 3% grain.
-// Phase 2 adds the count-up and the thread drawing; the numbers below are the final values.
-import SectionLabel from "../components/SectionLabel.astro";
-import GoldThread from "../components/GoldThread.astro";
+// Why we build it: the current words and the real PNAS numbers, restyled to the product page.
 import Icon from "../components/Icon.astro";
 import { STUDY } from "../data/content";
 ---
-<section class="night why" id="why" data-tone="night" aria-labelledby="why-title">
-  <div class="container why__inner">
-    <SectionLabel tone="night">Why we’re building it</SectionLabel>
-    <h2 class="why__title" id="why-title">
-      <span class="why__dim">Most AI tools think for you.</span>{" "}<span class="why__bright">Neuroditto helps you</span>{" "}<span class="why__key">think for yourself.<GoldThread tone="night" class="why__thread" /><span class="why__glow" aria-hidden="true"></span></span>
-    </h2>
-
-    <dl class="why__stats">
-      <div class="stat">
+<section class="sect why dark" id="why" data-bg="emerald" data-fg="dark-text" aria-labelledby="why-h">
+  <div class="wrap">
+    <div class="center rise">
+      <p class="eyebrow">Why we’re building it</p>
+      <h2 class="h2" id="why-h"><span class="why__dim">Most AI tools think for you.</span> Neuroditto helps you <em>think for yourself.</em></h2>
+    </div>
+    <dl class="why__grid">
+      <div class="stat rise">
         <dt class="stat__label">Students in the study</dt>
-        <dd class="stat__pre">about</dd>
-        <dd class="stat__num"><span aria-hidden="true" data-count="1000">1,000</span><span class="visually-hidden">1,000</span></dd>
+        <dd class="stat__num"><small>about</small><span aria-hidden="true" data-count="1000">1,000</span><span class="visually-hidden">1,000</span></dd>
       </div>
-      <div class="stat">
+      <div class="stat rise">
         <dt class="stat__label">Lower scores once answer-giving AI was taken away</dt>
-        <dd class="stat__num stat__num--key"><span aria-hidden="true" data-count="17" data-suffix="%">17%</span><span class="visually-hidden">17%</span></dd>
+        <dd class="stat__num"><span aria-hidden="true" data-count="17" data-suffix="%">17%</span><span class="visually-hidden">17%</span></dd>
       </div>
     </dl>
-
-    <p class="why__body">In a study of about 1,000 students, AI that gave answers made students score 17% worse once it was taken away. The same AI, built to give hints, largely avoided that drop. AI isn’t the problem. How it’s built is.</p>
-    <p class="why__source">
+    <p class="why__body rise">In a study of about 1,000 students, AI that gave answers made students score 17% worse once it was taken away. The same AI, built to give hints, largely avoided that drop. AI isn’t the problem. How it’s built is.</p>
+    <p class="why__src rise">
       <a href={STUDY.url} rel="noopener" target="_blank">{STUDY.cite}<Icon name="external-link" size={16} /><span class="visually-hidden"> (opens in a new tab)</span></a>
     </p>
   </div>
 </section>
 <style>
-  .why { padding-block: calc(var(--section-pad) * 0.5) var(--section-pad); overflow: clip; }
-  .why__glow {
-    position: absolute; z-index: -1; pointer-events: none;
-    width: 18rem; height: 18rem; right: -9rem; bottom: -9rem;
-    border-radius: 50%;
-    background: var(--c-champagne);
-    opacity: var(--glow-opacity);
-    filter: blur(90px);
-  }
-  .why__inner { display: flex; flex-direction: column; gap: var(--space-4); }
-  .why__title { font-size: var(--fs-h2-why); line-height: 1.12; display: block; }
-  .why__dim { color: var(--night-text-2); display: block; }
-  .why__bright { color: var(--night-text); }
-  .why__key { color: var(--night-accent); position: relative; display: inline-block; white-space: nowrap; }
-  .why__key :global(.why__thread) { position: absolute; left: 0; right: 0; bottom: -0.32em; width: 100%; }
-
-  .why__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); max-width: 52rem; margin-top: var(--space-2); }
+  .why__dim { color: var(--c-dark-text-2); }
+  .why__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
   .stat {
-    background: var(--night-card);
-    box-shadow: var(--night-card-edge); /* taste-skill-ignore: adapter night card = inset top highlight */
-    border-radius: var(--r-card);
-    padding: var(--space-4) var(--space-3) var(--space-3);
-    display: flex; flex-direction: column; gap: var(--space-1); justify-content: flex-end;
+    background: var(--c-dark-card); border-radius: 28px; padding: 30px;
+    display: flex; flex-direction: column; gap: 8px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-dark-text) 6%, transparent);
     container-type: inline-size;
   }
   /* Sized to its own card: "1,000" in Syne 800 is about 4.2em wide, so 22cqi always fits. */
-  .stat__num { order: 2; font-variant-numeric: tabular-nums; font-family: var(--font-accent); font-weight: 800; font-size: min(var(--fs-number), 22cqi); line-height: 1; margin-left: -0.06em; /* optical: Syne digits carry left side-bearing */ letter-spacing: -0.02em; color: var(--night-text); }
-  .stat__num--key { color: var(--night-accent); }
-  .stat__pre { order: 1; margin-bottom: -0.25rem; font-family: var(--font-sans); font-weight: 500; font-size: var(--fs-lead); letter-spacing: 0; color: var(--night-text-2); }
-  .stat__label { order: 3; font-size: var(--fs-small); color: var(--night-text-2); max-width: 26ch; }
-
-  .why__body { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--night-text-2); max-width: 54ch; }
-  .why__source a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; color: var(--night-accent); font-size: var(--fs-small); font-weight: 500; }
-
-  @media (max-width: 640px) {
-    .why__stats { grid-template-columns: minmax(0, 1fr); }
-    .why__key { white-space: normal; }
-    .why__dim { display: inline; }
-    .why__glow { width: 12rem; height: 12rem; right: -4rem; bottom: -6rem; }
-  }
+  .stat__num { order: 1; font: 800 min(clamp(64px, 8vw, 112px), 22cqi)/.85 var(--font-accent); color: var(--c-light-gold); font-variant-numeric: tabular-nums; margin-left: -.04em; }
+  .stat__num small { display: block; font: 500 var(--fs-lead)/1.2 var(--font-sans); color: var(--c-dark-text-2); margin-bottom: 10px; }
+  .stat__label { order: 2; color: var(--c-dark-text-2); max-width: 30ch; }
+  .why__body { color: var(--c-dark-text-2); font-size: var(--fs-lead); max-width: 54ch; margin: 36px auto 0; text-align: center; }
+  .why__src { text-align: center; margin-top: 20px; }
+  .why__src a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--c-light-gold); font-size: var(--fs-small); font-weight: 500; }
+  @media (max-width: 860px) { .why__grid { grid-template-columns: minmax(0, 1fr); } }
 </style>

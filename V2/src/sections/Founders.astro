@@ -1,55 +1,54 @@
 ---
-import SectionLabel from "../components/SectionLabel.astro";
+// Founders + FAQ: the current words, restyled (ivory, big Fraunces headings, white rounded cards).
 import FAQ from "../components/FAQ.astro";
 import { FOUNDERS, LINKS } from "../data/content";
 ---
-<section class="section founders" id="founders" aria-labelledby="founders-title">
-  <div class="container founders__grid" data-reveal-group>
-    <div class="founders__card" data-reveal>
-      <SectionLabel>The founders</SectionLabel>
-      <h2 id="founders-title">Built in public by Jyothi and Krishna.</h2>
-      <p class="founders__lead">We share what we build, what we learn and what goes wrong. Follow along.</p>
-      <p class="founders__follow"><a href={LINKS.instagram} rel="noopener" target="_blank">@neuroditto.ai on Instagram<span class="visually-hidden"> (opens in a new tab)</span></a></p>
-      <ul class="founders__people" role="list">
-        {FOUNDERS.map((f) => (
-          <li class="person">
-            <!-- PLACEHOLDER: founder photo -->
-            <div class="person__photo" role="img" aria-label={`Photo placeholder for ${f.name}`}>Photo</div>
-            <div>
-              <p class="person__name">{f.name}</p>
-              <p class="person__role">{f.role}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+<section class="sect founders" id="founders" data-bg="ivory" aria-labelledby="founders-h">
+  <div class="wrap">
+    <div class="center rise">
+      <p class="eyebrow">The founders</p>
+      <h2 class="h2" id="founders-h">Built in public by Jyothi and Krishna.</h2>
+      <p class="lead">We share what we build, what we learn and what goes wrong. Follow along.</p>
+      <a class="btn btn--soft" href={LINKS.instagram} rel="noopener" target="_blank">@neuroditto.ai on Instagram<span class="visually-hidden"> (opens in a new tab)</span></a>
     </div>
-    <div class="founders__faq" data-reveal>
-      <h2 class="faq-title" id="faq-title">Questions people ask us</h2>
-      <FAQ />
+    <ul class="people" role="list">
+      {FOUNDERS.map((f) => (
+        <li class="person rise">
+          <!-- PLACEHOLDER: founder photo -->
+          <div class="person__photo" role="img" aria-label={`Photo placeholder for ${f.name}`}>Photo</div>
+          <div>
+            <p class="person__name">{f.name}</p>
+            <p class="person__role">{f.role}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <div class="faq-block">
+      <h2 class="h2 faq-h rise" id="faq-h">Questions people ask us</h2>
+      <div class="rise"><FAQ /></div>
     </div>
   </div>
 </section>
 <style>
-  .founders__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: start; }
-  .founders__card {
-    background: var(--c-blush); border-radius: var(--r-panel);
-    padding: clamp(1.75rem, 3.5vw, 3rem);
-    display: flex; flex-direction: column; gap: var(--space-2);
+  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; max-width: 760px; margin: 0 auto; }
+  .person {
+    background: var(--card); border-radius: var(--r-tile); padding: 24px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-ink) 5%, transparent), 0 30px 60px -44px var(--shadow-ink);
   }
-  .founders__card h2 { font-size: clamp(1.875rem, 1.6rem + 0.8vw, 2.25rem); line-height: 1.15; }
-  .founders__lead { color: var(--text-2); }
-  .founders__follow a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
-  .founders__people { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
-  .person { display: flex; align-items: center; gap: 0.75rem; }
   .person__photo {
-    width: 64px; height: 64px; border-radius: 50%; flex: none;
-    background: var(--c-ivory); border: 2px dashed var(--c-jade);
-    display: grid; place-items: center;
-    font-size: var(--fs-label); color: var(--text-2);
+    width: 72px; height: 72px; border-radius: 50%; flex: none;
+    background: var(--c-blush); border: 2px dashed var(--c-jade);
+    display: grid; place-items: center; font-size: var(--fs-note); color: var(--text-2);
   }
-  .person__name { font-weight: 700; }
-  .person__role { font-size: var(--fs-small); color: var(--text-2); }
-  .founders__faq { display: flex; flex-direction: column; gap: var(--space-3); }
-  .faq-title { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); line-height: 1.25; letter-spacing: 0; }
-  @media (max-width: 900px) { .founders__grid { grid-template-columns: minmax(0, 1fr); } }
+  .person__name { font: 600 24px/1.1 var(--font-serif); letter-spacing: -.02em; }
+  .person__role { font-size: var(--fs-small); color: var(--text-2); margin-top: 4px; }
+  .faq-block { margin-top: 96px; display: grid; justify-items: center; gap: 40px; }
+  .faq-h { text-align: center; }
+  .faq-block > div { width: 100%; max-width: 820px; }
+  @media (max-width: 600px) {
+    .people { grid-template-columns: minmax(0, 1fr); }
+    .faq-block { margin-top: 64px; gap: 28px; }
+  }
 </style>

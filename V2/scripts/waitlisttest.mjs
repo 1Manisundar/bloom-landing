@@ -49,7 +49,7 @@ async function openPage(port) {
   await page.evaluate(() => window.__nd?.ready);
   await page.evaluate(() => {
     const el = document.getElementById("join");
-    window.__nd.jump(el.getBoundingClientRect().top + scrollY - document.querySelector(".site-header").offsetHeight);
+    window.__nd.jump(el.getBoundingClientRect().top + scrollY - document.getElementById("nav").offsetHeight);
   });
   await sleep(900);
   return { page, posts };

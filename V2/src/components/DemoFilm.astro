@@ -1,0 +1,151 @@
+---
+// The demo film frame: 16:9, max 1100px, deep emerald.
+// Empty `src` shows the placeholder. With `src`: a muted, looping <video> that plays only while the
+// frame is on screen, with visible play/pause and sound buttons. With reduced motion it never
+// autoplays; the person presses play.
+// More than one film: pass `films` (same fields); tabs appear under the frame.
+interface Film { src: string; poster?: string; captions?: string; label: string }
+interface Props extends Partial<Film> { films?: Film[] }
+const { src = "", poster = "", captions = "", label = "Demo film", films } = Astro.props;
+const list: Film[] = films?.length ? films : [{ src, poster, captions, label }];
+const first = list[0];
+---
+<figure class="film" data-film>
+  <div class="film__frame">
+    {first.src ? (
+      <>
+        <video
+          class="film__video"
+          src={first.src}
+          poster={first.poster || undefined}
+          muted
+          playsinline
+          loop
+          preload="none"
+          aria-label={first.label}
+        >
+          {first.captions && <track kind="captions" src={first.captions} srclang="en" label="English" default />}
+        </video>
+        <div class="film__ctrl">
+          <button class="film__btn" type="button" data-film-play aria-label="Play the film">
+            <svg class="i-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+            <svg class="i-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+          </button>
+          <button class="film__btn" type="button" data-film-sound aria-label="Turn sound on" aria-pressed="false">
+            <svg class="i-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path d="m22 9-6 6M16 9l6 6" /></svg>
+            <svg class="i-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" /></svg>
+          </button>
+        </div>
+      </>
+    ) : (
+      // PLACEHOLDER: the demo film is added later.
+      <div class="film__ph" role="img" aria-label="Placeholder: the demo film goes here">
+        <span class="film__play" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg></span>
+        <b>Demo film goes here</b>
+        <small>16:9 · about 18 seconds · MP4 + poster image</small>
+      </div>
+    )}
+  </div>
+  {list.length > 1 && (
+    <div class="film__tabs" role="tablist" aria-label="Films">
+      {list.map((f, i) => (
+        <button type="button" role="tab" class="film__tab" aria-selected={i === 0 ? "true" : "false"}
+          data-src={f.src} data-poster={f.poster} data-captions={f.captions} data-label={f.label}>{f.label}</button>
+      ))}
+    </div>
+  )}
+  <figcaption class="note">Example person and example data.</figcaption>
+</figure>
+
+<style>
+  .film { margin: 0 auto; max-width: 1100px; display: grid; gap: 12px; }
+  .film__frame {
+    position: relative; aspect-ratio: 16 / 9; border-radius: 32px; overflow: hidden;
+    background: var(--c-emerald);
+    box-shadow: 0 50px 90px -50px color-mix(in srgb, var(--c-emerald) 70%, transparent);
+  }
+  .film__video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .film__ph {
+    position: absolute; inset: 0;
+    background: radial-gradient(60% 70% at 50% 40%, var(--c-dark-card), var(--c-emerald));
+    display: grid; place-content: center; justify-items: center; gap: 12px;
+    color: var(--c-dark-text); text-align: center; padding: 20px;
+    outline: 2px dashed color-mix(in srgb, var(--c-light-gold) 45%, transparent); outline-offset: -14px; border-radius: inherit;
+  }
+  .film__play { width: 78px; height: 78px; border-radius: 50%; background: var(--c-light-gold); color: var(--c-emerald); display: grid; place-items: center; padding-left: 4px; box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-light-gold) 18%, transparent); }
+  .film__ph b { font: 600 clamp(20px, 2.4vw, 30px)/1.1 var(--font-serif); }
+  .film__ph small { font-size: 14px; color: var(--c-dark-text-2); }
+  .film__ctrl { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 8px; }
+  .film__btn {
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center;
+    background: color-mix(in srgb, var(--c-emerald) 70%, transparent); color: var(--c-dark-text);
+    backdrop-filter: blur(8px);
+  }
+  .film__btn:focus-visible { outline-color: var(--c-light-gold); }
+  .film__btn .i-pause, .film[data-playing] .film__btn .i-play { display: none; }
+  .film[data-playing] .film__btn .i-pause { display: block; }
+  .film__btn .i-on, .film[data-sound] .film__btn .i-off { display: none; }
+  .film[data-sound] .film__btn .i-on { display: block; }
+  .film__tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .film__tab { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; cursor: pointer; background: var(--c-sage); color: var(--c-ink); font-weight: 600; }
+  .film__tab[aria-selected="true"] { background: var(--c-forest); color: var(--c-ivory); }
+  .film .note { text-align: center; }
+  @media (max-width: 860px) {
+    .film__frame { border-radius: 22px; }
+    .film__ph { outline-offset: -9px; gap: 8px; }
+    .film__play { width: 56px; height: 56px; box-shadow: 0 0 0 7px color-mix(in srgb, var(--c-light-gold) 18%, transparent); }
+    .film__ph small { font-size: 12px; }
+    .film__ctrl { right: 10px; bottom: 10px; }
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  for (const fig of document.querySelectorAll<HTMLElement>("[data-film]")) {
+    const video = fig.querySelector<HTMLVideoElement>("video");
+    if (!video) continue;
+    const play = fig.querySelector<HTMLButtonElement>("[data-film-play]")!;
+    const sound = fig.querySelector<HTMLButtonElement>("[data-film-sound]")!;
+    let onScreen = false;
+    let userPaused = false; // the person pressed pause: stay paused until they press play
+    const sync = () => {
+      fig.toggleAttribute("data-playing", !video.paused);
+      play.setAttribute("aria-label", video.paused ? "Play the film" : "Pause the film");
+    };
+    video.addEventListener("play", sync);
+    video.addEventListener("pause", sync);
+    play.addEventListener("click", () => {
+      if (video.paused) { userPaused = false; video.play().catch(() => {}); }
+      else { userPaused = true; video.pause(); }
+    });
+    sound.addEventListener("click", () => {
+      video.muted = !video.muted;
+      fig.toggleAttribute("data-sound", !video.muted);
+      sound.setAttribute("aria-pressed", String(!video.muted));
+      sound.setAttribute("aria-label", video.muted ? "Turn sound on" : "Turn sound off");
+    });
+    // Plays only while the frame is on screen; never on its own with reduced motion.
+    new IntersectionObserver(([en]) => {
+      onScreen = en.isIntersecting;
+      if (onScreen && !userPaused && !reduce.matches) video.play().catch(() => {});
+      if (!onScreen && !video.paused) video.pause();
+    }, { threshold: 0.4 }).observe(fig);
+
+    // Tabs (only rendered with more than one film).
+    const tabs = [...fig.querySelectorAll<HTMLButtonElement>(".film__tab")];
+    tabs.forEach((tab) => tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+      video.pause();
+      video.src = tab.dataset.src ?? "";
+      video.poster = tab.dataset.poster ?? "";
+      video.setAttribute("aria-label", tab.dataset.label ?? "");
+      video.querySelector("track")?.remove();
+      if (tab.dataset.captions) {
+        const track = Object.assign(document.createElement("track"), { kind: "captions", src: tab.dataset.captions, srclang: "en", label: "English", default: true });
+        video.append(track);
+      }
+      if (onScreen && !reduce.matches) { userPaused = false; video.play().catch(() => {}); }
+    }));
+  }
+</script>

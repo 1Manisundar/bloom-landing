@@ -9,8 +9,8 @@ const updated = "3 November 2026";
   description="What the Neuroditto website and waitlist store (your email and sign-up date), who can see it, and how to be removed. In the Neuroditto app, your data stays on your phone."
   path="/privacy"
 >
-  <section class="section policy" aria-labelledby="privacy-title">
-    <div class="container policy__inner">
+  <section class="sect policy" data-bg="ivory" aria-labelledby="privacy-title">
+    <div class="wrap policy__inner">
       <h1 id="privacy-title">Privacy</h1>
       <p class="policy__lead">Two parts: this website with its waitlist, and the Neuroditto app.</p>
 
@@ -30,23 +30,22 @@ const updated = "3 November 2026";
         <p>Your data stays on your phone.</p>
       </section>
 
-      <p class="caption">Last updated {updated}.</p>
+      <p class="note">Last updated {updated}.</p>
       <p><a href="/">Back to the home page</a></p>
     </div>
   </section>
 </Base>
 <style>
-  /* Same left edge as the header and every home-page section; the reading column stays 680px. */
-  .policy__inner { display: flex; flex-direction: column; gap: var(--space-2); }
-  .policy__inner > * { max-width: var(--prose); }
-  .policy h1 { font-size: var(--fs-hero); line-height: 1.04; margin-bottom: var(--space-1); }
-  .policy__lead { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text-2); margin-bottom: var(--space-3); }
-  .policy__part { border-top: var(--hairline); padding-block: var(--space-3) var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
-  .policy__part h2 { font-family: var(--font-sans); font-weight: 700; font-size: var(--fs-h3); letter-spacing: 0; }
-  .policy__list { display: flex; flex-direction: column; gap: 0.75rem; }
-  .policy__list li { position: relative; padding-left: 1.25rem; }
-  .policy__list li::before {
-    content: ""; position: absolute; left: 0; top: 0.65em;
-    width: 7px; height: 7px; border-radius: 50%; background: var(--c-jade);
-  }
+  /* Same left edge as the header; the reading column stays 680px. */
+  .policy { padding-block: 72px; }
+  .policy__inner { display: flex; flex-direction: column; gap: 16px; }
+  .policy__inner > * { max-width: 680px; }
+  .policy h1 { font: 600 clamp(44px, 6vw, 88px)/.98 var(--font-serif); letter-spacing: -.035em; margin-bottom: 8px; }
+  .policy__lead { font-size: var(--fs-lead); color: var(--text-2); margin-bottom: 24px; }
+  .policy__part { background: var(--card); border-radius: var(--r-tile); padding: 28px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-ink) 5%, transparent), 0 30px 60px -44px var(--shadow-ink); }
+  .policy__part h2 { font: 600 clamp(26px, 3vw, 34px)/1.1 var(--font-serif); letter-spacing: -.02em; }
+  .policy__list { display: flex; flex-direction: column; gap: 12px; }
+  .policy__list li { position: relative; padding-left: 20px; }
+  .policy__list li::before { content: ""; position: absolute; left: 0; top: .65em; width: 7px; height: 7px; border-radius: 50%; background: var(--c-jade); }
+  .policy a { color: var(--c-forest); font-weight: 600; }
 </style>

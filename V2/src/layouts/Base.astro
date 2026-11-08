@@ -1,12 +1,12 @@
 ---
-// Only the brand-kit weights: DM Sans 400–700, Fraunces 500/600, Syne 600–800.
+// Only the brand-kit weights the page uses: DM Sans 400–700, Fraunces 500/600 (+ italic 500), Syne 700/800.
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-500.css";
 import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-700.css";
 import "@fontsource/fraunces/latin-500.css";
+import "@fontsource/fraunces/latin-500-italic.css";
 import "@fontsource/fraunces/latin-600.css";
-import "@fontsource/syne/latin-600.css";
 import "@fontsource/syne/latin-700.css";
 import "@fontsource/syne/latin-800.css";
 import "../styles/global.css";
@@ -16,11 +16,12 @@ import dmSansBody from "@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
-interface Props { title?: string; description?: string; path?: string }
+interface Props { title?: string; description?: string; path?: string; home?: boolean }
 const {
   title = "Neuroditto: a fitness tracker for your mind",
-  description = "Share a moment from your day in a few words. See how you reacted. Over weeks, see the pattern. A phone app for one person; your data stays on your phone.",
+  description = "Neuroditto tracks your thinking patterns and blind spots across every part of your life. A phone app for one person.",
   path = "/",
+  home = false,
 } = Astro.props;
 const site = Astro.site ?? new URL("https://neuroditto.ai");
 const canonical = new URL(path, site).href;
@@ -30,10 +31,11 @@ const ogImage = new URL("/og.png", site).href;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light" />
+    <script is:inline>document.documentElement.classList.add("js");</script>
     <link rel="preload" href={frauncesHead} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={dmSansBody} as="font" type="font/woff2" crossorigin />
     <link rel="canonical" href={canonical} />
@@ -58,13 +60,13 @@ const ogImage = new URL("/og.png", site).href;
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
+    <Header home={home} />
     <main id="main">
       <slot />
     </main>
     <Footer />
     <script>
-      import "../scripts/motion";
+      import "../scripts/page";
     </script>
   </body>
 </html>
