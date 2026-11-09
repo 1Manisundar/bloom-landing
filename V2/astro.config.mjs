@@ -10,7 +10,8 @@ export default defineConfig({
   output: "static",
   adapter: vercel(),
   trailingSlash: "ignore",
-  build: { inlineStylesheets: "auto" },
+  // All CSS goes into the page itself: no stylesheet request blocks the first paint (Lighthouse, Gate 3).
+  build: { inlineStylesheets: "always" },
   devToolbar: { enabled: false },
   integrations: [sitemap()],
 });

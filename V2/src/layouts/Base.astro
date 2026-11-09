@@ -29,6 +29,8 @@ const canonical = new URL(path, site).href;
 const ogImage = new URL("/og.png", site).href;
 // The browser bar colour starts as ivory (read from tokens.css, the one place colours live); the page
 // script keeps it equal to the page colour while it blends.
+// Vercel preview builds (VERCEL_ENV=preview) must not be indexed. Production and local builds are not touched.
+const noindex = process.env.VERCEL_ENV === "preview";
 const ivory = tokens.match(/--c-ivory:\s*(#[0-9A-Fa-f]{6})/)?.[1];
 ---
 <!doctype html>
@@ -40,6 +42,7 @@ const ivory = tokens.match(/--c-ivory:\s*(#[0-9A-Fa-f]{6})/)?.[1];
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content={ivory} id="themeColor" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <script is:inline>document.documentElement.classList.add("js");</script>
     <link rel="preload" href={frauncesHead} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={dmSansBody} as="font" type="font/woff2" crossorigin />

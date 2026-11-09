@@ -1,8 +1,10 @@
 // A tiny static server for the prerendered site (dist/client), used by the screenshot and test scripts.
 // The Vercel adapter does not support `astro preview`, so this stands in for it.
-// Clean URLs like Vercel: /privacy and /privacy/ serve privacy/index.html.
+// Clean URLs like Vercel: /privacy and /privacy/ serve privacy/index.html. Like Vercel, text is sent
+// compressed and hashed build files (/_astro/) are cached for a year, so local Lighthouse numbers match.
 
 import { createServer } from "node:http";
+import { gzipSync } from "node:zlib";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 
@@ -25,8 +27,16 @@ export async function serveStatic({ port = 4329, root = resolve("dist/client") }
       if (info?.isDirectory()) { file = join(file, "index.html"); info = await stat(file).catch(() => null); }
       if (!info && !extname(file)) { file = `${file}.html`; info = await stat(file).catch(() => null); }
       if (!info) { res.writeHead(404, { "Content-Type": "text/plain" }); res.end("Not found"); return; }
-      res.writeHead(200, { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream" });
-      res.end(await readFile(file));
+      const type = TYPES[extname(file)] ?? "application/octet-stream";
+      const headers = { "Content-Type": type, "Cache-Control": path.startsWith("/_astro/") ? "public, max-age=31536000, immutable" : "public, max-age=0, must-revalidate" };
+      let body = await readFile(file);
+      if (/^(text\/|application\/(json|xml|manifest)|image\/svg)/.test(type) && /gzip/.test(req.headers["accept-encoding"] ?? "")) {
+        body = gzipSync(body);
+        headers["Content-Encoding"] = "gzip";
+        headers["Vary"] = "Accept-Encoding";
+      }
+      res.writeHead(200, headers);
+      res.end(body);
     } catch {
       res.writeHead(500); res.end();
     }
