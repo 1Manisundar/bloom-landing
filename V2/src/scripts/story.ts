@@ -86,14 +86,32 @@ if (st && stage) {
   window.addEventListener("resize", fit, { passive: true });
   document.fonts?.ready.then(fit);
 
-  onFrame((_now, dt) => {
-    if (!pinQ.matches) return;
-    // Paused while the story is off screen.
-    const r = st.getBoundingClientRect();
-    if (r.bottom < -50 || r.top > window.innerHeight + 50) return;
-    const target = progress();
-    if (Math.abs(target - ps) < 0.0004) return;
-    ps += (target - ps) * Math.min(1, dt * 8);
-    draw(ps);
+  let target = 0, onScreen = false;
+  onFrame({
+    read() {
+      if (!pinQ.matches) return;
+      // Paused while the story is off screen.
+      const r = st.getBoundingClientRect();
+      onScreen = !(r.bottom < -50 || r.top > window.innerHeight + 50);
+      if (onScreen) target = progress();
+    },
+    write(dt) {
+      if (!pinQ.matches || !onScreen || Math.abs(target - ps) < 0.0004) return;
+      ps += (target - ps) * Math.min(1, dt * 8);
+      draw(ps);
+    },
   });
+
+  /* Mira waves for 5 seconds once she is on screen, then holds the still pose: moving content longer
+     than 5 seconds needs a way to stop it (WCAG 2.2.2), and a short wave needs none. */
+  const mira = st.querySelector<HTMLImageElement>(".mira");
+  if (mira?.dataset.still && "IntersectionObserver" in window) {
+    const still = mira.dataset.still;
+    const io = new IntersectionObserver(([en]) => {
+      if (!en.isIntersecting) return;
+      io.disconnect();
+      window.setTimeout(() => { mira.src = still; }, 5000);
+    });
+    io.observe(mira);
+  }
 }

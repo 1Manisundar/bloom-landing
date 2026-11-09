@@ -20,12 +20,15 @@ import { HERO } from "../data/content";
   .ph__in { display: grid; justify-items: center; gap: 22px; }
   .ph__kick { font: 700 13px/1 var(--font-accent); letter-spacing: .2em; text-transform: uppercase; color: var(--accent-text); animation: phIn .9s var(--glide) both; }
   .ph__h1 { font: 600 var(--fs-hero)/.92 var(--font-serif); letter-spacing: -.045em; }
-  .ln { display: block; overflow: hidden; padding-bottom: .08em; }
+  /* Each line rises from a mask. Only the bottom edge clips (the rise comes from below), so tall letters,
+     the italic "mind." overhang and descenders (y) are never cut. The bottom padding makes room for the
+     descenders and the negative margin keeps the line spacing the same. */
+  .ln { display: block; clip-path: inset(-0.5em -0.5em 0 -0.5em); padding-bottom: .22em; margin-bottom: -.14em; }
   .ln > span { display: block; animation: phUp 1.3s var(--glide) both; }
   .ln:nth-child(2) > span { animation-delay: .1s; }
   .ph__h1 em { font-style: italic; font-weight: 500; color: var(--c-forest); }
   .ph__sub { font-size: clamp(17px, 1.6vw, 22px); color: var(--text-2); max-width: 36ch; animation: phIn .9s .35s var(--glide) both; }
   .ph__ctas { margin-top: 8px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; animation: phIn .9s .5s var(--glide) both; }
-  @keyframes phUp { from { transform: translateY(105%); } to { transform: none; } }
+  @keyframes phUp { from { transform: translateY(130%); } to { transform: none; } }
   @keyframes phIn { from { opacity: .001; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 </style>

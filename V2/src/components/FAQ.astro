@@ -2,7 +2,8 @@
 import Icon from "./Icon.astro";
 import { FAQ } from "../data/content";
 // [CURRENT STAGE] stays a visible placeholder until the founders give the line.
-const parts = (a: string) => a.split(/(\[CURRENT STAGE\])/);
+// The brand name is marked translate="no" so page translators leave it alone.
+const parts = (a: string) => a.split(/(\[CURRENT STAGE\]|Neuroditto)/);
 ---
 <div class="faq">
   {FAQ.map((item) => (
@@ -12,7 +13,7 @@ const parts = (a: string) => a.split(/(\[CURRENT STAGE\])/);
         <Icon name="plus" size={22} class="faq__icon" />
       </summary>
       <p class="faq__a">
-        {parts(item.a).map((p) => p === "[CURRENT STAGE]" ? <mark class="placeholder">[CURRENT STAGE]</mark> : p)}
+        {parts(item.a).map((p) => p === "[CURRENT STAGE]" ? <mark class="placeholder">[CURRENT STAGE]</mark> : p === "Neuroditto" ? <span translate="no">Neuroditto</span> : p)}
       </p>
     </details>
   ))}

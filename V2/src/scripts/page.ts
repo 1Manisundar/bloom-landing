@@ -19,18 +19,22 @@ window.__nd = {
   jump: (y) => { if (window.__nd.lenis) window.__nd.lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); },
 };
 
-/* ---------------- Frame loop ---------------- */
-type Tick = (now: number, dt: number) => void;
+/* ---------------- Frame loop ----------------
+   Each frame measures everything first (read), then changes styles (write), so the browser never has
+   to redo layout in the middle of a frame. */
+export interface Tick { read?: () => void; write: (dt: number) => void }
 const ticks: Tick[] = [];
-export function onFrame(fn: Tick) { ticks.push(fn); }
+export function onFrame(tick: Tick) { ticks.push(tick); }
 let last = performance.now();
 function frame(now: number) {
   requestAnimationFrame(frame);
   window.__nd.lenis?.raf(now);
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
-  paint(false);
-  for (const t of ticks) t(now, dt);
+  measure();
+  for (const t of ticks) t.read?.();
+  apply(false);
+  for (const t of ticks) t.write(dt);
 }
 
 /* ---------------- Header height ---------------- */
@@ -69,8 +73,11 @@ function collect() {
 }
 collect();
 const cur = { bg: secs[0]?.bg.slice() ?? [0, 0, 0], fg: secs[0]?.fg.slice() ?? [0, 0, 0] };
+const target = { bg: cur.bg.slice(), fg: cur.fg.slice() };
+const themeMeta = document.getElementById("themeColor");
 let shown = "";
-function paint(snap: boolean) {
+/** Read phase: where the sections are, and so which colour the page should have. */
+function measure() {
   if (!secs.length) return;
   const vh = window.innerHeight, nav = navH();
   const bg = secs[0].bg.slice(), fg = secs[0].fg.slice();
@@ -86,14 +93,21 @@ function paint(snap: boolean) {
     prevTop = top;
     for (let c = 0; c < 3; c++) { bg[c] += (secs[i].bg[c] - bg[c]) * k; fg[c] += (secs[i].fg[c] - fg[c]) * k; }
   }
+  target.bg = bg; target.fg = fg;
+}
+/** Write phase: move the page colour toward the target (lag 0.14 per frame) and paint it. */
+function apply(snap: boolean) {
   const f = snap || reduceQ.matches ? 1 : 0.14;
-  for (let c = 0; c < 3; c++) { cur.bg[c] += (bg[c] - cur.bg[c]) * f; cur.fg[c] += (fg[c] - cur.fg[c]) * f; }
+  for (let c = 0; c < 3; c++) { cur.bg[c] += (target.bg[c] - cur.bg[c]) * f; cur.fg[c] += (target.fg[c] - cur.fg[c]) * f; }
   const b = `rgb(${cur.bg.map(Math.round)})`, t = `rgb(${cur.fg.map(Math.round)})`;
   if (b + t === shown) return;
   shown = b + t;
   root.style.setProperty("--pbg", b);
   root.style.setProperty("--pfg", t);
+  // The phone's browser bar follows the page colour too.
+  themeMeta?.setAttribute("content", b);
 }
+function paint(snap: boolean) { measure(); apply(snap); }
 paint(true);
 
 /* ---------------- Phone menu ---------------- */

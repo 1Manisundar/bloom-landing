@@ -13,6 +13,7 @@ import "../styles/global.css";
 // The two faces on the first screen, preloaded (font-display: swap comes from @fontsource).
 import frauncesHead from "@fontsource/fraunces/files/fraunces-latin-600-normal.woff2?url";
 import dmSansBody from "@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2?url";
+import tokens from "../styles/tokens.css?raw";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
@@ -26,6 +27,9 @@ const {
 const site = Astro.site ?? new URL("https://neuroditto.ai");
 const canonical = new URL(path, site).href;
 const ogImage = new URL("/og.png", site).href;
+// The browser bar colour starts as ivory (read from tokens.css, the one place colours live); the page
+// script keeps it equal to the page colour while it blends.
+const ivory = tokens.match(/--c-ivory:\s*(#[0-9A-Fa-f]{6})/)?.[1];
 ---
 <!doctype html>
 <html lang="en">
@@ -35,6 +39,7 @@ const ogImage = new URL("/og.png", site).href;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content={ivory} id="themeColor" />
     <script is:inline>document.documentElement.classList.add("js");</script>
     <link rel="preload" href={frauncesHead} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={dmSansBody} as="font" type="font/woff2" crossorigin />

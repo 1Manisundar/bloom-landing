@@ -14,7 +14,8 @@ const VIEWS = [
   { name: "desktop1440", width: 1440, height: 900 },
 ];
 const only = process.argv.find((a) => a.startsWith("--only="))?.slice(7);
-const OUT = resolve("shots", "gate1");
+// --out=<folder> writes somewhere other than shots/gate1 (for later gates).
+const OUT = resolve("shots", process.argv.find((a) => a.startsWith("--out="))?.slice(6) ?? "gate1");
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 const problems = [];
 

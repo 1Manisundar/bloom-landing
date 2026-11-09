@@ -82,6 +82,7 @@ const first = list[0];
     background: color-mix(in srgb, var(--c-emerald) 70%, transparent); color: var(--c-dark-text);
     backdrop-filter: blur(8px);
   }
+  .film__btn:hover { background: var(--c-emerald); }
   .film__btn:focus-visible { outline-color: var(--c-light-gold); }
   .film__btn .i-pause, .film[data-playing] .film__btn .i-play { display: none; }
   .film[data-playing] .film__btn .i-pause { display: block; }
@@ -89,6 +90,7 @@ const first = list[0];
   .film[data-sound] .film__btn .i-on { display: block; }
   .film__tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
   .film__tab { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; cursor: pointer; background: var(--c-sage); color: var(--c-ink); font-weight: 600; }
+  .film__tab:hover { background: color-mix(in srgb, var(--c-sage) 85%, var(--c-ink)); }
   .film__tab[aria-selected="true"] { background: var(--c-forest); color: var(--c-ivory); }
   .film .note { text-align: center; }
   @media (max-width: 860px) {

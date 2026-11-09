@@ -9,7 +9,7 @@ import { PRIVACY_LINES } from "../data/content";
     </div>
     <h2 class="pv-h rise" id="pv-h">Your mind stays<br /><em>on your phone.</em></h2>
     <div class="pv-grid">
-      {PRIVACY_LINES.map((l) => <div class="rise"><b>{l.title}</b><p>{l.body}</p></div>)}
+      {PRIVACY_LINES.map((l) => <div class="rise"><h3>{l.title}</h3><p>{l.body}</p></div>)}
     </div>
   </div>
 </section>
@@ -19,7 +19,7 @@ import { PRIVACY_LINES } from "../data/content";
   .pv-h { font: 600 var(--fs-privacy)/.98 var(--font-serif); letter-spacing: -.04em; }
   .pv-h em { font-style: italic; font-weight: 500; color: var(--c-light-gold); }
   .pv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; max-width: 980px; margin: 64px auto 0; text-align: left; }
-  .pv-grid b { font: 600 22px/1.2 var(--font-serif); display: block; margin-bottom: 8px; }
+  .pv-grid h3 { font: 600 22px/1.2 var(--font-serif); margin-bottom: 8px; }
   .pv-grid p { color: var(--c-dark-text-2); }
   @media (max-width: 860px) {
     .priv { padding-block: 56px; }

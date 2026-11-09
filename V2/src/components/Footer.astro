@@ -15,7 +15,7 @@ const year = 2026;
   </div>
 </footer>
 <style>
-  .foot { border-top: 1px solid var(--c-border); padding-block: 24px; color: var(--c-eucalyptus); font-size: var(--fs-small); }
+  .foot { border-top: 1px solid var(--c-border); padding-block: 24px calc(24px + env(safe-area-inset-bottom, 0px)); color: var(--c-eucalyptus); font-size: var(--fs-small); }
   .foot__bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
   .foot__links { display: flex; gap: 8px; }
   .foot__icon {

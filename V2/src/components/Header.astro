@@ -30,7 +30,8 @@ const href = (hash: string) => (home ? hash : `/${hash}`);
   }
   .nav__in { max-width: var(--container); margin: 0 auto; padding: 14px var(--gr) 14px var(--gl); display: flex; align-items: center; gap: 20px; }
   .logo { font: 600 21px/1 var(--font-serif); text-decoration: none; display: flex; gap: 9px; align-items: center; min-height: 44px; color: var(--pfg); }
-  .logo i { width: 10px; height: 10px; border-radius: 50%; background: var(--c-gold); }
+  .logo i { width: 10px; height: 10px; border-radius: 50%; background: var(--c-gold); transition: transform .3s var(--spring); }
+  .logo:hover i { transform: scale(1.4); }
   .links { display: flex; gap: 26px; margin-left: auto; }
   .links a { text-decoration: none; font-weight: 500; font-size: var(--fs-small); color: var(--pfg); opacity: .78; transition: opacity .3s; display: inline-flex; align-items: center; min-height: 44px; }
   .links a:hover { opacity: 1; }
@@ -40,9 +41,11 @@ const href = (hash: string) => (home ? hash : `/${hash}`);
     align-items: center; justify-content: center;
     background: color-mix(in srgb, var(--pfg) 9%, transparent); color: var(--pfg);
   }
+  .menu:hover { background: color-mix(in srgb, var(--pfg) 16%, transparent); }
   .drop { padding: 0 var(--gr) 12px var(--gl); display: grid; }
   .drop[hidden] { display: none; }
-  .drop a { padding: 14px 0; text-decoration: none; font-weight: 600; color: var(--pfg); border-top: 1px solid color-mix(in srgb, var(--pfg) 12%, transparent); }
+  .drop a { padding: 14px 0; text-decoration: none; font-weight: 600; color: var(--pfg); border-top: 1px solid color-mix(in srgb, var(--pfg) 12%, transparent); text-underline-offset: .2em; }
+  .drop a:hover { text-decoration: underline; }
 
   @media (max-width: 960px) {
     .links { display: none; }
