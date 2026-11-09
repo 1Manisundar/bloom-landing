@@ -29,8 +29,12 @@ const canonical = new URL(path, site).href;
 const ogImage = new URL("/og.png", site).href;
 // The browser bar colour starts as ivory (read from tokens.css, the one place colours live); the page
 // script keeps it equal to the page colour while it blends.
-// Vercel preview builds (VERCEL_ENV=preview) must not be indexed. Production and local builds are not touched.
-const noindex = process.env.VERCEL_ENV === "preview";
+// Only the real site may be indexed. On Vercel, every build that does not serve neuroditto.ai gets noindex:
+// previews, and production while it only has its *.vercel.app address. Once neuroditto.ai is the project's
+// production domain, the next production build drops the tag by itself. Local builds are not touched.
+const vercelEnv = process.env.VERCEL_ENV;
+const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "";
+const noindex = vercelEnv === "preview" || (vercelEnv === "production" && !/^(www\.)?neuroditto\.ai$/.test(productionHost));
 const ivory = tokens.match(/--c-ivory:\s*(#[0-9A-Fa-f]{6})/)?.[1];
 ---
 <!doctype html>

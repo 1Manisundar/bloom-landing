@@ -2,8 +2,8 @@
 // Tabs through the whole page and checks every stop: it is something you can use, its focus ring shows,
 // and it is on screen and not hidden under the sticky header. Then uses the page with keys only:
 // skip link, header links (menu on phones), Escape closes the menu, FAQ opens with Enter, companion rows
-// pause with Enter, the waitlist form submits with Enter and its status line answers (the static test
-// server has no /api/waitlist, so the answer is the error message; nothing is stored).
+// pause with Enter, the waitlist form submits with Enter and its status line answers. The address typed is
+// incomplete on purpose, so nothing is ever stored, even with BASE_URL pointing at the live site.
 // Usage: npm run build && node scripts/keyboardtest.mjs
 
 import { chromium } from "playwright-core";
@@ -92,7 +92,7 @@ try {
       }
 
       // 6. Waitlist with keys only: type, Enter submits, the status is announced.
-      await page.focus("#waitlist-email"); await page.keyboard.type("keyboard@example.com"); await page.keyboard.press("Enter"); await sleep(400);
+      await page.focus("#waitlist-email"); await page.keyboard.type("keyboard@example"); await page.keyboard.press("Enter"); await sleep(400);
       const said = (await page.textContent("#waitlist-status"))?.trim();
       check(!!said, `${tag}: Enter submits the waitlist form and the status line answers ("${said}")`);
       await ctx.close();
