@@ -1,9 +1,12 @@
 ---
 // Lucide icons (2px stroke), inlined from lucide-static at build time. Decorative unless `label` is given.
+// Lucide has no brand icons, so Instagram and LinkedIn come from Tabler Icons (same 2px outline style).
 import plus from "lucide-static/icons/plus.svg?raw";
 import externalLink from "lucide-static/icons/external-link.svg?raw";
+import instagram from "@tabler/icons/outline/brand-instagram.svg?raw";
+import linkedin from "@tabler/icons/outline/brand-linkedin.svg?raw";
 
-const ICONS = { plus, "external-link": externalLink } as const;
+const ICONS = { plus, "external-link": externalLink, instagram, linkedin } as const;
 interface Props { name: keyof typeof ICONS; size?: number; label?: string; class?: string }
 const { name, size = 20, label, class: cls = "" } = Astro.props;
 const svg = ICONS[name]

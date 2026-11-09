@@ -96,5 +96,5 @@ export const FOUNDERS = [
 
 export const LINKS = {
   instagram: "https://www.instagram.com/neuroditto.ai/",
-  linkedin: "#linkedin-placeholder", // PLACEHOLDER: no LinkedIn URL given yet
+  linkedin: "https://www.linkedin.com/company/neuroditto-ai/",
 };

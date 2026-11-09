@@ -1,15 +1,18 @@
 ---
-// Two rows of companion faces, scrolling slowly in opposite directions. Each row is drawn twice so the
-// loop has no seam; the second copy is hidden from screen readers. Still with reduced motion.
+// Two rows of companion faces, scrolling slowly in opposite directions. Each row is drawn four times and
+// moves by half its length, so the loop has no seam and still fills a 2560px screen; only the first copy
+// is read by screen readers. Still with reduced motion.
 import { ROW_A, ROW_B, TINTS, companionSrc } from "../data/companions";
 const rows = [ROW_A, ROW_B];
 ---
-<section class="faces" id="companions" data-bg="ivory" aria-labelledby="faces-h">
+<!-- On the dark band with Privacy and Why (user decision, Nov 9 2026): a short light strip between two dark
+     sections made the page colour flip dark → light → dark within ~300px. -->
+<section class="faces dark" id="companions" data-bg="emerald" data-fg="dark-text" aria-labelledby="faces-h">
   <p class="faces__cap" id="faces-h">30 companions, each with its own way of talking. The screens and notes are examples.</p>
   {rows.map((row, r) => (
     <div class:list={["row", { "row--rev": r === 1 }]}>
-      {[0, 1].map((copy) => (
-        <ul class="row__set" role="list" aria-hidden={copy === 1 ? "true" : undefined}>
+      {[0, 1, 2, 3].map((copy) => (
+        <ul class="row__set" role="list" aria-hidden={copy > 0 ? "true" : undefined}>
           {row.map((c, i) => (
             <li class="face" style={`--tint:var(--c-${TINTS[(i + r * 3) % TINTS.length]})`}>
               <img src={companionSrc(c.key)} width="67" height="80" alt={copy === 0 ? c.alt : ""} loading="lazy" decoding="async" />
@@ -28,7 +31,7 @@ const rows = [ROW_A, ROW_B];
     mask-image: linear-gradient(90deg, transparent, var(--c-ink) 12%, var(--c-ink) 88%, transparent);
   }
   .faces__cap { text-align: center; color: color-mix(in srgb, var(--pfg) 72%, var(--pbg)); font-size: var(--fs-small); margin-bottom: 12px; padding-inline: var(--gl) var(--gr); }
-  .row { display: flex; width: max-content; animation: roll 80s linear infinite; }
+  .row { display: flex; width: max-content; animation: roll 160s linear infinite; }
   .row--rev { animation-direction: reverse; }
   .row__set { display: flex; gap: 14px; padding-right: 14px; }
   .face { width: 84px; height: 84px; border-radius: 26px; background: color-mix(in srgb, var(--tint) 70%, var(--c-white)); display: grid; place-items: center; flex: none; }

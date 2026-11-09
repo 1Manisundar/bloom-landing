@@ -8,7 +8,7 @@ import { chromium } from "playwright-core";
 import { serveStatic } from "./lib/serve.mjs";
 
 const WIDTHS = [360, 390, 430, 768, 1024, 1280, 1366, 1440, 1536, 1920];
-const PAGES = ["/", "/privacy"];
+const PAGES = ["/"]; // "/privacy" is off for now (src/pages/_privacy.astro)
 const server = await serveStatic({ port: 4344 });
 const browser = await chromium.launch({ channel: "chrome" });
 const problems = [];

@@ -64,8 +64,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (!url || !key) return json(503, { error: "closed" });
 
   try {
+    // Only the project address counts: a pasted URL that ends in /rest/v1/ (shown in some Supabase
+    // screens) would otherwise double the path.
+    const base = new URL(url).origin;
     // Insert; a repeat address is ignored by the unique key (ON CONFLICT DO NOTHING).
-    const res = await fetch(`${url.replace(/\/$/, "")}/rest/v1/waitlist?on_conflict=email`, {
+    const res = await fetch(`${base}/rest/v1/waitlist?on_conflict=email`, {
       method: "POST",
       headers: {
         apikey: key,

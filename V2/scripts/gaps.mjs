@@ -18,7 +18,7 @@ try {
     const mobile = width < 600;
     const context = await browser.newContext({ viewport: { width, height }, reducedMotion: "reduce", isMobile: mobile, hasTouch: mobile });
     const page = await context.newPage();
-    for (const path of ["/", "/privacy"]) {
+    for (const path of ["/"]) { // "/privacy" is off for now (src/pages/_privacy.astro)
       await page.goto(`${server.origin}${path}`, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(200);

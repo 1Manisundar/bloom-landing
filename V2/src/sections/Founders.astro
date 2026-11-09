@@ -2,9 +2,12 @@
 // Founders + FAQ: the current words, restyled (ivory, big Fraunces headings, white rounded cards).
 import FAQ from "../components/FAQ.astro";
 import { FOUNDERS, LINKS } from "../data/content";
+// FOUNDERS OFF for now (user, Nov 9 2026): set to true to show the founders block above the FAQ again.
+const SHOW_FOUNDERS = false;
 ---
-<section class="sect founders" id="founders" data-bg="ivory" aria-labelledby="founders-h">
+<section class="sect founders" id="founders" data-bg="ivory" aria-labelledby={SHOW_FOUNDERS ? "founders-h" : "faq-h"}>
   <div class="wrap">
+    {SHOW_FOUNDERS && (<>
     <div class="center rise">
       <p class="eyebrow">The founders</p>
       <h2 class="h2" id="founders-h">Built in public by Jyothi and Krishna.</h2>
@@ -23,8 +26,9 @@ import { FOUNDERS, LINKS } from "../data/content";
         </li>
       ))}
     </ul>
+    </>)}
 
-    <div class="faq-block">
+    <div class:list={["faq-block", { "faq-block--first": !SHOW_FOUNDERS }]}>
       <h2 class="h2 faq-h rise" id="faq-h">Questions people ask us</h2>
       <div class="rise"><FAQ /></div>
     </div>
@@ -45,6 +49,7 @@ import { FOUNDERS, LINKS } from "../data/content";
   .person__name { font: 600 24px/1.1 var(--font-serif); letter-spacing: -.02em; }
   .person__role { font-size: var(--fs-small); color: var(--text-2); margin-top: 4px; }
   .faq-block { margin-top: 96px; display: grid; justify-items: center; gap: 40px; }
+  .faq-block--first { margin-top: 0 !important; }
   .faq-h { text-align: center; }
   .faq-block > div { width: 100%; max-width: 820px; }
   @media (max-width: 600px) {

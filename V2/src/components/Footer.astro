@@ -1,4 +1,5 @@
 ---
+import Icon from "./Icon.astro";
 import { LINKS } from "../data/content";
 const year = 2026;
 ---
@@ -6,17 +7,21 @@ const year = 2026;
   <div class="wrap foot__bar">
     <span>© {year} <span translate="no">Neuroditto.ai</span></span>
     <ul class="foot__links" role="list">
-      <li><a href="/privacy">Privacy</a></li>
-      <li><a href={LINKS.instagram} rel="me noopener" target="_blank">Instagram<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-      <!-- PLACEHOLDER: LinkedIn URL not given yet -->
-      <li><a href={LINKS.linkedin} data-placeholder="linkedin">LinkedIn</a></li>
+      {/* PRIVACY PAGE OFF for now (user, Nov 9 2026): rename src/pages/_privacy.astro back to privacy.astro
+          and restore this link: <li><a href="/privacy">Privacy</a></li> */}
+      <li><a class="foot__icon" href={LINKS.instagram} rel="me noopener" target="_blank"><Icon name="instagram" size={22} /><span class="visually-hidden">Neuroditto on Instagram (opens in a new tab)</span></a></li>
+      <li><a class="foot__icon" href={LINKS.linkedin} rel="me noopener" target="_blank"><Icon name="linkedin" size={22} /><span class="visually-hidden">Neuroditto on LinkedIn (opens in a new tab)</span></a></li>
     </ul>
   </div>
 </footer>
 <style>
   .foot { border-top: 1px solid var(--c-border); padding-block: 24px; color: var(--c-eucalyptus); font-size: var(--fs-small); }
   .foot__bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-  .foot__links { display: flex; gap: 20px; }
-  .foot__links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; color: var(--c-ink); font-weight: 500; }
-  .foot__links a:hover { color: var(--c-forest); }
+  .foot__links { display: flex; gap: 8px; }
+  .foot__icon {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px;
+    color: var(--c-ink); background: color-mix(in srgb, var(--c-ink) 6%, transparent);
+    transition: background-color .2s, color .2s;
+  }
+  .foot__icon:hover { color: var(--c-forest); background: var(--c-sage); }
 </style>

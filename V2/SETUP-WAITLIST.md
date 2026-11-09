@@ -28,9 +28,19 @@ create table public.waitlist (
 -- read nor write it. Only the site's server route, using the secret key, can add rows.
 alter table public.waitlist enable row level security;
 revoke all on table public.waitlist from anon, authenticated;
+grant insert on table public.waitlist to service_role;
 ```
 
 3. Open **Table Editor**. You should see `waitlist` with two columns, `email` and `created_at`, and a lock icon showing row level security is on.
+4. To check the lock, run this in **SQL Editor**:
+
+```sql
+select relrowsecurity as rls_on from pg_class where oid = 'public.waitlist'::regclass;
+select grantee, privilege_type from information_schema.role_table_grants
+where table_schema = 'public' and table_name = 'waitlist' order by grantee;
+```
+
+   The first answer must be `true`. In the second, `anon` and `authenticated` must not appear at all; `service_role` (the site's server route) and `postgres` (you) may.
 
 ## 3. Copy the two values the server needs
 
@@ -72,7 +82,7 @@ If the page says "That didn't go through", open Vercel, then **Logs**, and look 
 
 ## 7. Fill in the privacy page
 
-In `V2/src/pages/privacy.astro`, replace:
+The privacy page is hidden for now (`src/pages/_privacy.astro`, not built). When it comes back, replace:
 - `[REGION]` with the region from step 1 (for example "Frankfurt, Germany").
 - `[CONTACT EMAIL]` with the address people should write to be removed.
 

@@ -36,8 +36,9 @@ const supa = createServer((req, res) => {
 await new Promise((r) => supa.listen(4350, "127.0.0.1", r));
 
 async function startDev(env, port) {
-  for (const k of ["PUBLIC_WAITLIST_URL", "SUPABASE_URL", "SUPABASE_SECRET_KEY"]) delete process.env[k];
-  Object.assign(process.env, env);
+  // Set every key (empty = not set), never delete: values already in process.env win over the .env file,
+  // so a real .env can never leak into this test and send test addresses to the real Supabase table.
+  for (const k of ["PUBLIC_WAITLIST_URL", "SUPABASE_URL", "SUPABASE_SECRET_KEY"]) process.env[k] = env[k] ?? "";
   return dev({ root: process.cwd(), server: { port, host: "127.0.0.1" }, logLevel: "error" });
 }
 const browser = await chromium.launch({ channel: "chrome" });

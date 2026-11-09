@@ -72,11 +72,18 @@ const cur = { bg: secs[0]?.bg.slice() ?? [0, 0, 0], fg: secs[0]?.fg.slice() ?? [
 let shown = "";
 function paint(snap: boolean) {
   if (!secs.length) return;
-  const vh = window.innerHeight;
+  const vh = window.innerHeight, nav = navH();
   const bg = secs[0].bg.slice(), fg = secs[0].fg.slice();
+  let prevTop = secs[0].el.getBoundingClientRect().top;
   for (let i = 1; i < secs.length; i++) {
-    const k = smooth((vh * 0.88 - secs[i].el.getBoundingClientRect().top) / (vh * 0.36));
-    if (k <= 0) break;
+    const top = secs[i].el.getBoundingClientRect().top;
+    const raw = smooth((vh * 0.88 - top) / (vh * 0.36));
+    if (raw <= 0) break;
+    // A section shorter than the screen must keep its colour while its top is still under the header
+    // (a menu jump lands there), so the next colour waits until the previous section has scrolled up.
+    // Tall sections have long passed the header by then, so this changes nothing for them.
+    const k = raw * smooth((nav - prevTop) / (vh * 0.3));
+    prevTop = top;
     for (let c = 0; c < 3; c++) { bg[c] += (secs[i].bg[c] - bg[c]) * k; fg[c] += (secs[i].fg[c] - fg[c]) * k; }
   }
   const f = snap || reduceQ.matches ? 1 : 0.14;
