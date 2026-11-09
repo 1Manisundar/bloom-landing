@@ -18,8 +18,8 @@ const VIEWS = [
   { name: "laptop", width: 1366, height: 768 },
   { name: "phone", width: 390, height: 844, mobile: true },
 ];
-const LINKS = ["story", "demo", "privacy", "why"];
-const SHOOT = new Set(["demo", "privacy"]);
+// Every link in the header menu, read from the page (the Demo link is off until the film exists).
+const SHOOT = new Set(["story", "privacy"]);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const failures = [];
 const rows = [];
@@ -53,6 +53,7 @@ try {
       await page.evaluate(() => window.__nd?.ready);
       await sleep(400);
       const tag = `${view.name}${motion === "reduce" ? "-reduced" : ""}`;
+      const LINKS = await page.$$eval("#dropMenu a", (as) => as.map((a) => a.hash.slice(1)));
 
       for (const from of ["top", "bottom"]) {
         for (const id of LINKS) {

@@ -101,7 +101,7 @@ try {
       for (const [name, expr] of list) {
         const fa = resolve(raw, `${name}-site.png`), fb = resolve(raw, `${name}-ref.png`);
         const okA = await capture(s.page, expr, fa);
-        if (!okA) { problems.push(`${tag}: no target for ${name}`); continue; }
+        if (!okA) { if (name !== "10-demo") problems.push(`${tag}: no target for ${name}`); continue; } // demo is off until the film exists
         const okB = await capture(r.page, expr, fb);
         await sideBySide(fa, okB ? fb : null, resolve(dir, `${name}.png`), view);
       }

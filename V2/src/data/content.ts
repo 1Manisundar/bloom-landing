@@ -4,7 +4,8 @@
 
 export const NAV = [
   { hash: "#story", label: "How it works" },
-  { hash: "#demo", label: "Demo" },
+  // DEMO OFF until the film exists (see src/pages/index.astro).
+  // { hash: "#demo", label: "Demo" },
   { hash: "#privacy", label: "Privacy" },
   { hash: "#why", label: "Why" },
 ] as const;
